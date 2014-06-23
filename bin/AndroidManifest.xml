@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.backup"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="11"
+        android:targetSdkVersion="19" />
+	<uses-permission android:name="android.permission.GET_TASKS"/>
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+        android:screenOrientation="portrait" >
+        <receiver android:name="com.example.backup.backgroundtasks.MyBroadcastReceiver"
+            	  android:enabled="true" android:exported="true">  
+		    <intent-filter>  
+		        <action android:name="android.intent.action.BOOT_COMPLETED" />  
+		        <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+		    </intent-filter>  
+		</receiver>
+		
+        <activity
+            android:name="com.example.backup.MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="com.example.backup.ads.AdScreen"/>
+        <activity android:name="com.example.backup.LockScreenActivity"/>
+         <activity
+			android:name="com.example.backup.game.PuzzleActivity"
+			android:label="@string/app_name" android:configChanges="mcc|mnc|locale|keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|fontScale" />
+         <activity android:name="com.example.backup.game.Preview"/>
+         <activity android:name="com.example.backup.game.Finish"/>
+        <service android:enabled="true" android:name="com.example.backup.backgroundtasks.MyService" />
+        <service android:enabled="true" android:name="com.example.backup.backgroundtasks.LockScreenService" />
+        <service  android:enabled="true" android:name="com.example.backup.backgroundtasks.FakeLockScreenService"/>       
+    </application>
+
+</manifest>

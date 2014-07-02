@@ -7,8 +7,8 @@
 
     <ImageView
         android:id="@+id/imageView1"
-        android:layout_width="@dimen/app_icon__dimension_large"
-        android:layout_height="@dimen/app_icon__dimension_large"
+        android:layout_width="@dimen/app_icon_dimension_large"
+        android:layout_height="@dimen/app_icon_dimension_large"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="7dp"

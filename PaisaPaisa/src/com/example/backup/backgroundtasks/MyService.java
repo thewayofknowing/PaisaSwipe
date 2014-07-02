@@ -1,32 +1,24 @@
 package com.example.backup.backgroundtasks;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+
 import java.util.HashSet;
 import java.util.List;
 
-import com.example.backup.MainActivity;
-import com.example.backup.R;
 import com.example.backup.ads.AdScreen;
 import com.example.backup.constants.*;
+import com.example.backup.data.Advertisement;
+import com.example.backup.db.DataBaseHelper;
 
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.os.Build;
-import android.os.Bundle;
+import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
@@ -40,25 +32,35 @@ import android.util.Log;
 
 public class MyService extends Service implements Constants{
 
-	private Handler myHandler;
-	private Runnable runnable,waitRunnable;
+	private static Handler myHandler;
+	private static Runnable runnable;
+	private static Runnable waitRunnable;
 	private ActivityManager am;
 	private PackageManager pm;
 	private List<RunningTaskInfo> tasks;
-	private HashSet<String> reset,app_ad,app_ad_off;
-	private SharedPreferences sharedPreferences;
-	
+	private static HashSet<String> reset;
+	private static HashSet<String> app_ad;
+	private static HashSet<String> app_ad_off;
+	private static SharedPreferences sharedPreferences;
+	private List<Advertisement> advertisements;
+	static MyService s_myService;
 	/*
 	 * THIS IS SO THAT AD DOESN'T POPUP AGAIN FOR SPLASH SCREEN APS
 	 */
 
-	private boolean wait_exec;
+	private static boolean wait_exec;
 	
+	/**
+     * Class for clients to access.  Because we know this service always
+     * runs in the same process as its clients, we don't need to deal with
+     * IPC.
+     */
+    public class LocalBinder extends Binder {
+        public MyService getService() {
+            return MyService.this;
+        }
+    }
 	
-	/*
-	 * TO CHECK IF APP IS RUNNING, OR SERVICE STARTED FROM BOOT BROADCASE LISTENER
-	 */
-	private boolean isMainRunning;
 	@Override
 	public IBinder onBind(Intent arg0) {
 		return null;
@@ -78,35 +80,14 @@ public class MyService extends Service implements Constants{
 		if (!(getSharedPreferences(myPreferences, MODE_PRIVATE).contains(STATUS) && getSharedPreferences(myPreferences, MODE_PRIVATE).getBoolean(STATUS, false))){
 			stopSelf();
 		}
-
-		initVariables();
 		
-		 int icon = R.drawable.ic_launcher;
-		 long when = System.currentTimeMillis();
-		 NotificationManager nm=(NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-		 Intent intent=new Intent(getBaseContext(),MainActivity.class);
-	     PendingIntent  pending=PendingIntent.getActivity(getBaseContext(), 0, intent, 0);
-	     Notification notification;
-	        if (Build.VERSION.SDK_INT < 11) {
-	            notification = new Notification(icon, "Title", when);
-	            notification.setLatestEventInfo(
-	                    getBaseContext(),
-	                    "Title",
-	                    "Text",
-	                    pending);
-	        } else {
-	            notification = new Notification.Builder(getBaseContext())
-	                    .setContentTitle("Title")
-	                    .setContentText(
-	                            "Text").setSmallIcon(R.drawable.ic_launcher)
-	                    .setContentIntent(pending).setWhen(when).setAutoCancel(true)
-	                    .build();
-	        }
-	     notification.flags |= Notification.FLAG_AUTO_CANCEL;
-	     notification.defaults |= Notification.DEFAULT_SOUND;
+		DataBaseHelper db = new DataBaseHelper(this);
+		advertisements = db.getAllAds();
+		
+		s_myService = MyService.this;
+		initVariables();
 	
-		startForeground(22, notification);
-		//Toast.makeText(this, "OnCreate", Toast.LENGTH_LONG).show();
+		startForeground(22, new Notification());
 		Log.d(TAG, "onCreate");
 		//return Service.START_STICKY;
 	}
@@ -119,47 +100,18 @@ public class MyService extends Service implements Constants{
 	@Override
 	public int onStartCommand(final Intent intent, int flags, int startId) {
 	 
-	initBackgroundAppCheck();	
-		
+	initRunnables();	
+	myHandler.post(runnable);
 	 /*
 	  * LET THE SPLASH SCREEN APS BOOT UP, AVOID DISPLAYING AD AGAIN	
 	  */
-     wait_exec = false;
-	 waitRunnable = new Runnable() {
-	 	
-		@Override
-		public void run() {
-			Bundle bundle  = intent.getExtras();
-			if(bundle!=null) {
-				if(!wait_exec) {
-					wait_exec = true;
-					if(bundle.containsKey("wait")) {
-						myHandler.removeCallbacks(runnable);
-					}
-					myHandler.postDelayed(waitRunnable, interval);
-				}
-				else {
-					if(bundle.containsKey("wait")) {
-						 app_ad_off.addAll(app_ad);
-						 app_ad.removeAll(app_ad_off);
-				    	 myHandler.post(runnable);
-					}
-				}
-			}
-			else {
-				myHandler.post(runnable);
-			}
-		}
-	};	
-	 myHandler.post(waitRunnable);
 	
-	 
 
 	// We need to return if we want to handle this service explicitly. 
 	return START_FLAG_REDELIVERY;
 }
 	
-	private void initBackgroundAppCheck() {
+	private void initRunnables() {
 		/*
 		 * CHECK THE LIST OF ACTIVATED ADS IN LIST OF RUNNING APPS
 		 * IF PRESENT, START THE "AdScreen" ACTIVITY TO DISPLAY THE AD
@@ -219,11 +171,27 @@ public class MyService extends Service implements Constants{
 				 	myHandler.postDelayed(runnable, 529);
 			 }
 		 };
+		 
+		 waitRunnable = new Runnable() {
+			 	
+				@Override
+				public void run() {
+						if(!wait_exec) {
+							wait_exec = true;
+							myHandler.removeCallbacks(runnable);
+							myHandler.postDelayed(waitRunnable, interval);
+						}
+						else {
+							 app_ad_off.addAll(app_ad);
+							 app_ad.removeAll(app_ad_off);
+					    	 myHandler.post(runnable);						
+						}
+				}
+			};
 	}
 	
 
-	
-	private void initVariables() {
+	public static void initVariables() {
 		app_ad = new HashSet<String>();	
 		app_ad_off = new HashSet<String>();
 		
@@ -232,13 +200,23 @@ public class MyService extends Service implements Constants{
 		 */
 		
 		app_ad.addAll( sharedPreferences.getStringSet(ACTIVATED_LIST, new HashSet<String>()) );	
-		 
-		if(app_ad.isEmpty()) {
-			stopSelf();
-		}
+	
 		Log.d(TAG,"OnStart:"+ app_ad.toString() + "");
 		//Log.d(TAG,"app_ad(OnCreate): " + app_ad.toString());
 		reset = new HashSet<String>();
+	}
+	
+	public static void delayAds() {
+		 wait_exec = false;	
+		 myHandler.post(waitRunnable);
+	}
+	
+	public static void stopAds() {
+		 myHandler.removeCallbacks(runnable);
+	}
+	
+	public static void startAds() {
+		 myHandler.post(runnable);
 	}
 	
 	@Override

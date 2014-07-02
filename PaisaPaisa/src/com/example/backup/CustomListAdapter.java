@@ -42,6 +42,7 @@ public class CustomListAdapter extends ArrayAdapter<String> implements Constants
 	private final Activity context;
 	private final List<String> appLabels;
 	private final List<Drawable> icons;
+	private boolean is_list;
 	SharedPreferences sharedPreferences;
 	static class ViewHolder {
 		TextView txtTitle;
@@ -53,7 +54,12 @@ public class CustomListAdapter extends ArrayAdapter<String> implements Constants
 	
 	@Override
 	public int getCount() {
-		return appLabels.size();
+		if (is_list) {
+			return appLabels.size();
+		}
+		else {
+			return 1;
+		}
 	}
 	 
 	ServiceConnection mConnection = new ServiceConnection() {
@@ -73,11 +79,12 @@ public class CustomListAdapter extends ArrayAdapter<String> implements Constants
 	 * @params: appLabels - Application labels for the installed applications
 	 * @params: icons- set of icons for the list of applications installed
 	 */
-	public CustomListAdapter(Activity context, List<Drawable> icons, List<String> objects) {
+	public CustomListAdapter(Activity context, List<Drawable> icons, List<String> objects, Boolean isList) {
 		super(context, R.layout.list_element, objects);
 		this.context = context;
 		this.appLabels = objects;
 		this.icons = icons;
+		this.is_list = isList;
 		sharedPreferences = context.getSharedPreferences(myPreferences, context.MODE_PRIVATE);
 		Intent mIntent = new Intent(context, MyService.class);
 	    context.bindService(mIntent, mConnection, Context.BIND_AUTO_CREATE);
@@ -89,93 +96,55 @@ public class CustomListAdapter extends ArrayAdapter<String> implements Constants
 	ViewHolder viewHolder;	
 	
 	LayoutInflater inflater = context.getLayoutInflater();
-    convertView = inflater.inflate(R.layout.list_element, parent, false);
-    viewHolder = new ViewHolder();
-	convertView.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.background_small));
-    
-	//Setting the various elements of a row
-//	viewHolder.tb = (ToggleButton) convertView.findViewById(R.id.toggleButton1);
-	viewHolder.txtTitle = (TextView) convertView.findViewById(R.id.textView1);
-	viewHolder.imageView = (ImageView) convertView.findViewById(R.id.imageView1);
-	viewHolder.switchButton = (Switch) convertView.findViewById(R.id.switch1);
-	/*
-	if (position == 0) {
-		viewHolder.txtTitle.setText("Applications");
-		viewHolder.txtTitle.setTextColor(Color.rgb(33, 33, 204));
-		RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) viewHolder.txtTitle.getLayoutParams();
-		params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-		params.setMargins(6, 0, 0, 0);
-		viewHolder.txtTitle.setLayoutParams(params);
-		viewHolder.txtTitle.setTextSize(22);
-		viewHolder.txtTitle.setTypeface(null, Typeface.BOLD);
-
-		viewHolder.imageView.setVisibility(View.GONE);
-		viewHolder.toggle.setVisibility(View.GONE);
-	}
-	else {
-	*/
-		final String appName = appLabels.get(position);
-		viewHolder.txtTitle.setText(appName);
-		Bitmap bitmap = ((BitmapDrawable)icons.get(position)).getBitmap();
-	    viewHolder.imageView.setImageBitmap(getRoundedCornerBitmap(bitmap, 36));
-		//viewHolder.imageView.setImageDrawable();
+		if(is_list) {
+		    convertView = inflater.inflate(R.layout.list_element, parent, false);
+		    viewHolder = new ViewHolder();
+			convertView.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.background_small));
+		    
+			//Setting the various elements of a row
+			viewHolder.txtTitle = (TextView) convertView.findViewById(R.id.textView1);
+			viewHolder.imageView = (ImageView) convertView.findViewById(R.id.imageView1);
+			viewHolder.switchButton = (Switch) convertView.findViewById(R.id.switch1);
 		
-		if(MainActivity.app_ad_list.contains(appName)) {
-			viewHolder.switchButton.setChecked(true);
-		}
-		
-		/*
-		 * Image button click.. toggle app add on/off
-		 * contentDescription : on/off, app ad on/off respectively
-		 */
-		viewHolder.switchButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			final String appName = appLabels.get(position);
+			viewHolder.txtTitle.setText(appName);
+			Bitmap bitmap = ((BitmapDrawable)icons.get(position)).getBitmap();
+		    viewHolder.imageView.setImageBitmap(getRoundedCornerBitmap(bitmap, 36));
+			//viewHolder.imageView.setImageDrawable();
 			
-			@Override
-			public void onCheckedChanged(CompoundButton arg0, boolean isChecked) {
-				if(isChecked) {
-					MainActivity.app_ad_list.add(appName);
-				}
-				else {
-					MainActivity.app_ad_list.remove(appName);
-				}
-				Log.d(TAG,"Adapter:" + MainActivity.app_ad_list.toString() + "");
-				   context.getSharedPreferences(myPreferences,context.MODE_PRIVATE).edit().putStringSet(ACTIVATED_LIST, MainActivity.app_ad_list).commit();
-				   if(MainActivity.sharedPreferences.getBoolean(STATUS, false)) {
-					   Intent intent = new Intent(context, MyService.class);
-					   s_myService.stopAds();
-					   s_myService.initVariables();
-					   s_myService.startAds();
-				   }
+			if(MainActivity.app_ad_list.contains(appName)) {
+				viewHolder.switchButton.setChecked(true);
 			}
-		});
-	/*
-		viewHolder.toggle.setOnClickListener(new OnClickListener() {
 			
-			@Override
-			public void onClick(View v) {
-				if(v.getContentDescription().equals("off")) {
-					v.setContentDescription("on");
-					v.setBackgroundDrawable(on);
-					MainActivity.app_ad_list.add(appName);
+			/*
+			 * Image button click.. toggle app add on/off
+			 * contentDescription : on/off, app ad on/off respectively
+			 */
+			viewHolder.switchButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				
+				@Override
+				public void onCheckedChanged(CompoundButton arg0, boolean isChecked) {
+					if(isChecked) {
+						MainActivity.app_ad_list.add(appName);
+					}
+					else {
+						MainActivity.app_ad_list.remove(appName);
+					}
+					Log.d(TAG,"Adapter:" + MainActivity.app_ad_list.toString() + "");
+					   context.getSharedPreferences(myPreferences,context.MODE_PRIVATE).edit().putStringSet(ACTIVATED_LIST, MainActivity.app_ad_list).commit();
+					   if(MainActivity.sharedPreferences.getBoolean(STATUS, false)) {
+						   Intent intent = new Intent(context, MyService.class);
+						   s_myService.stopAds();
+						   s_myService.initVariables();
+						   s_myService.startAds();
+					   }
 				}
-				else {
-					v.setBackgroundDrawable(off);;
-					v.setContentDescription("off");
-					MainActivity.app_ad_list.remove(appName);
-				}
-			   Log.d(TAG,"Adapter:" + MainActivity.app_ad_list.toString() + "");
-			   context.getSharedPreferences(myPreferences,context.MODE_PRIVATE).edit().putStringSet(ACTIVATED_LIST, MainActivity.app_ad_list).commit();
-			   if(MainActivity.sharedPreferences.getBoolean(STATUS, false)) {
-				   Intent intent = new Intent(context, MyService.class);
-				   s_myService.stopAds();
-				   s_myService.initVariables();
-				   s_myService.startAds();
-			   }
-		 }
-			
-		});
-	*/
-	
+			});
+		}
+		else {
+			convertView = inflater.inflate(R.layout.search_no_match, parent, false);
+			convertView.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.background_small));
+		}
 	return convertView;
   }
 	

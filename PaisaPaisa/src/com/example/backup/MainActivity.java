@@ -9,8 +9,11 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.app.Activity;
 import android.content.Context;
@@ -24,6 +27,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -34,6 +39,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -63,10 +69,10 @@ public class MainActivity extends Activity implements Constants {
 	public static SharedPreferences sharedPreferences;
 	private ListView list;
 	private CustomListAdapter adapter;
-	private List<Drawable> icons;
-	private List<String> appLabels;
 	private PackageManager pm;
-	
+	private List<String> s_appLabels;
+	private List<Drawable> s_appIcons;
+	List<Process> processes;
 	public static HashSet<String> app_ad;
 	public static HashSet<String> app_ad_off;
 	public static HashSet<String> app_ad_list;
@@ -77,7 +83,8 @@ public class MainActivity extends Activity implements Constants {
 	private ListView mDrawerList;
 	
 
-	private ImageView leftNavButton = null; 
+	private ImageView s_leftNavButton = null; 
+	private EditText s_searchText = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -103,37 +110,60 @@ public class MainActivity extends Activity implements Constants {
 		//INITIALIZE VARIABLES
 		pm = getPackageManager();
 		List<PackageInfo> apps = pm.getInstalledPackages(0);
-	    icons = new ArrayList<Drawable>();
-	    appLabels = new ArrayList<String>();
-	    
+	    processes = new ArrayList<Process>();
+		Process process = new Process();
+
 	   //POST INFO
-	    postInfo(MainActivity.this);
+	    //postInfo(MainActivity.this);
 	    
 	    /*
 	    * GET A LIST OF INSTALLED APPS
 	    */
+	    
 	    if (apps != null) {
 			for (PackageInfo info: apps) {
 				//if((info.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) == 0) {
 					if(!(info.applicationInfo.packageName.equals(getPackageName())) && pm.getApplicationLabel(info.applicationInfo).toString().indexOf("com.")<0) {	
-						appLabels.add("" + pm.getApplicationLabel(info.applicationInfo));
-						icons.add(pm.getApplicationIcon(info.applicationInfo));
+						process = new Process();
+						process.setLabel("" + pm.getApplicationLabel(info.applicationInfo));
+						process.setIcon(pm.getApplicationIcon(info.applicationInfo));
+						processes.add(process);
 					}
 				//}
 			}
 		}
 		else {
-			appLabels.add("No Apps Installed");
+			process.appLabel = "No Apps Installed";
+			processes.add(process);
 		}
 		
-	    Collections.sort(appLabels);
+	    Collections.sort(processes,new CustomComparator());
 	    
 	    //PREPARE THE LIST OF APPS (CUSTOM ADAPTER)
-		prepareList();
+		prepareList(processes);
 		
 		
 	}
 	
+	public class Process {
+		public Drawable icon;
+		public String appLabel;
+		
+		public void setIcon(Drawable icon) {
+			this.icon = icon;
+		}
+		
+		public void setLabel(String label) {
+			this.appLabel = label;
+		}
+	}
+	
+	public class CustomComparator implements Comparator<Process> {
+	    @Override
+	    public int compare(Process o1, Process o2) {
+	        return o1.appLabel.compareTo(o2.appLabel);
+	    }
+	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -193,25 +223,50 @@ public class MainActivity extends Activity implements Constants {
 	private void initTitle() {
 		RelativeLayout title = (RelativeLayout) findViewById(R.id.titleBar);
 		TitleBar tb = new TitleBar(this,title);
-		leftNavButton = tb.getLeftOptionsImgBtn();
+		s_leftNavButton = tb.getLeftOptionsImgBtn();
+		s_searchText = tb.getSearchEditText();
+		TextWatcher searchTextWatcher = new TextWatcher() {
+			
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				String search = s_searchText.getText().toString();
+				if(search.length() == 0) {
+					prepareList(processes);
+				}
+				else {
+					prepareList(searchMatches(search));
+				}
+				
+			}
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {				
+			}
+			
+			@Override
+			public void afterTextChanged(Editable arg0) {				
+			}
+		};
+		s_searchText.addTextChangedListener(searchTextWatcher);
+	}
+	
+	private List<Process> searchMatches(String keyword) {
+		String pattern = "(?i)( *)^" + keyword + "(.*)";
+	    Pattern r = Pattern.compile(pattern);
+	    Matcher m;
+	    List<Process> searchMatches = new ArrayList<Process>();
+	    for (Process process: processes) {
+	    	m = r.matcher(process.appLabel);
+	    	if(m.find()) {
+	    		searchMatches.add(process);
+	    	}
+	    }
+	    return searchMatches;
 	}
 	
 	private void initDrawer() {
 		 mDrawerList = (ListView) findViewById(R.id.drawer_list);
-		
-		 /*
-		 mList = new ArrayList<HashMap<String,String>>();
-		 for(int i=0;i<4;i++){
-			 HashMap<String, String> hm = new HashMap<String,String>();
-			 hm.put(CONTENT, mContents[i]);
-			 hm.put(ICONZ, mIcon[i] + "" );
-			 mList.add(hm);
-		 }
-		 
-		 String[] from = { ICONZ, CONTENT};
-		 int[] to = { R.id.icon, R.id.content};
-		 mAdapter = new SimpleAdapter(this, mList, R.layout.drawer_layout, from, to);
-		 */
 	     NavBarAdapter l_leftNavBarListAdapter = new NavBarAdapter(this);
 
 		 mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
@@ -226,7 +281,7 @@ public class MainActivity extends Activity implements Constants {
 				 mDrawerLayout.closeDrawer(Gravity.LEFT);
 			}
 		});
-		 leftNavButton.setOnClickListener(new OnClickListener() {
+		 s_leftNavButton.setOnClickListener(new OnClickListener() {
 				
 				@Override
 				public void onClick(View arg0) {
@@ -241,8 +296,19 @@ public class MainActivity extends Activity implements Constants {
 	/*
 	 * PREPARE THE LIST FROM CUSTOM ADAPTER
 	 */
-	private void prepareList() {
-		adapter = new CustomListAdapter(this, icons, appLabels);
+	private void prepareList(List<Process> Processes) {
+		if(Processes.isEmpty()) {
+			adapter = new CustomListAdapter(this, s_appIcons, s_appLabels,false);
+		}
+		else {
+			s_appLabels = new ArrayList<String>();
+			s_appIcons = new ArrayList<Drawable>();
+			for (Process process: Processes) {
+				s_appLabels.add(process.appLabel);
+				s_appIcons.add(process.icon);
+			}
+			adapter = new CustomListAdapter(this, s_appIcons, s_appLabels,true);
+		}
 		list = (ListView) findViewById(R.id.list);
 		list.setAdapter(adapter);	
 	}

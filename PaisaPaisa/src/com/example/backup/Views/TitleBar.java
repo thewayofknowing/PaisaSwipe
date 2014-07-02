@@ -8,12 +8,18 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 public class TitleBar extends ViewGroup implements Constants {
 
 	private static ImageView leftNavButton = null;
 	private static EditText searchText = null;
 	private static ViewGroup viewGroup = null;
+	private static ImageView searchIcon = null;
+	private static TextView title = null;
+	private static RelativeLayout search_layout = null;
+	private static ImageView cross = null;
 	
 	public TitleBar(Context context, ViewGroup v) {
 		super(context);
@@ -25,6 +31,10 @@ public class TitleBar extends ViewGroup implements Constants {
 		viewGroup = (ViewGroup) infl.inflate(R.layout.title, v, true);
 		leftNavButton = (ImageView) viewGroup.findViewById(R.id.navButton);
 		searchText = (EditText) viewGroup.findViewById(R.id.search);
+		searchIcon = (ImageView) viewGroup.findViewById(R.id.search_icon);
+		title = (TextView) viewGroup.findViewById(R.id.title);
+		cross = (ImageView) viewGroup.findViewById(R.id.cross);
+		search_layout = (RelativeLayout) viewGroup.findViewById(R.id.search_layout);
 	}
 	
 	public ImageView getLeftOptionsImgBtn() {
@@ -33,6 +43,22 @@ public class TitleBar extends ViewGroup implements Constants {
 
 	public EditText getSearchEditText() {
 		return searchText;
+	}
+	
+	public ImageView getSearchIcon() {
+		return searchIcon;
+	}
+	
+	public TextView getTitle() {
+		return title;
+	}
+	
+	public ImageView getCross() {
+		return cross;
+	}
+	
+	public RelativeLayout getSearchLayout() {
+		return search_layout;
 	}
 	
 	@Override

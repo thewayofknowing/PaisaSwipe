@@ -37,12 +37,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.example.backup.Views.TitleBar;
@@ -85,6 +89,10 @@ public class MainActivity extends Activity implements Constants {
 
 	private ImageView s_leftNavButton = null; 
 	private EditText s_searchText = null;
+	private ImageView s_searchIcon = null;
+	private TextView s_title = null;
+	private ImageView s_cross = null;
+	private RelativeLayout s_searchLayout = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -225,6 +233,11 @@ public class MainActivity extends Activity implements Constants {
 		TitleBar tb = new TitleBar(this,title);
 		s_leftNavButton = tb.getLeftOptionsImgBtn();
 		s_searchText = tb.getSearchEditText();
+		s_searchLayout = tb.getSearchLayout();
+		s_title = tb.getTitle();
+		
+		s_searchLayout.setVisibility(View.GONE);
+		
 		TextWatcher searchTextWatcher = new TextWatcher() {
 			
 			@Override
@@ -235,8 +248,7 @@ public class MainActivity extends Activity implements Constants {
 				}
 				else {
 					prepareList(searchMatches(search));
-				}
-				
+				}	
 			}
 			
 			@Override
@@ -249,10 +261,39 @@ public class MainActivity extends Activity implements Constants {
 			}
 		};
 		s_searchText.addTextChangedListener(searchTextWatcher);
+		
+		s_searchIcon = tb.getSearchIcon();
+		final Animation searchBarAnimation = AnimationUtils.loadAnimation(this, R.anim.search_bar_animation);
+		final Animation titleAnimation = AnimationUtils.loadAnimation(this, R.anim.title_animation);
+		final Animation searchIconAway = AnimationUtils.loadAnimation(this, R.anim.search_icon_away);
+		s_searchIcon.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				s_searchLayout.startAnimation(searchBarAnimation);
+				s_searchLayout.setVisibility(View.VISIBLE);
+				s_searchIcon.startAnimation(searchIconAway);
+				s_title.startAnimation(titleAnimation);
+			}
+		});
+		
+		final Animation searchBarAwayAnimation = AnimationUtils.loadAnimation(this, R.anim.search_bar_away_animation);
+		final Animation titleReturnAnimation = AnimationUtils.loadAnimation(this, R.anim.title_return_animation);
+		final Animation searchIconBack = AnimationUtils.loadAnimation(this, R.anim.search_icon_back);
+		s_cross = tb.getCross();
+		s_cross.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				s_searchLayout.startAnimation(searchBarAwayAnimation);
+				s_searchIcon.startAnimation(searchIconBack);
+				s_title.startAnimation(titleReturnAnimation);
+			}
+		});
 	}
 	
 	private List<Process> searchMatches(String keyword) {
-		String pattern = "(?i)( *)^" + keyword + "(.*)";
+		String pattern = "(?i)^( *)" + keyword + "(.*)";
 	    Pattern r = Pattern.compile(pattern);
 	    Matcher m;
 	    List<Process> searchMatches = new ArrayList<Process>();

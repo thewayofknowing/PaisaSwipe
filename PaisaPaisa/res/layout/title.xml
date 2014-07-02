@@ -28,21 +28,45 @@
         android:textColor="#FFFFFF"
         android:textSize="25sp" />
     
-    <EditText
-        android:id="@+id/search"
+    <RelativeLayout
+        android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:layout_height="36dp"
+        android:orientation="horizontal"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/navButton"
+        android:layout_marginLeft="15dp"
+        android:id="@+id/search_layout"
+        android:layout_alignParentRight="true"
+         >
+        <ImageView
+	        android:id="@+id/cross"
+	        android:layout_width="20dp"
+	        android:layout_height="20dp"
+	        android:src="@drawable/cross"
+	        android:layout_centerVertical="true"
+	        android:clickable="true" />
+        <EditText
+	        android:id="@+id/search"
+	        android:layout_width="wrap_content"
+	        android:layout_height="36dp"
+	        android:layout_toRightOf="@id/cross"
+	        android:textSize="10sp"
+	        android:paddingLeft="30dp"
+	        android:hint="search"
+	        android:background="@drawable/search_bar"
+	        android:ems="10"
+         />
+    </RelativeLayout>
+    
+
+    <ImageView
+        android:id="@+id/search_icon"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
-        android:layout_toRightOf="@id/title"
-        android:textSize="10sp"
-        android:paddingLeft="15dp"
-        android:layout_marginLeft="15dp"
-        android:hint="search"
-        android:background="@drawable/search_bar"
-        android:ems="10" >
-
-        <requestFocus />
-    </EditText>
+        android:layout_marginRight="10dp"
+        android:src="@drawable/search"
+        android:clickable="true" />
 
 </RelativeLayout>

@@ -7,6 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -38,7 +40,7 @@ import android.widget.RelativeLayout;
 import android.widget.ToggleButton;
 
 import com.example.backup.Views.TitleBar;
-import com.example.backup.backgroundtasks.FakeLockScreenService;
+import com.example.backup.backgroundtasks.FakeService;
 import com.example.backup.backgroundtasks.LockScreenService;
 import com.example.backup.backgroundtasks.MyService;
 import com.example.backup.constants.*;
@@ -93,17 +95,16 @@ public class MainActivity extends Activity implements Constants {
 		initDrawer();
 		
 		//Start LockScreen Service
-		stopService(new Intent(getBaseContext(),LockScreenService.class));
-		startService(new Intent(getBaseContext(),FakeLockScreenService.class));
-
+		//stopService(new Intent(getBaseContext(),LockScreenService.class));
+		startService(new Intent(getBaseContext(),LockScreenService.class));
+		startService(new Intent(getBaseContext(),MyService.class));
+		startService(new Intent(getBaseContext(),FakeService.class));
 		
 		//INITIALIZE VARIABLES
 		pm = getPackageManager();
 		List<PackageInfo> apps = pm.getInstalledPackages(0);
 	    icons = new ArrayList<Drawable>();
 	    appLabels = new ArrayList<String>();
-	    intent = new Intent(getBaseContext(),MyService.class);
-	    stopService(intent);
 	    
 	   //POST INFO
 	    postInfo(MainActivity.this);
@@ -113,18 +114,20 @@ public class MainActivity extends Activity implements Constants {
 	    */
 	    if (apps != null) {
 			for (PackageInfo info: apps) {
-				if((info.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) == 0) {
+				//if((info.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) == 0) {
 					if(!(info.applicationInfo.packageName.equals(getPackageName())) && pm.getApplicationLabel(info.applicationInfo).toString().indexOf("com.")<0) {	
 						appLabels.add("" + pm.getApplicationLabel(info.applicationInfo));
 						icons.add(pm.getApplicationIcon(info.applicationInfo));
 					}
-				}
+				//}
 			}
 		}
 		else {
 			appLabels.add("No Apps Installed");
 		}
 		
+	    Collections.sort(appLabels);
+	    
 	    //PREPARE THE LIST OF APPS (CUSTOM ADAPTER)
 		prepareList();
 		
@@ -303,7 +306,7 @@ public class MainActivity extends Activity implements Constants {
 	private void postInfo(Activity context) {
 		//if(!(sharedPreferences.contains("DataPosted") && sharedPreferences.getBoolean("DataPosted", false))) {
 			if(isConnented(context)) {
-				PostData.post(context);
+				//PostData.post(context);
 			}
 		//}
 	}

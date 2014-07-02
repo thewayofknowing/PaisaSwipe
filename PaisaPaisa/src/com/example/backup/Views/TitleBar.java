@@ -4,7 +4,6 @@ import com.example.backup.R;
 import com.example.backup.constants.Constants;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -20,7 +19,7 @@ public class TitleBar extends ViewGroup implements Constants {
 	}
 	
 	public static void initTitleBar(Context context,ViewGroup v) {
-		LayoutInflater infl = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
+		LayoutInflater infl = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		viewGroup = (ViewGroup) infl.inflate(R.layout.title, v, true);
 		leftNavButton = (ImageView) viewGroup.findViewById(R.id.navButton);
 		

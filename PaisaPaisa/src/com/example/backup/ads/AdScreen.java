@@ -6,13 +6,16 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.KeyguardManager;
 import android.app.ActivityManager.RunningTaskInfo;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.IBinder;
 
 import com.example.backup.R;
 import com.example.backup.backgroundtasks.MyService;
@@ -43,6 +46,7 @@ public class AdScreen extends Activity implements Constants, OnTriggerListener {
 
     private GlowPadView mGlowPadView;
 
+	MyService s_myService;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +57,12 @@ public class AdScreen extends Activity implements Constants, OnTriggerListener {
 		
 		activity = this;
 		
-		myService = new Intent(getBaseContext(),MyService.class);
-		stopService(myService);
+		//myService = new Intent(getBaseContext(),MyService.class);
+		//stopService(myService);
+		
+		 Intent mIntent = new Intent(this, MyService.class);
+	     bindService(mIntent, mConnection, BIND_AUTO_CREATE);
+	     s_myService.stopAds();
 		
         packageName = getIntent().getExtras().getString("name");
         ImageView iv = (ImageView) findViewById(R.id.imageView1);
@@ -102,11 +110,24 @@ public class AdScreen extends Activity implements Constants, OnTriggerListener {
             	  LaunchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             	  startActivity(LaunchIntent);
 	    	 }
-    		  myService.putExtra("wait","1");
-    		  startService(myService);
+    		  //myService.putExtra("wait","1");
+    		  //startService(myService);
+	    	  s_myService.delayAds();
 	    	  
 	    }
 	
+	    ServiceConnection mConnection = new ServiceConnection() {
+			@Override
+			public void onServiceConnected(ComponentName name, IBinder service) {
+		        s_myService = ((MyService.LocalBinder)service).getService();
+			}
+
+			@Override
+			public void onServiceDisconnected(ComponentName name) {
+		        s_myService = null;
+			}
+		};    
+	    
        @Override
     protected void onPause() {
     	super.onPause();
@@ -115,13 +136,20 @@ public class AdScreen extends Activity implements Constants, OnTriggerListener {
     @Override
     protected void onStop() {
     	Log.d(TAG,"Ad onStop");
-    	stopService(myService);
-   		myService.putExtra("wait","1");
-    	startService(myService);
+    	//stopService(myService);
+   		//myService.putExtra("wait","1");
+    	//startService(myService);
+    	s_myService.delayAds();
        	finish();
     	super.onStop();
     }
 
+    @Override
+    protected void onDestroy() {
+    	unbindService(mConnection);
+    	super.onDestroy();
+    }
+    
 	@Override
 	public void onGrabbed(View v, int handle) {
 		// TODO Auto-generated method stub
@@ -153,14 +181,11 @@ public class AdScreen extends Activity implements Constants, OnTriggerListener {
 
 	}
 
-
 	@Override
 	public void onGrabbedStateChange(View v, int handle) {
 		// TODO Auto-generated method stub
 		
 	}
-
-
 
 	@Override
 	public void onFinishFinalAnimation() {

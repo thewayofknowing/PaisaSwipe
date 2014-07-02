@@ -21,14 +21,22 @@ import android.util.Log;
 //2890
 public class ExternalMedia implements Constants {
 
-	Activity context;
-	static String directory_path;
+	static ExternalMedia s_ext = null;
+	Activity s_context;
+	static String s_path;
 	
-	public ExternalMedia(Activity context) {
-		this.context = context;
-		directory_path = Environment.getExternalStorageDirectory()
-                			.getAbsolutePath() + "/Download";
-		Log.d(TAG,"path:" + directory_path);
+	public void initConfig(Activity context) {
+		this.s_context = context;
+		s_path = Environment.getExternalStorageDirectory()
+                			.getAbsolutePath() + "/Swipe'N'Ad";
+		Log.d(TAG,"path:" + s_path);
+	}
+	
+	public static ExternalMedia getInstance() {
+		if(s_ext == null) {
+			s_ext = new ExternalMedia();
+		}
+		return s_ext;
 	}
 	
 	/*
@@ -57,7 +65,7 @@ public class ExternalMedia implements Constants {
 	}
 
 	public static boolean isFileExists(String FileName) {
-		File file = new File(directory_path, FileName);
+		File file = new File(s_path, FileName);
 		if (file.exists()) {
 		  return true;
 		}
@@ -67,7 +75,7 @@ public class ExternalMedia implements Constants {
 	}
 	
 	public static Bitmap loadImage(String FileName) {
-	   File file= new File(directory_path, FileName);
+	   File file= new File(s_path , FileName);
 	   BitmapFactory.Options options = new BitmapFactory.Options();
 	   options.inSampleSize = 2;
 	   final Bitmap b = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
@@ -75,7 +83,7 @@ public class ExternalMedia implements Constants {
 	}
 	
 	public void writeToSDFile(String FileName,String text){
-	    File dir = new File (directory_path);
+	    File dir = new File (s_path);
 	    dir.mkdirs();
 	    File file = new File(dir, FileName);
 
@@ -97,7 +105,7 @@ public class ExternalMedia implements Constants {
 	public String readFromSDFile(String FileName){
 		String result = "";
 		try {
-	        InputStream inputStream = context.openFileInput(directory_path + "/" + FileName);
+	        InputStream inputStream = s_context.openFileInput(s_path + "/" + FileName);
 
 	        if ( inputStream != null ) {
 	            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);

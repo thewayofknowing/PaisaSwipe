@@ -4,6 +4,7 @@ package com.example.backup.backgroundtasks;
 import com.example.backup.MainActivity;
 import com.example.backup.R;
 import com.example.backup.constants.Constants;
+import com.example.backup.listeners.LockScreenReceiver;
 
 import android.app.KeyguardManager;
 import android.app.Notification;
@@ -42,24 +43,23 @@ public class LockScreenService extends Service implements Constants{
 	    k1= km.newKeyguardLock("IN");
 	    k1.disableKeyguard();
 	    
+	    /*
 	    Notification note=new Notification(R.drawable.on,
                 "Can you hear the music?",
                 System.currentTimeMillis());
 		Intent i=new Intent(this, MainActivity.class);
-		
 		i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|
 		Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		
 		PendingIntent pi=PendingIntent.getActivity(this, 0,
 		                        i, 0);
-		
 		note.setLatestEventInfo(this, "Fake Player",
 		    "Now Playing: \"Ummmm, Nothing\"",
 		    pi);
 		note.flags|=Notification.FLAG_NO_CLEAR;
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		//mNotificationManager.notify(13,note);
-		//startForeground(13, note);
+		mNotificationManager.notify(13,note);
+		*/
+		startForeground(22, new Notification());
 	
 	    super.onCreate();
 	}

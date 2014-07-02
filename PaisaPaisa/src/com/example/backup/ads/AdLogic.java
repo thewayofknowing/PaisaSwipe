@@ -14,10 +14,10 @@ import com.example.backup.extmedia.ExternalMedia;
 public class AdLogic {
 
 	private static Bitmap bitmap;
-	private static ExternalMedia ext;
+	private static ExternalMedia s_ext;
 	
 	public AdLogic(Activity context) {
-		ext = new ExternalMedia(context);
+		s_ext = ExternalMedia.getInstance();
 	}
 	
 	public static Bitmap getImageUri(Activity context) {
@@ -27,8 +27,7 @@ public class AdLogic {
 	     int dstWidth = (int)( metrics.widthPixels * metrics.density);
 	     int dstHeight =(int)( metrics.heightPixels * metrics.density);
 	     
-		 ExternalMedia ext = new ExternalMedia(context);
-	     bitmap = ext.loadImage("poster.jpg");
+	     bitmap = s_ext.loadImage("poster.jpg");
 	     if(bitmap == null) bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.poster);
 	     
 	     //bitmap = Bitmap.createScaledBitmap(bitmap, (int) dstWidth,(int) dstHeight, true);

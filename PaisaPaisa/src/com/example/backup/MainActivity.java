@@ -232,12 +232,12 @@ public class MainActivity extends Activity implements Constants {
 		RelativeLayout title = (RelativeLayout) findViewById(R.id.titleBar);
 		TitleBar tb = new TitleBar(this,title);
 		s_leftNavButton = tb.getLeftOptionsImgBtn();
+		
 		s_searchText = tb.getSearchEditText();
 		s_searchLayout = tb.getSearchLayout();
-		s_title = tb.getTitle();
-		
 		s_searchLayout.setVisibility(View.GONE);
-		
+		s_title = tb.getTitle();
+				
 		TextWatcher searchTextWatcher = new TextWatcher() {
 			
 			@Override
@@ -271,8 +271,11 @@ public class MainActivity extends Activity implements Constants {
 			@Override
 			public void onClick(View v) {
 				s_searchLayout.startAnimation(searchBarAnimation);
-				s_searchLayout.setVisibility(View.VISIBLE);
 				s_searchIcon.startAnimation(searchIconAway);
+				s_searchIcon.setClickable(false);
+				s_searchText.setEnabled(true);
+				s_cross.setEnabled(true);
+				s_searchLayout.setVisibility(View.VISIBLE);
 				s_title.startAnimation(titleAnimation);
 			}
 		});
@@ -287,6 +290,9 @@ public class MainActivity extends Activity implements Constants {
 			public void onClick(View arg0) {
 				s_searchLayout.startAnimation(searchBarAwayAnimation);
 				s_searchIcon.startAnimation(searchIconBack);
+				s_searchIcon.setClickable(true);
+				s_searchText.setEnabled(false);
+				s_cross.setEnabled(false);
 				s_title.startAnimation(titleReturnAnimation);
 			}
 		});

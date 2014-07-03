@@ -2,6 +2,7 @@ package com.example.backup.listeners;
 
 import android.content.BroadcastReceiver;
 
+import com.example.backup.backgroundtasks.FakeService;
 import com.example.backup.backgroundtasks.LockScreenService;
 import com.example.backup.backgroundtasks.MyService;
 import com.example.backup.constants.*;
@@ -19,11 +20,10 @@ public class MyBroadcastReceiver extends BroadcastReceiver implements Constants 
 					
 	            if(intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED))
 		            {
-		     
-	        			  context.startService(new Intent(context,LockScreenService.class));
-		            	  Log.d(TAG,"Broadcast Received");
-						  Intent startServiceIntent = new Intent(context, MyService.class);
-				          context.startService(startServiceIntent);
+		  
+	            	context.startService(new Intent(context,LockScreenService.class));
+	        		context.startService(new Intent(context,MyService.class));
+	        		context.startService(new Intent(context,FakeService.class));
 				          
 		            }
 

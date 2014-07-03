@@ -1,4 +1,0 @@
-PaisaSwipe
-==========
-
-Summer Startup

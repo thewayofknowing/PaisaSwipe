@@ -60,10 +60,11 @@ public class LockScreenActivity extends Activity implements Constants, OnTrigger
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON|
+	            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD|
+	            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED|
+	            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 		super.onCreate(savedInstanceState);
-		getWindow().setType(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED|WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON|WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG|WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
-		//this.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG|WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		//getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED|WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON|WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
 		setContentView(R.layout.lock);
 	   	
 	    myIntent = getIntent();

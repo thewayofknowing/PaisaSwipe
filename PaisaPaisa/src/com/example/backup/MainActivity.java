@@ -236,7 +236,7 @@ public class MainActivity extends Activity implements Constants {
 		s_searchLayout = tb.getSearchLayout();
 		s_title = tb.getTitle();
 		
-		s_searchLayout.setVisibility(View.GONE);
+		s_searchLayout.setVisibility(View.GONE );
 		
 		TextWatcher searchTextWatcher = new TextWatcher() {
 			

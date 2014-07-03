@@ -12,5 +12,9 @@
 
 # Project target.
 target=android-19
+<<<<<<< HEAD
 android.library.reference.1=../../../Android/library
 android.library.reference.2=../../../Android/facebook-android-sdk-3.15.0/facebook
+=======
+android.library.reference.1=../library
+>>>>>>> 895f17fe1c4a435df6a137404b5fcad6e09a07d9

@@ -1,12 +1,8 @@
 package com.example.backup;
 
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -14,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.facebook.*;
 import com.facebook.model.GraphObject;
 import com.facebook.model.GraphPlace;
@@ -22,45 +19,29 @@ import com.facebook.widget.*;
 
 import java.util.*;
 
-public class Login extends FragmentActivity {
-
-    private static final String PERMISSION = "publish_actions";
-    private static final Location SEATTLE_LOCATION = new Location("") {
-        {
-            setLatitude(47.6097);
-            setLongitude(-122.3331);
-        }
-    };
-
-    private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
-
-    private Button postStatusUpdateButton;
-    private Button pickPlaceButton;
-    private LoginButton loginButton;
-    private ProfilePictureView profilePictureView;
-    private TextView greeting;
-    private PendingAction pendingAction = PendingAction.NONE;
-    private ViewGroup controlsContainer;
-    private GraphUser user;
-    private GraphPlace place;
-    private List<GraphUser> tags;
-    private boolean canPresentShareDialog;
-
-    private enum PendingAction {
-        NONE,
-        POST_PHOTO,
-        POST_STATUS_UPDATE
-    }
-    private UiLifecycleHelper uiHelper;
-
-    private Session.StatusCallback callback = new Session.StatusCallback() {
-        @Override
-        public void call(Session session, SessionState state, Exception exception) {
-            onSessionStateChange(session, state, exception);
-        }
-    };
-
-    private FacebookDialog.Callback dialogCallback = new FacebookDialog.Callback() {
+public class Login extends Activity {
+	
+	private static final String PERMISSION = "publish_actions";
+	private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
+	private LoginButton loginButton;
+	private TextView greeting;
+	private ProfilePictureView profilePictureView;
+	private Button postStatusUpdateButton;
+	private Button pickPlaceButton;
+	PendingAction pendingAction = PendingAction.NONE;
+	private ViewGroup controlsContainer;
+	private GraphUser user;
+	private GraphPlace place;
+	private List<GraphUser> tags;
+	private boolean canPresentShareDialog;
+    
+	private enum PendingAction {
+	        NONE,
+	        POST_PHOTO,
+	        POST_STATUS_UPDATE
+	    }
+	
+	private FacebookDialog.Callback dialogCallback = new FacebookDialog.Callback() {
         @Override
         public void onError(FacebookDialog.PendingCall pendingCall, Exception error, Bundle data) {
             Log.d("HelloFacebook", String.format("Error: %s", error.toString()));
@@ -71,146 +52,78 @@ public class Login extends FragmentActivity {
             Log.d("HelloFacebook", "Success!");
         }
     };
-
-    @Override
+    
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        uiHelper = new UiLifecycleHelper(this, callback);
-        uiHelper.onCreate(savedInstanceState);
-
-        if (savedInstanceState != null) {
-            String name = savedInstanceState.getString(PENDING_ACTION_BUNDLE_KEY);
-            pendingAction = PendingAction.valueOf(name);
-        }
-
         setContentView(R.layout.login);
 
-        loginButton = (LoginButton) findViewById(R.id.login_button);
-        loginButton.setUserInfoChangedCallback(new LoginButton.UserInfoChangedCallback() {
-            @Override
-            public void onUserInfoFetched(GraphUser user) {
-                Login.this.user = user;
-                updateUI();
-                // It's possible that we were waiting for this.user to be populated in order to post a
-                // status update.
-                handlePendingAction();
-            }
-        });
+		    
+		    loginButton = (LoginButton) findViewById(R.id.login_button);
+	        loginButton.setUserInfoChangedCallback(new LoginButton.UserInfoChangedCallback() {
+	            @Override
+	            public void onUserInfoFetched(GraphUser user) {
+	                Login.this.user = user;
+	                updateUI();
+	                // It's possible that we were waiting for this.user to be populated in order to post a
+	                // status update.
+	                handlePendingAction();
+	            }
+	        });
+	        
+	        profilePictureView = (ProfilePictureView) findViewById(R.id.profilePicture);
+	        greeting = (TextView) findViewById(R.id.greeting);
 
-        profilePictureView = (ProfilePictureView) findViewById(R.id.profilePicture);
-        greeting = (TextView) findViewById(R.id.greeting);
+	        postStatusUpdateButton = (Button) findViewById(R.id.postStatusUpdateButton);
+	        postStatusUpdateButton.setOnClickListener(new View.OnClickListener() {
+	            public void onClick(View view) {
+	                onClickPostStatusUpdate();
+	            }
+	        });
 
-        postStatusUpdateButton = (Button) findViewById(R.id.postStatusUpdateButton);
-        postStatusUpdateButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                onClickPostStatusUpdate();
-            }
-        });
+	               
+	        canPresentShareDialog = FacebookDialog.canPresentShareDialog(this,
+	        FacebookDialog.ShareDialogFeature.SHARE_DIALOG);
+	        
+		    // start Facebook Login
+		   /* Session.openActiveSession(this, true, new Session.StatusCallback() {
 
-       
+		      // callback when session changes state
+		      @Override
+		      public void call(Session session, SessionState state, Exception exception) {
+		        if (session.isOpened()) {
 
-        
-        pickPlaceButton = (Button) findViewById(R.id.pickPlaceButton);
-        pickPlaceButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                onClickPickPlace();
-            }
-        });
+		          // make request to the /me API
+		          Request.newMeRequest(session, new Request.GraphUserCallback() {
 
-        controlsContainer = (ViewGroup) findViewById(R.id.main_ui_container);
+		            // callback after Graph API response with user object
+		            @Override
+		            public void onCompleted(GraphUser user, Response response) {
+		              if (user != null) {
+		                TextView welcome = (TextView) findViewById(R.id.welcome);
+		                welcome.setText("Hello " + user.getName() + "!");
+		              }
+		            }
+		          }).executeAsync();
+		        }
+		      }
+		    });
+		  }
 
-        final FragmentManager fm = getSupportFragmentManager();
-        Fragment fragment = fm.findFragmentById(R.id.fragment_container);
-        if (fragment != null) {
-            // If we're being re-created and have a fragment, we need to a) hide the main UI controls and
-            // b) hook up its listeners again.
-            controlsContainer.setVisibility(View.GONE);
-            if (fragment instanceof FriendPickerFragment) {
-                setFriendPickerListeners((FriendPickerFragment) fragment);
-            } else if (fragment instanceof PlacePickerFragment) {
-                setPlacePickerListeners((PlacePickerFragment) fragment);
-            }
-        }
+		  @Override
+		  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		      super.onActivityResult(requestCode, resultCode, data);
+		      Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
+		  }*/
 
-        // Listen for changes in the back stack so we know if a fragment got popped off because the user
-        // clicked the back button.
-        fm.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
-            @Override
-            public void onBackStackChanged() {
-                if (fm.getBackStackEntryCount() == 0) {
-                    // We need to re-show our UI.
-                    controlsContainer.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-        // Can we present the share dialog for regular links?
-        canPresentShareDialog = FacebookDialog.canPresentShareDialog(this,
-                FacebookDialog.ShareDialogFeature.SHARE_DIALOG);
-        
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        uiHelper.onResume();
-
-        // Call the 'activateApp' method to log an app event for use in analytics and advertising reporting.  Do so in
-        // the onResume methods of the primary Activities that an app may be launched into.
-        AppEventsLogger.activateApp(this);
-
-        updateUI();
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        uiHelper.onSaveInstanceState(outState);
-
-        outState.putString(PENDING_ACTION_BUNDLE_KEY, pendingAction.name());
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        uiHelper.onActivityResult(requestCode, resultCode, data, dialogCallback);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        uiHelper.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        uiHelper.onDestroy();
-    }
-
-    private void onSessionStateChange(Session session, SessionState state, Exception exception) {
-        if (pendingAction != PendingAction.NONE &&
-                (exception instanceof FacebookOperationCanceledException ||
-                exception instanceof FacebookAuthorizationException)) {
-                new AlertDialog.Builder(Login.this)
-                    .setTitle(R.string.cancelled)
-                    .setMessage(R.string.permission_not_granted)
-                    .setPositiveButton(R.string.ok, null)
-                    .show();
-            pendingAction = PendingAction.NONE;
-        } else if (state == SessionState.OPENED_TOKEN_UPDATED) {
-            handlePendingAction();
-        }
-        updateUI();
-    }
-
+		}
+	 
+     
     private void updateUI() {
         Session session = Session.getActiveSession();
         boolean enableButtons = (session != null && session.isOpened());
 
         postStatusUpdateButton.setEnabled(enableButtons || canPresentShareDialog);
-        pickPlaceButton.setEnabled(enableButtons);
-
+        
         if (enableButtons && user != null) {
             profilePictureView.setProfileId(user.getId());
             greeting.setText(getString(R.string.hello_user, user.getFirstName()));
@@ -271,7 +184,7 @@ public class Login extends FragmentActivity {
     private void postStatusUpdate() {
         if (canPresentShareDialog) {
             FacebookDialog shareDialog = createShareDialogBuilderForLink().build();
-            uiHelper.trackPendingDialogCall(shareDialog.present());
+           
         } else if (user != null && hasPublishPermission()) {
             final String message = getString(R.string.status_update, user.getFirstName(), (new Date().toString()));
             Request request = Request
@@ -289,106 +202,10 @@ public class Login extends FragmentActivity {
 
     
 
-    
-    private void showPickerFragment(PickerFragment<?> fragment) {
-        fragment.setOnErrorListener(new PickerFragment.OnErrorListener() {
-            @Override
-            public void onError(PickerFragment<?> pickerFragment, FacebookException error) {
-                String text = getString(R.string.exception, error.getMessage());
-                Toast toast = Toast.makeText(Login.this, text, Toast.LENGTH_SHORT);
-                toast.show();
-            }
-        });
+  
+     
 
-        FragmentManager fm = getSupportFragmentManager();
-        fm.beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .addToBackStack(null)
-                .commit();
-
-        controlsContainer.setVisibility(View.GONE);
-
-        // We want the fragment fully created so we can use it immediately.
-        fm.executePendingTransactions();
-
-        fragment.loadData(false);
-    }
-
-    
-    private void setFriendPickerListeners(final FriendPickerFragment fragment) {
-        fragment.setOnDoneButtonClickedListener(new FriendPickerFragment.OnDoneButtonClickedListener() {
-            @Override
-            public void onDoneButtonClicked(PickerFragment<?> pickerFragment) {
-                onFriendPickerDone(fragment);
-            }
-        });
-    }
-
-    private void onFriendPickerDone(FriendPickerFragment fragment) {
-        FragmentManager fm = getSupportFragmentManager();
-        fm.popBackStack();
-
-        String results = "";
-
-        List<GraphUser> selection = fragment.getSelection();
-        tags = selection;
-        if (selection != null && selection.size() > 0) {
-            ArrayList<String> names = new ArrayList<String>();
-            for (GraphUser user : selection) {
-                names.add(user.getName());
-            }
-            results = TextUtils.join(", ", names);
-        } else {
-            results = getString(R.string.no_friends_selected);
-        }
-
-        showAlert(getString(R.string.you_picked), results);
-    }
-
-    private void onPlacePickerDone(PlacePickerFragment fragment) {
-        FragmentManager fm = getSupportFragmentManager();
-        fm.popBackStack();
-
-        String result = "";
-
-        GraphPlace selection = fragment.getSelection();
-        if (selection != null) {
-            result = selection.getName();
-        } else {
-            result = getString(R.string.no_place_selected);
-        }
-
-        place = selection;
-
-        showAlert(getString(R.string.you_picked), result);
-    }
-
-    private void onClickPickPlace() {
-        final PlacePickerFragment fragment = new PlacePickerFragment();
-        fragment.setLocation(SEATTLE_LOCATION);
-        fragment.setTitleText(getString(R.string.pick_seattle_place));
-
-        setPlacePickerListeners(fragment);
-
-        showPickerFragment(fragment);
-    }
-
-    private void setPlacePickerListeners(final PlacePickerFragment fragment) {
-        fragment.setOnDoneButtonClickedListener(new PlacePickerFragment.OnDoneButtonClickedListener() {
-            @Override
-            public void onDoneButtonClicked(PickerFragment<?> pickerFragment) {
-                onPlacePickerDone(fragment);
-            }
-        });
-        fragment.setOnSelectionChangedListener(new PlacePickerFragment.OnSelectionChangedListener() {
-            @Override
-            public void onSelectionChanged(PickerFragment<?> pickerFragment) {
-                if (fragment.getSelection() != null) {
-                    onPlacePickerDone(fragment);
-                }
-            }
-        });
-    }
+   
 
     private void showAlert(String title, String message) {
         new AlertDialog.Builder(this)

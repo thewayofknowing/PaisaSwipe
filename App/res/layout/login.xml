@@ -62,12 +62,7 @@
                     android:layout_height="wrap_content"
                     android:text="Post Status Update"
                     />
-            <Button
-                    android:id="@+id/pickPlaceButton"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Pick Place"
-                    />
+           
         </LinearLayout>
     </LinearLayout>
     <FrameLayout

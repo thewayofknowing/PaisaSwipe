@@ -32,7 +32,7 @@
 		    </intent-filter>  
 		</receiver>
 		
-        <activity android:name=".Login"
+        <activity android:name=".LockPattern"
                   android:label="@string/app_name"
                   android:windowSoftInputMode="adjustResize">
             <intent-filter>

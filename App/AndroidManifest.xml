@@ -48,7 +48,7 @@
         <provider android:authorities="com.facebook.app.NativeAppCallContentProvider417280161745186"
                   android:name="com.facebook.NativeAppCallContentProvider"
                   android:exported="true"/>
-        <receiver android:name="com.example.backup.HelloFacebookBroadcastReceiver">
+        <receiver android:name="com.example.backup.FbBroadcastReceiver">
             <intent-filter>
                 <action android:name="com.facebook.platform.AppCallResultBroadcast" />
             </intent-filter>

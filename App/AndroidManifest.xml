@@ -48,7 +48,7 @@
         <provider android:authorities="com.facebook.app.NativeAppCallContentProvider417280161745186"
                   android:name="com.facebook.NativeAppCallContentProvider"
                   android:exported="true"/>
-        <receiver android:name="com.example.backup.FbBroadcastReceiver">
+        <receiver android:name="com.example.backup.HelloFacebookBroadcastReceiver">
             <intent-filter>
                 <action android:name="com.facebook.platform.AppCallResultBroadcast" />
             </intent-filter>
@@ -74,6 +74,7 @@
         <service android:enabled="true" android:name="com.example.backup.backgroundtasks.LockScreenService" />
         <service  android:enabled="true" android:name="com.example.backup.backgroundtasks.FakeService"/>      
         <service android:enabled="true" android:name="com.example.backup.listeners.NetworkChangeListener"/>
+        <activity android:name="com.haibison.android.lockpattern.LockPatternActivity" android:theme="@style/Alp.42447968.Theme.Dark"></activity>
       </application>
 
 </manifest>

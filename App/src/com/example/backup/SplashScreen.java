@@ -207,7 +207,7 @@ public class SplashScreen extends Activity implements ConnectionCallbacks, OnCon
 	
 	@Override
 	protected void onStart() {
-	    //mGoogleApiClient.connect();
+	    mGoogleApiClient.connect();
 		super.onStart();
 	}
 	

@@ -2,8 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:gravity="center_horizontal"
     tools:context="com.example.backup.SplashScreen"
     tools:ignore="MergeRootFrame" >
@@ -13,16 +13,29 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:orientation="vertical"
-        android:background="@drawable/loading"
-        />
+        android:background="@drawable/splash_loading"
+        >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="55" />
+
+        <ImageView 
+            android:src="@drawable/splash_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="45"
+            />
+     </LinearLayout>
     
 	<LinearLayout
 	    android:id="@+id/signup"
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent"
-	    android:orientation="vertical"
-	    android:background="@drawable/signup"
-	     >
+	    android:background="@drawable/splash_signup"
+	    android:orientation="vertical" >
 	
 	    <LinearLayout 
 	        android:layout_height="wrap_content"
@@ -33,8 +46,8 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="15dp"
-        android:layout_weight="25"
+        android:layout_margin="20dp"
+        android:layout_weight="15"
         android:background="@drawable/signup_background"
         android:orientation="vertical" >
         

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff" >
+
+    <RelativeLayout 
+	        android:id="@+id/titleBar"
+	        android:layout_height="@dimen/title_bar_height"
+	        android:layout_width="match_parent"
+	        android:orientation="horizontal"
+	         />
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="15dp"
+        android:layout_margin="15dp" >
+
+        <EditText
+            android:id="@+id/email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            android:textColorHint="#ddd"
+            android:layout_marginTop="7dp" >
+        </EditText>
+
+        <EditText
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Full Name"
+            android:inputType="text"
+            android:textColorHint="#ddd" 
+            android:layout_marginTop="7dp">
+        </EditText>
+
+        <EditText
+            android:id="@+id/pass_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:textColorHint="#ddd" 
+            android:layout_marginTop="7dp">
+        </EditText>
+
+        <EditText
+            android:id="@+id/repass_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Retype Password"
+            android:inputType="textPassword"
+            android:textColorHint="#ddd" 
+            android:layout_marginTop="7dp">
+        </EditText>
+        
+        <EditText
+            android:id="@+id/pin_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Pincode"
+            android:inputType="number"
+            android:textColorHint="#ddd" 
+            android:layout_marginTop="7dp">
+        </EditText>
+
+
+       	<RadioGroup
+       	    android:layout_width="wrap_content"
+       	    android:layout_height="wrap_content"
+       	    android:orientation="horizontal"
+       	    android:layout_gravity="center_horizontal" 
+       	    android:layout_marginTop="7dp">
+       	  <RadioButton
+            android:id="@+id/radiobutton_male"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableRight="@drawable/male"/>   
+           <RadioButton 
+            android:id="@+id/radiobutton_female"
+            android:layout_marginLeft="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableRight="@drawable/female"/>
+       	</RadioGroup>
+        	        
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:background="#82FA58"
+            android:ems="20"
+            android:text="Create Account"
+            android:textColor="#fff"
+            android:layout_marginTop="7dp" />
+        
+    </LinearLayout>
+
+</ScrollView>

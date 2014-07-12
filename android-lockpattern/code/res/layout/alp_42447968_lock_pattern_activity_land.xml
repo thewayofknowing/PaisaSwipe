@@ -26,6 +26,7 @@
         android:layout_height="match_parent"
         android:layout_weight=".3" >
 
+<<<<<<< HEAD
         <TextView
             android:id="@+id/alp_42447968_textview_info"
             android:layout_width="match_parent"
@@ -36,6 +37,8 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textIsSelectable="true" />
 
+=======
+>>>>>>> d15c23a219c84f2447cb81614da51d34824cc8e3
         <LinearLayout
             android:id="@+id/alp_42447968_viewgroup_footer"
             style="?attr/alp_42447968_button_bar_style"

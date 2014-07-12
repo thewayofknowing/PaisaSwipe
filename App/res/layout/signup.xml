@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="15dp" >
+
+        <TextView
+            android:id="@+id/Sign_up"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:ems="25"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="Sign up with us"
+            android:textAlignment="center"
+            android:textColor="#0489B1" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/mailid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="12"
+            android:paddingLeft="10dp"
+            android:text="Mail ID"
+            android:textColor="#999" >
+        </TextView>
+
+        <EditText
+            android:id="@+id/mailaddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="abc@xmail.com"
+            android:inputType="textEmailAddress"
+            android:textColorHint="#ddd" >
+        </EditText>
+
+        <TextView
+            android:id="@+id/user"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="12"
+            android:paddingLeft="10dp"
+            android:text="Username"
+            android:textColor="#999" >
+        </TextView>
+
+        <EditText
+            android:id="@+id/user_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="abc123"
+            android:inputType="text"
+            android:textColorHint="#ddd" >
+        </EditText>
+
+        <TextView
+            android:id="@+id/pass"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="12"
+            android:paddingLeft="10dp"
+            android:text="Enter Password"
+            android:textColor="#999" >
+        </TextView>
+
+        <EditText
+            android:id="@+id/pass_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="XXXXXXXXX"
+            android:inputType="textPassword"
+            android:textColorHint="#ddd" >
+        </EditText>
+
+        <TextView
+            android:id="@+id/repass"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="12"
+            android:paddingLeft="10dp"
+            android:text="Re-enter Password"
+            android:textColor="#999" >
+        </TextView>
+
+        <EditText
+            android:id="@+id/repass_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="XXXXXXXXX"
+            android:inputType="textPassword"
+            android:textColorHint="#ddd" >
+        </EditText>
+
+        <TextView
+            android:id="@+id/pin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="12"
+            android:paddingLeft="10dp"
+            android:text="Pincode"
+            android:textColor="#999" >
+        </TextView>
+
+        <EditText
+            android:id="@+id/pin_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="XXXXXX"
+            android:inputType="number"
+            android:textColorHint="#ddd" >
+        </EditText>
+
+        <TextView
+            android:id="@+id/gen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="12"
+            android:paddingLeft="10dp"
+            android:text="Pick your Gender"
+            android:textColor="#999" >
+        </TextView>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="10dp" >
+
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:paddingRight="10dp"
+                android:src="@drawable/icon" />
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+               	android:layout_toRightOf="@id/imageView1"
+                android:src="@drawable/icon" />
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:text="Create Account"
+            android:ems="20"
+            android:textColor="#fff"
+            android:background="#82FA58" />
+        
+    </LinearLayout>
+
+</ScrollView>

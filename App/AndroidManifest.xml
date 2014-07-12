@@ -74,7 +74,7 @@
         <service android:enabled="true" android:name="com.example.backup.backgroundtasks.LockScreenService" />
         <service  android:enabled="true" android:name="com.example.backup.backgroundtasks.FakeService"/>      
         <service android:enabled="true" android:name="com.example.backup.listeners.NetworkChangeListener"/>
-        <activity android:name="com.haibison.android.lockpattern.LockPatternActivity" android:theme="@style/Alp.42447968.Theme.Dark"></activity>
+        <activity android:name="com.haibison.android.lockpattern.LockPatternActivity" android:theme="@style/Alp.42447968.Theme.Light"></activity>
       </application>
 
 </manifest>

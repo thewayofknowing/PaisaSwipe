@@ -59,8 +59,8 @@ import com.example.backup.constants.*;
 import com.example.backup.postinfo.*;
 
 public class MainActivity extends Activity implements Constants {
-	
-	
+
+
 	/*
 	 * @param: app_ad- set of activated ad strings (If an app is activated, it is present in
 	 * 													this set, absent otherwise)
@@ -71,7 +71,7 @@ public class MainActivity extends Activity implements Constants {
 	 * @param:toggleservice- toggle button to activate ads on or off
 	 * @param: intent- Intent for the background service
 	 */
-	
+
 	public static SharedPreferences sharedPreferences;
 	private ListView list;
 	private CustomListAdapter adapter;
@@ -82,12 +82,12 @@ public class MainActivity extends Activity implements Constants {
 	public static HashSet<String> app_ad;
 	public static HashSet<String> app_ad_off;
 	public static HashSet<String> app_ad_list;
-	
+
 	private static Intent intent;
-	
+
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
-	
+
 
 	private ImageView s_leftNavButton = null; 
 	private EditText s_searchText = null;
@@ -95,28 +95,28 @@ public class MainActivity extends Activity implements Constants {
 	private TextView s_title = null;
 	private ImageView s_cross = null;
 	private RelativeLayout s_searchLayout = null;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		sharedPreferences = getSharedPreferences(myPreferences,	MODE_PRIVATE);   
-				
+
 		app_ad_list = new HashSet<String>();
 		app_ad = new HashSet<String>();
-		
+
 		initAppLockList();	
-		
+
 		setContentView(R.layout.activity_main);
 		initTitle();	
 		sharedPreferences.edit().putBoolean(STATUS, true).commit();
 		initDrawer();
-		
+
 		//Start LockScreen Service
 		//stopService(new Intent(getBaseContext(),LockScreenService.class));
 		startService(new Intent(getBaseContext(),LockScreenService.class));
 		startService(new Intent(getBaseContext(),MyService.class));
 		startService(new Intent(getBaseContext(),FakeService.class));
-		
+
 		//INITIALIZE VARIABLES
 		pm = getPackageManager();
 		List<PackageInfo> apps = pm.getInstalledPackages(0);
@@ -125,11 +125,11 @@ public class MainActivity extends Activity implements Constants {
 
 	   //POST INFO
 	    //postInfo(MainActivity.this);
-	    
+
 	    /*
 	    * GET A LIST OF INSTALLED APPS
 	    */
-	    
+
 	    if (apps != null) {
 			for (PackageInfo info: apps) {
 				//if((info.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) == 0) {
@@ -146,35 +146,35 @@ public class MainActivity extends Activity implements Constants {
 			process.appLabel = "No Apps Installed";
 			processes.add(process);
 		}
-		
+
 	    Collections.sort(processes,new CustomComparator());
-	    
+
 	    //PREPARE THE LIST OF APPS (CUSTOM ADAPTER)
 		prepareList(processes);
-		
-		
+
+
 	}
-	
+
 	public class Process {
 		public Drawable icon;
 		public String appLabel;
-		
+
 		public void setIcon(Drawable icon) {
 			this.icon = icon;
 		}
-		
+
 		public void setLabel(String label) {
 			this.appLabel = label;
 		}
 	}
-	
+
 	public class CustomComparator implements Comparator<Process> {
 	    @Override
 	    public int compare(Process o1, Process o2) {
 	        return o1.appLabel.compareTo(o2.appLabel);
 	    }
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -191,10 +191,10 @@ public class MainActivity extends Activity implements Constants {
 
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	@Override
 	protected void onResume() {
-		
+
 		//stopService(intent);
 		/*
 		 * LOADING THE LIST OF ACTIVATED ADS
@@ -205,11 +205,11 @@ public class MainActivity extends Activity implements Constants {
 	    }
 		super.onResume();
 	}
-	
+
 	@Override
 	protected void onPause() {
-		
-		
+
+
 		//startService(intent);
 		/*
 		 * SAVE THE LIST OF ACTIVATED ADS 
@@ -218,8 +218,8 @@ public class MainActivity extends Activity implements Constants {
 		finish();
 		super.onPause();
 	}
-	
-	
+
+
 	/*
 	 * READING THE LIST OF ACTIVATED APPS AT THE START
 	 */
@@ -229,19 +229,19 @@ public class MainActivity extends Activity implements Constants {
 		    app_ad.addAll(app_ad_list);
 	    }
 	}
-	
+
 	private void initTitle() {
 		RelativeLayout title = (RelativeLayout) findViewById(R.id.titleBar);
 		TitleBar tb = new TitleBar(this,title);
 		s_leftNavButton = tb.getLeftOptionsImgBtn();
-		
+
 		s_searchText = tb.getSearchEditText();
 		s_searchLayout = tb.getSearchLayout();
 		s_searchLayout.setVisibility(View.GONE);
 		s_title = tb.getTitle();
-				
+
 		TextWatcher searchTextWatcher = new TextWatcher() {
-			
+
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
 				String search = s_searchText.getText().toString();
@@ -252,24 +252,24 @@ public class MainActivity extends Activity implements Constants {
 					prepareList(searchMatches(search));
 				}	
 			}
-			
+
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {				
 			}
-			
+
 			@Override
 			public void afterTextChanged(Editable arg0) {				
 			}
 		};
 		s_searchText.addTextChangedListener(searchTextWatcher);
-		
+
 		s_searchIcon = tb.getSearchIcon();
 		final Animation searchBarAnimation = AnimationUtils.loadAnimation(this, R.anim.search_bar_animation);
 		final Animation titleAnimation = AnimationUtils.loadAnimation(this, R.anim.title_animation);
 		final Animation searchIconAway = AnimationUtils.loadAnimation(this, R.anim.search_icon_away);
 		s_searchIcon.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				s_searchLayout.startAnimation(searchBarAnimation);
@@ -281,13 +281,13 @@ public class MainActivity extends Activity implements Constants {
 				s_title.startAnimation(titleAnimation);
 			}
 		});
-		
+
 		final Animation searchBarAwayAnimation = AnimationUtils.loadAnimation(this, R.anim.search_bar_away_animation);
 		final Animation titleReturnAnimation = AnimationUtils.loadAnimation(this, R.anim.title_return_animation);
 		final Animation searchIconBack = AnimationUtils.loadAnimation(this, R.anim.search_icon_back);
 		s_cross = tb.getCross();
 		s_cross.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View arg0) {
 				s_searchLayout.startAnimation(searchBarAwayAnimation);
@@ -299,7 +299,7 @@ public class MainActivity extends Activity implements Constants {
 			}
 		});
 	}
-	
+
 	private List<Process> searchMatches(String keyword) {
 		String pattern = "(?i)^( *)" + keyword + "(.*)";
 	    Pattern r = Pattern.compile(pattern);
@@ -313,14 +313,14 @@ public class MainActivity extends Activity implements Constants {
 	    }
 	    return searchMatches;
 	}
-	
+
 	private void initDrawer() {
 		 mDrawerList = (ListView) findViewById(R.id.drawer_list);
 	     NavBarAdapter l_leftNavBarListAdapter = new NavBarAdapter(this);
 
 		 mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
 		 mDrawerList.setAdapter(l_leftNavBarListAdapter);
-		 
+
 		 mDrawerList.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -331,7 +331,7 @@ public class MainActivity extends Activity implements Constants {
 			}
 		});
 		 s_leftNavButton.setOnClickListener(new OnClickListener() {
-				
+
 				@Override
 				public void onClick(View arg0) {
 					mDrawerLayout.openDrawer(Gravity.LEFT);
@@ -340,8 +340,8 @@ public class MainActivity extends Activity implements Constants {
 				}
 			});
 	}
-	
-	
+
+
 	/*
 	 * PREPARE THE LIST FROM CUSTOM ADAPTER
 	 */
@@ -361,7 +361,7 @@ public class MainActivity extends Activity implements Constants {
 		list = (ListView) findViewById(R.id.list);
 		list.setAdapter(adapter);	
 	}
-	
+
 	/*
 	 * ACTIVATED BUTTON TOGGLE CHANGE HANDLER
 	 *
@@ -411,13 +411,13 @@ public class MainActivity extends Activity implements Constants {
 		}
 		return false;
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		//restartService();
 		super.onDestroy();
 	}
-	
+
 	private void postInfo(Activity context) {
 		//if(!(sharedPreferences.contains("DataPosted") && sharedPreferences.getBoolean("DataPosted", false))) {
 			if(isConnented(context)) {
@@ -425,5 +425,4 @@ public class MainActivity extends Activity implements Constants {
 			}
 		//}
 	}
-
 }

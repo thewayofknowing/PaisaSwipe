@@ -99,12 +99,12 @@ public class CustomListAdapter extends ArrayAdapter<String> implements Constants
 	public View getView(final int position, View convertView, ViewGroup parent) {
 	
 	ViewHolder viewHolder;	
-	
+
 	LayoutInflater inflater = context.getLayoutInflater();
 		if(is_list) {
 		    convertView = inflater.inflate(R.layout.list_element, parent, false);
 		    viewHolder = new ViewHolder();
-			convertView.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.background_small));
+			convertView.setBackground(context.getResources().getDrawable(R.drawable.background_small));
 		    
 			//Setting the various elements of a row
 			viewHolder.txtTitle = (TextView) convertView.findViewById(R.id.textView1);
@@ -119,12 +119,15 @@ public class CustomListAdapter extends ArrayAdapter<String> implements Constants
 			
 			if(MainActivity.app_ad_list.contains(appName)) {
 				viewHolder.switchButton.setChecked(true);
+				
 			}
 			
 			/*
 			 * Image button click.. toggle app add on/off
 			 * contentDescription : on/off, app ad on/off respectively
 			 */
+			 if (viewHolder.switchButton != null) {
+			    
 			viewHolder.switchButton.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 				
 				@Override
@@ -144,11 +147,11 @@ public class CustomListAdapter extends ArrayAdapter<String> implements Constants
 						   s_myService.startAds();
 					   }
 				}
-			});
+			});}
 		}
 		else {
 			convertView = inflater.inflate(R.layout.search_no_match, parent, false);
-			convertView.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.background_small));
+			convertView.setBackground(context.getResources().getDrawable(R.drawable.background_small));
 		}
 	return convertView;
   }

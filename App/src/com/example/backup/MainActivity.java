@@ -1,6 +1,13 @@
 package com.example.backup;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -12,6 +19,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -21,7 +29,10 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,15 +43,20 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.example.backup.Views.TitleBar;
+import com.example.backup.adapters.CustomListAdapter;
+import com.example.backup.adapters.NavBarAdapter;
 import com.example.backup.backgroundtasks.FakeService;
 import com.example.backup.backgroundtasks.LockScreenService;
 import com.example.backup.backgroundtasks.MyService;
-import com.example.backup.constants.Constants;
+import com.example.backup.constants.*;
+import com.example.backup.postinfo.*;
 
 public class MainActivity extends Activity implements Constants {
 	
@@ -67,13 +83,13 @@ public class MainActivity extends Activity implements Constants {
 	public static HashSet<String> app_ad_off;
 	public static HashSet<String> app_ad_list;
 	
-	//private static Intent intent;
+	private static Intent intent;
 	
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
 	
 
-//	private ImageView s_leftNavButton = null; 
+	private ImageView s_leftNavButton = null; 
 	private EditText s_searchText = null;
 	private ImageView s_searchIcon = null;
 	private TextView s_title = null;
@@ -91,7 +107,7 @@ public class MainActivity extends Activity implements Constants {
 		initAppLockList();	
 		
 		setContentView(R.layout.activity_main);
-		//initTitle();	
+		initTitle();	
 		sharedPreferences.edit().putBoolean(STATUS, true).commit();
 		initDrawer();
 		
@@ -217,7 +233,7 @@ public class MainActivity extends Activity implements Constants {
 	private void initTitle() {
 		RelativeLayout title = (RelativeLayout) findViewById(R.id.titleBar);
 		TitleBar tb = new TitleBar(this,title);
-		//s_leftNavButton = tb.getLeftOptionsImgBtn();
+		s_leftNavButton = tb.getLeftOptionsImgBtn();
 		
 		s_searchText = tb.getSearchEditText();
 		s_searchLayout = tb.getSearchLayout();
@@ -314,15 +330,15 @@ public class MainActivity extends Activity implements Constants {
 				 mDrawerLayout.closeDrawer(Gravity.LEFT);
 			}
 		});
-//		 s_leftNavButton.setOnClickListener(new OnClickListener() {
-//				
-//				@Override
-//				public void onClick(View arg0) {
-//					mDrawerLayout.openDrawer(Gravity.LEFT);
-//					mDrawerList.bringToFront();
-//					mDrawerList.requestLayout();
-//				}
-//			});
+		 s_leftNavButton.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View arg0) {
+					mDrawerLayout.openDrawer(Gravity.LEFT);
+					mDrawerList.bringToFront();
+					mDrawerList.requestLayout();
+				}
+			});
 	}
 	
 	

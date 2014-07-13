@@ -9,7 +9,6 @@ import com.example.backup.constants.*;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 public class MyBroadcastReceiver extends BroadcastReceiver implements Constants {
 

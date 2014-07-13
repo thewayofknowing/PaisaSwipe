@@ -18,7 +18,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.IBinder;
-import android.util.Log;
 
 public class NetworkChangeListener extends Service implements Constants {
 

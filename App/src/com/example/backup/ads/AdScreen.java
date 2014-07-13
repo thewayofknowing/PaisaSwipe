@@ -22,6 +22,7 @@ import com.example.backup.backgroundtasks.MyService;
 import com.example.backup.constants.*;
 import com.fima.glowpadview.GlowPadView;
 import com.fima.glowpadview.GlowPadView.OnTriggerListener;
+import com.haibison.android.lockpattern.LockPatternActivity;
 
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
@@ -31,6 +32,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 public class AdScreen extends Activity implements Constants, OnTriggerListener {
 	
@@ -48,6 +50,11 @@ public class AdScreen extends Activity implements Constants, OnTriggerListener {
 
 	MyService s_myService;
 	
+	private static final int REQ_CREATE_PATTERN = 1;
+	private static final int REQ_ENTER_PATTERN = 2;
+	Intent intent;
+	char[] savedPattern = {'1','2','3','6'};
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -63,6 +70,8 @@ public class AdScreen extends Activity implements Constants, OnTriggerListener {
 		 Intent mIntent = new Intent(this, MyService.class);
 	     bindService(mIntent, mConnection, BIND_AUTO_CREATE);
 	     s_myService.stopAds();
+	     
+	     
 		
         packageName = getIntent().getExtras().getString("name");
         ImageView iv = (ImageView) findViewById(R.id.imageView1);
@@ -70,16 +79,60 @@ public class AdScreen extends Activity implements Constants, OnTriggerListener {
         AdLogic adL = new AdLogic(this);
 	    bitmap = adL.getImageUri(this);
        
-	    mGlowPadView = (GlowPadView) findViewById(R.id.glow_pad_view);
-        mGlowPadView.setBackgroundDrawable(new BitmapDrawable(bitmap));
+	    intent = new Intent(LockPatternActivity.ACTION_COMPARE_PATTERN, null,
+		        getApplicationContext(), LockPatternActivity.class);
+		startActivityForResult(intent, REQ_ENTER_PATTERN);
+	    
+	    //mGlowPadView = (GlowPadView) findViewById(R.id.glow_pad_view);
+        //mGlowPadView.setBackgroundDrawable(new BitmapDrawable(bitmap));
         
-		 mGlowPadView.setOnTriggerListener(this);
+		 //mGlowPadView.setOnTriggerListener(this);
 		
 		// uncomment this to make sure the glowpad doesn't vibrate on touch
 		// mGlowPadView.setVibrateEnabled(false);
 		
 		// uncomment this to hide targets
-		 mGlowPadView.setShowTargetsOnIdle(true);
+		 //mGlowPadView.setShowTargetsOnIdle(true);
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (requestCode) {
+			case REQ_CREATE_PATTERN: {
+				if (resultCode == RESULT_OK) {
+					char[] pattern = data
+							.getCharArrayExtra(LockPatternActivity.EXTRA_PATTERN);
+					Toast.makeText(getBaseContext(), pattern.toString() , Toast.LENGTH_LONG).show();	
+					savedPattern = pattern;
+				}
+				break;
+			}// REQ_CREATE_PATTERN
+			 case REQ_ENTER_PATTERN: {
+			        /*
+			         * NOTE that there are 4 possible result codes!!!
+			         */
+			        switch (resultCode) {
+			        case RESULT_OK:
+			            // The user passed
+			        	Toast.makeText(getBaseContext(), "Passed", Toast.LENGTH_LONG).show();
+			            break;
+			        case RESULT_CANCELED:
+			            // The user cancelled the task
+			            break;
+			        case LockPatternActivity.RESULT_FAILED:
+			        	Toast.makeText(getBaseContext(), "Failed!!", Toast.LENGTH_LONG).show();
+			            // The user failed to enter the pattern
+			            break;
+			        case LockPatternActivity.RESULT_FORGOT_PATTERN:
+			            // The user forgot the pattern and invoked your recovery Activity.
+			            break;
+			        }
+			        int retryCount = data.getIntExtra(
+			                LockPatternActivity.EXTRA_RETRY_COUNT, 0);
+	
+			        break;
+			 }
+	     }
 	}
 	
 	@Override

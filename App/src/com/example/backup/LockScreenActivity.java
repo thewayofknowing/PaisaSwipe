@@ -9,48 +9,28 @@ import java.util.Stack;
 import org.apache.http.NameValuePair;
 
 import com.example.backup.ads.AdLogic;
-import com.example.backup.ads.AdScreen;
-import com.example.backup.backgroundtasks.LockScreenService;
 import com.example.backup.backgroundtasks.MyService;
-import com.example.backup.backgroundtasks.PostStatsAsyncTask;
 import com.example.backup.constants.Constants;
-import com.example.backup.data.Stats;
 import com.fima.glowpadview.GlowPadView;
 import com.fima.glowpadview.GlowPadView.OnTriggerListener;
 
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.KeyguardManager;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.view.GestureDetectorCompat;
-import android.telephony.PhoneStateListener;
-import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnFocusChangeListener;
 import android.view.WindowManager;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 public class LockScreenActivity extends Activity implements Constants, OnTriggerListener {
 	
-	private GestureDetectorCompat mDetector; 
     private Bitmap bitmap;
     private GlowPadView mGlowPadView;
-    private Intent myService;
-	KeyguardManager.KeyguardLock k1;
 	Intent myIntent;
 	MyService s_myService;
 	Calendar calendar;
@@ -81,10 +61,6 @@ public class LockScreenActivity extends Activity implements Constants, OnTrigger
 	     Intent mIntent = new Intent(this, MyService.class);
 	     bindService(mIntent, mConnection, BIND_AUTO_CREATE);
 	     s_myService.stopAds();
-	     
-	     StateListener phoneStateListener = new StateListener();
-         TelephonyManager telephonyManager =(TelephonyManager)getSystemService(TELEPHONY_SERVICE);
-         telephonyManager.listen(phoneStateListener,PhoneStateListener.LISTEN_CALL_STATE);
          
          mGlowPadView = (GlowPadView) findViewById(R.id.glow_pad_view);
          mGlowPadView.setBackgroundDrawable(new BitmapDrawable(bitmap));
@@ -184,25 +160,6 @@ public class LockScreenActivity extends Activity implements Constants, OnTrigger
 		// TODO Auto-generated method stub
 
 	}
-	
-	class StateListener extends PhoneStateListener{
-        @Override
-        public void onCallStateChanged(int state, String incomingNumber) {
-
-            super.onCallStateChanged(state, incomingNumber);
-            switch(state){
-                case TelephonyManager.CALL_STATE_RINGING:
-                	//finish();
-                    break;
-                case TelephonyManager.CALL_STATE_OFFHOOK:
-                	finish();
-                    break;
-                case TelephonyManager.CALL_STATE_IDLE:
-                    break;
-            }
-        }
-    };
-	
 	
 	 @Override
 	    public void onBackPressed() {

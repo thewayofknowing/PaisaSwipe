@@ -16,6 +16,7 @@ public interface Constants {
     public static final String app_ad_filename = "AppAd.txt";
     public static final String server_url = "http://54.187.181.173/start_up/";
     public static final String post_stats_page = "postStats";
+    public static final String signup_page = "app_signup";
     
     public static int[] mIcon = new int[]{
     		 com.example.backup.R.drawable.game,

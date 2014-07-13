@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    tools:context="com.example.backup.SplashScreen"
+    tools:ignore="MergeRootFrame" >
+    
+    <LinearLayout
+        android:id="@+id/loading_screen"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:background="@drawable/splash_loading"
+        >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="55" />
+
+        <ImageView 
+            android:src="@drawable/splash_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="45"
+            />
+     </LinearLayout>
+    
+	<LinearLayout
+	    android:id="@+id/signup"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:background="@drawable/splash_signup"
+	    android:orientation="vertical" >
+	
+	    <LinearLayout 
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:layout_weight="50" />
+	    
+	    <LinearLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:layout_weight="15"
+        android:background="@drawable/signup_background"
+        android:orientation="vertical" >
+        
+	        <TextView 
+	            android:id="@+id/signup_button"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center_horizontal"
+	            android:textSize="22sp"
+	            android:textStyle="bold"
+	            android:textColor="#FFFFFF"
+	            android:text="Sign up with us"
+	            android:layout_marginBottom="8dp"
+	            />
+	        
+	        <ImageView 
+	            android:layout_height="10dp"
+	            android:layout_width="match_parent"
+	            android:padding="5dp"
+	            android:layout_marginBottom="8dp"
+	            android:src="@drawable/white_divider"/>
+	        
+	        <ImageView
+		            android:id="@+id/sign_in_button_google"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_gravity="center_horizontal"
+		            android:src="@drawable/google_signup"
+		            android:clickable="true"
+		            android:layout_marginBottom="5dp" />
+	        
+	        <ImageView
+	            android:id="@+id/sign_in_button_facebook"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center_horizontal"
+	            android:clickable="true"
+	            android:src="@drawable/facebook_signup" />
+	        
+	    </LinearLayout>
+	   
+	     <LinearLayout 
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:layout_weight="25" />
+	
+	</LinearLayout>
+
+</RelativeLayout>

@@ -114,18 +114,32 @@
             android:gravity="center_horizontal"
             android:orientation="horizontal" >
 
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/share" />
+
             <TextView
                 android:id="@+id/share"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:background="@android:color/white"
                 android:gravity="center_horizontal"
-                android:textAlignment="gravity"
-                android:layout_gravity="center_horizontal"
-                android:padding="10dp"
-                android:textSize="12sp"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp"
                 android:text="Share your happiness with your friends"
-                android:textColor="#5ba3d9" />
+                android:textAlignment="gravity"
+                android:textColor="#5ba3d9"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal" >
         </LinearLayout>
 
         <LinearLayout

@@ -20,7 +20,7 @@ public interface Constants {
     
     public static int[] mIcon = new int[]{
     		 com.example.backup.R.drawable.game,
-			 com.example.backup.R.drawable.wallet,
+			 com.example.backup.R.drawable.border,
 			 com.example.backup.R.drawable.setting,
 			 com.example.backup.R.drawable.feedback,
 			 };

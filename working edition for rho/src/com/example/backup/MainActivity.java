@@ -35,6 +35,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -333,6 +334,8 @@ public class MainActivity extends Activity implements Constants {
 		
 		s_tab1.setBackgroundResource(R.drawable.app_ads_selected);
 		s_tab2.setBackgroundResource(R.drawable.app_lock_unselected);
+		s_tab1.setScaleType(ScaleType.FIT_XY);
+		s_tab2.setScaleType(ScaleType.FIT_XY);
 
 		s_tab1.setOnClickListener(new OnClickListener() {
 			

@@ -339,6 +339,7 @@ public class SignUp extends Activity implements Constants{
 			}
 			startActivity(new Intent(getBaseContext(),MainActivity.class));
 			super.onPostExecute(result);
+			finish();
 		}
 		
 	}

@@ -318,7 +318,9 @@ public class LockPatternActivity extends Activity {
         if (getIntent().hasExtra(EXTRA_THEME))
             setTheme(getIntent().getIntExtra(EXTRA_THEME,
                     R.style.Alp_42447968_Theme_Dark));
-
+        
+       
+        
         super.onCreate(savedInstanceState);
 
         loadSettings();

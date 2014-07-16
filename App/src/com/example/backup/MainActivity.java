@@ -154,7 +154,6 @@ public class MainActivity extends Activity implements Constants {
 	public class Process {
 		public Drawable icon;
 		public String appLabel;
-		public String packageName;
 		
 		public void setIcon(Drawable icon) {
 			this.icon = icon;
@@ -192,6 +191,34 @@ public class MainActivity extends Activity implements Constants {
 
 		return super.onOptionsItemSelected(item);
 	}
+	
+	@Override
+	protected void onResume() {
+		
+		//stopService(intent);
+		/*
+		 * LOADING THE LIST OF ACTIVATED ADS
+		 */
+		if(sharedPreferences.contains(ACTIVATED_LIST)){
+			 app_ad_list.addAll( sharedPreferences.getStringSet(ACTIVATED_LIST, new HashSet<String>() ));	
+			 app_ad.addAll(app_ad_list);
+	    }
+		super.onResume();
+	}
+	
+	@Override
+	protected void onPause() {
+		
+		
+		//startService(intent);
+		/*
+		 * SAVE THE LIST OF ACTIVATED ADS 
+		 */
+		sharedPreferences.edit().putStringSet(ACTIVATED_LIST, app_ad_list).commit();
+		finish();
+		super.onPause();
+	}
+	
 	
 	/*
 	 * READING THE LIST OF ACTIVATED APPS AT THE START

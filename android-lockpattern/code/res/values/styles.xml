@@ -17,15 +17,15 @@
 
 <resources>
 
-    <style name="Alp.42447968.BaseTheme.Dark" parent="@android:style/Theme" />
+    <style name="Alp.42447968.BaseTheme.Dark" parent="@android:Theme" />
 
     <style name="Alp.42447968.BaseThemeHelper.Dark" parent="@style/Alp.42447968.BaseTheme.Dark" />
 
     <style name="Alp.42447968.Theme.Dark" parent="@style/Alp.42447968.BaseThemeHelper.Dark">
 
         <!-- AOSP -->
-
-        <item name="android:windowBackground">@drawable/aosp_background_holo_dark</item>
+		<item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
 
         <!-- android-lockpattern -->
 
@@ -38,7 +38,7 @@
         <item name="aosp_drawable_indicator_code_lock_point_area_normal">@drawable/aosp_indicator_code_lock_point_area_green_holo</item>
     </style>
 
-    <style name="Alp.42447968.BaseTheme.Light" parent="@android:style/Theme.Light" />
+    <style name="Alp.42447968.BaseTheme.Light" parent="@android:Theme" />
 
     <style name="Alp.42447968.BaseThemeHelper.Light" parent="@style/Alp.42447968.BaseTheme.Light" />
 
@@ -46,7 +46,8 @@
 
         <!-- AOSP -->
 
-        <item name="android:windowBackground">@drawable/aosp_background_holo_light</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
 
         <!-- android-lockpattern -->
 
@@ -59,16 +60,16 @@
         <item name="aosp_drawable_indicator_code_lock_point_area_normal">@drawable/aosp_indicator_code_lock_point_area_blue_holo</item>
     </style>
 
-    <style name="Alp.42447968.BaseTheme.Light.DarkActionBar" parent="@android:style/Theme.Light" />
+    <style name="Alp.42447968.BaseTheme.Light.DarkActionBar" parent="@android:Theme" />
 
     <style name="Alp.42447968.BaseThemeHelper.Light.DarkActionBar" parent="@style/Alp.42447968.BaseTheme.Light.DarkActionBar" />
 
     <style name="Alp.42447968.Theme.Light.DarkActionBar" parent="@style/Alp.42447968.BaseThemeHelper.Light.DarkActionBar">
 
         <!-- AOSP -->
-
-        <item name="android:windowBackground">@drawable/aosp_background_holo_light</item>
-
+		<item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+       
         <!-- android-lockpattern -->
 
         <item name="alp_42447968_theme_dialog">@style/Alp.42447968.Theme.Dialog.Light</item>
@@ -80,7 +81,7 @@
         <item name="aosp_drawable_indicator_code_lock_point_area_normal">@drawable/aosp_indicator_code_lock_point_area_blue_holo</item>
     </style>
 
-    <style name="Alp.42447968.BaseTheme.Dialog.Dark" parent="@android:style/Theme.Dialog">
+    <style name="Alp.42447968.BaseTheme.Dialog.Dark" parent="@android:Theme.Dialog">
 
         <!-- AOSP -->
 
@@ -102,21 +103,21 @@
         <item name="aosp_drawable_indicator_code_lock_point_area_normal">@drawable/aosp_indicator_code_lock_point_area_green_holo</item>
     </style>
 
-    <style name="Alp.42447968.BaseTheme.Dialog.Light" parent="@android:style/Theme.Light">
+    <style name="Alp.42447968.BaseTheme.Dialog.Light" parent="@android:Theme">
 
         <!-- AOSP -->
 
         <item name="android:windowFrame">@null</item>
         <item name="android:windowTitleStyle">@style/AOSP_DialogWindowTitle</item>
         <item name="android:windowBackground">@drawable/aosp_dialog_full_holo_light</item>
-        <item name="android:windowIsFloating">true</item>
+<!--         <item name="android:windowIsFloating">true</item> -->
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
         <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowActionModeOverlay">true</item>
-        <item name="android:windowCloseOnTouchOutside">true</item>
-        <item name="android:colorBackgroundCacheHint">@null</item>
+<!--         <item name="android:windowActionBar">false</item> -->
+<!--         <item name="android:windowActionModeOverlay">true</item> -->
+<!--         <item name="android:windowCloseOnTouchOutside">true</item> -->
+<!--         <item name="android:colorBackgroundCacheHint">@null</item> -->
     </style>
 
     <style name="Alp.42447968.BaseThemeHelper.Dialog.Light" parent="@style/Alp.42447968.BaseTheme.Dialog.Light" />

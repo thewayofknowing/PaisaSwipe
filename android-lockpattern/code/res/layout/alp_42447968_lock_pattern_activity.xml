@@ -17,7 +17,8 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent" >
 
     <TextView
         android:id="@+id/alp_42447968_textview_info"
@@ -25,6 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="10dp"
+        android:background="@android:color/transparent"
         android:gravity="center_horizontal"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textIsSelectable="true" />
@@ -32,6 +34,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@android:color/transparent"
         android:layout_above="@+id/alp_42447968_viewgroup_footer"
         android:layout_below="@id/alp_42447968_textview_info" >
 
@@ -49,6 +52,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:background="@android:color/transparent"
         android:orientation="vertical"
         android:visibility="gone" >
 
@@ -62,6 +66,7 @@
             style="?attr/alp_42447968_button_bar_style"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
             android:orientation="horizontal" >
 
             <Button

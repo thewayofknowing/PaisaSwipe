@@ -56,7 +56,7 @@ public class NavBarAdapter extends BaseAdapter implements Constants {
 			l_tv = (TextView) convertView.findViewById(R.id.content);
 			ImageView l_iv = (ImageView) convertView.findViewById(R.id.icon);
 			l_tv.setText(mContents[position]);
-			l_iv.setBackgroundDrawable(m_cont.getResources().getDrawable(mIcon[position]));
+			l_iv.setBackground((m_cont.getResources().getDrawable(mIcon[position])));
 				
 			RelativeLayout parentLayout = (RelativeLayout) convertView.findViewById(R.id.parentLayout);
 			parentLayout.setOnClickListener(new View.OnClickListener() {

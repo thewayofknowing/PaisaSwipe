@@ -19,14 +19,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:baselineAligned="false"
+    android:background="@android:color/transparent"
     android:orientation="horizontal" >
 
     <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
+        android:background="@android:color/transparent"
         android:layout_weight=".3" >
 
-<<<<<<< HEAD
         <TextView
             android:id="@+id/alp_42447968_textview_info"
             android:layout_width="match_parent"
@@ -34,17 +35,17 @@
             android:layout_above="@+id/alp_42447968_viewgroup_footer"
             android:gravity="center_horizontal|top"
             android:padding="5dp"
+            android:background="@android:color/transparent"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textIsSelectable="true" />
 
-=======
->>>>>>> d15c23a219c84f2447cb81614da51d34824cc8e3
         <LinearLayout
             android:id="@+id/alp_42447968_viewgroup_footer"
             style="?attr/alp_42447968_button_bar_style"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:background="@android:color/transparent"
             android:orientation="vertical"
             android:visibility="gone" >
 
@@ -75,12 +76,14 @@
     <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
+        android:background="@android:color/transparent"
         android:layout_weight=".7" >
 
         <include
             android:id="@+id/alp_42447968_view_lock_pattern"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
             android:layout_centerInParent="true"
             layout="@layout/alp_42447968_lock_pattern_view" />
     </RelativeLayout>

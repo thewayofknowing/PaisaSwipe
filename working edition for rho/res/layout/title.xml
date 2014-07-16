@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/title_bar_height"
+    android:orientation="horizontal"
+    android:background="#0A3151"
+    android:padding="5dp"
+     >
+
+    
+    <ImageView 
+        android:id="@+id/navButton"
+        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:src="@drawable/dots"
+        android:layout_centerVertical="true"
+        android:clickable="true"
+        />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:gravity="center_vertical"
+        android:text="@string/app_name"
+        android:textColor="#FFFFFF"
+        android:textSize="25sp" />
+    
+    <RelativeLayout
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:orientation="horizontal"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/navButton"
+        android:layout_marginLeft="15dp"
+        android:id="@+id/search_layout"
+        android:layout_alignParentRight="true"
+         >
+        <ImageView
+	        android:id="@+id/cross"
+	        android:layout_width="20dp"
+	        android:layout_height="20dp"
+	        android:src="@drawable/cross"
+	        android:layout_centerVertical="true"
+	        android:clickable="true" />
+        <EditText
+	        android:id="@+id/search"
+	        android:layout_width="wrap_content"
+	        android:layout_height="36dp"
+	        android:layout_toRightOf="@id/cross"
+	        android:textSize="10sp"
+	        android:paddingLeft="30dp"
+	        android:hint="search"
+	        android:background="@drawable/search_bar"
+	        android:ems="10"
+         />
+    </RelativeLayout>
+    
+
+    <ImageView
+        android:id="@+id/search_icon"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:src="@drawable/search"
+        android:clickable="true" />
+
+</RelativeLayout>

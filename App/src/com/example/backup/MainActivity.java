@@ -104,18 +104,20 @@ public class MainActivity extends Activity implements Constants {
 		app_ad = new HashSet<String>();
 		app_ad_lock = new HashSet<String>();
 
-		initAppLockList();
-
-		setContentView(R.layout.activity_main);
 		initTitle();
 		initDrawer();
 		setTabListener();
+
+		initAppLockList();
+
+		setContentView(R.layout.activity_main);
 
 		// Start LockScreen/AppScreen Service
 		startService(new Intent(getBaseContext(), LockScreenService.class));
 		startService(new Intent(getBaseContext(), MyService.class));
 		startService(new Intent(getBaseContext(), FakeService.class));
 
+		
 		// INITIALIZE VARIABLES
 		pm = getPackageManager();
 		List<PackageInfo> apps = pm.getInstalledPackages(0);
@@ -240,77 +242,77 @@ public class MainActivity extends Activity implements Constants {
 	private void initTitle() {
 		RelativeLayout title = (RelativeLayout) findViewById(R.id.titleBar);
 		TitleBar tb = new TitleBar(this, title);
-		s_leftNavButton = tb.getLeftOptionsImgBtn();
+//		s_leftNavButton = tb.getLeftOptionsImgBtn();
+//
+//		s_searchText = tb.getSearchEditText();
+//		s_searchLayout = tb.getSearchLayout();
+//		s_searchLayout.setVisibility(View.GONE);
+//		s_title = tb.getTitle();
 
-		s_searchText = tb.getSearchEditText();
-		s_searchLayout = tb.getSearchLayout();
-		s_searchLayout.setVisibility(View.GONE);
-		s_title = tb.getTitle();
+//		TextWatcher searchTextWatcher = new TextWatcher() {
+//
+//			@Override
+//			public void onTextChanged(CharSequence s, int start, int before,
+//					int count) {
+//				String search = s_searchText.getText().toString();
+//				if (search.length() == 0) {
+//					prepareList(processes);
+//				} else {
+//					prepareList(searchMatches(search));
+//				}
+//			}
 
-		TextWatcher searchTextWatcher = new TextWatcher() {
-
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before,
-					int count) {
-				String search = s_searchText.getText().toString();
-				if (search.length() == 0) {
-					prepareList(processes);
-				} else {
-					prepareList(searchMatches(search));
-				}
-			}
-
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count,
-					int after) {
-			}
-
-			@Override
-			public void afterTextChanged(Editable arg0) {
-			}
-		};
-		s_searchText.addTextChangedListener(searchTextWatcher);
-
-		s_searchIcon = tb.getSearchIcon();
-		final Animation searchBarAnimation = AnimationUtils.loadAnimation(this,
-				R.anim.search_bar_animation);
-		final Animation titleAnimation = AnimationUtils.loadAnimation(this,
-				R.anim.title_animation);
-		final Animation searchIconAway = AnimationUtils.loadAnimation(this,
-				R.anim.search_icon_away);
-		s_searchIcon.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				s_searchLayout.startAnimation(searchBarAnimation);
-				s_searchIcon.startAnimation(searchIconAway);
-				s_searchIcon.setClickable(false);
-				s_searchText.setEnabled(true);
-				s_cross.setEnabled(true);
-				s_searchLayout.setVisibility(View.VISIBLE);
-				s_title.startAnimation(titleAnimation);
-			}
-		});
-
-		final Animation searchBarAwayAnimation = AnimationUtils.loadAnimation(
-				this, R.anim.search_bar_away_animation);
-		final Animation titleReturnAnimation = AnimationUtils.loadAnimation(
-				this, R.anim.title_return_animation);
-		final Animation searchIconBack = AnimationUtils.loadAnimation(this,
-				R.anim.search_icon_back);
-		s_cross = tb.getCross();
-		s_cross.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				s_searchLayout.startAnimation(searchBarAwayAnimation);
-				s_searchIcon.startAnimation(searchIconBack);
-				s_searchIcon.setClickable(true);
-				s_searchText.setEnabled(false);
-				s_cross.setEnabled(false);
-				s_title.startAnimation(titleReturnAnimation);
-			}
-		});
+//			@Override
+//			public void beforeTextChanged(CharSequence s, int start, int count,
+//					int after) {
+//			}
+//
+//			@Override
+//			public void afterTextChanged(Editable arg0) {
+//			}
+//		};
+//		s_searchText.addTextChangedListener(searchTextWatcher);
+//
+//		s_searchIcon = tb.getSearchIcon();
+//		final Animation searchBarAnimation = AnimationUtils.loadAnimation(this,
+//				R.anim.search_bar_animation);
+//		final Animation titleAnimation = AnimationUtils.loadAnimation(this,
+//				R.anim.title_animation);
+//		final Animation searchIconAway = AnimationUtils.loadAnimation(this,
+//				R.anim.search_icon_away);
+//		s_searchIcon.setOnClickListener(new OnClickListener() {
+//
+//			@Override
+//			public void onClick(View v) {
+//				s_searchLayout.startAnimation(searchBarAnimation);
+//				s_searchIcon.startAnimation(searchIconAway);
+//				s_searchIcon.setClickable(false);
+//				s_searchText.setEnabled(true);
+//				s_cross.setEnabled(true);
+//				s_searchLayout.setVisibility(View.VISIBLE);
+//				s_title.startAnimation(titleAnimation);
+//			}
+//		});
+//
+//		final Animation searchBarAwayAnimation = AnimationUtils.loadAnimation(
+//				this, R.anim.search_bar_away_animation);
+//		final Animation titleReturnAnimation = AnimationUtils.loadAnimation(
+//				this, R.anim.title_return_animation);
+//		final Animation searchIconBack = AnimationUtils.loadAnimation(this,
+//				R.anim.search_icon_back);
+//		s_cross = tb.getCross();
+//		s_cross.setOnClickListener(new OnClickListener() {
+//
+//			@Override
+//			public void onClick(View arg0) {
+//				s_searchLayout.startAnimation(searchBarAwayAnimation);
+//				s_searchIcon.startAnimation(searchIconBack);
+//				s_searchIcon.setClickable(true);
+//				s_searchText.setEnabled(false);
+//				s_cross.setEnabled(false);
+//				s_title.startAnimation(titleReturnAnimation);
+//			}
+//		});
 	}
 
 	private List<Process> searchMatches(String keyword) {
@@ -332,17 +334,17 @@ public class MainActivity extends Activity implements Constants {
 		NavBarAdapter l_leftNavBarListAdapter = new NavBarAdapter(this);
 
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-		mDrawerList.setAdapter(l_leftNavBarListAdapter);
+//		mDrawerList.setAdapter(l_leftNavBarListAdapter);
 
-		s_leftNavButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				mDrawerLayout.openDrawer(Gravity.LEFT);
-				mDrawerList.bringToFront();
-				mDrawerList.requestLayout();
-			}
-		});
+//		s_leftNavButton.setOnClickListener(new OnClickListener() {
+//
+//			@Override
+//			public void onClick(View arg0) {
+//				mDrawerLayout.openDrawer(Gravity.LEFT);
+//				mDrawerList.bringToFront();
+//				mDrawerList.requestLayout();
+//			}
+//		});
 	}
 
 	/*
@@ -376,9 +378,9 @@ public class MainActivity extends Activity implements Constants {
 		// getResources().getDrawable(R.drawable.app_lock_unselected);
 		s_tab1 = (ImageView) findViewById(R.id.tab1);
 		s_tab2 = (ImageView) findViewById(R.id.tab2);
-
-		s_tab1.setBackgroundResource(R.drawable.app_ads_selected);
-		s_tab2.setBackgroundResource(R.drawable.app_lock_unselected);
+//
+//		s_tab1.setBackgroundResource(R.drawable.app_ads_selected);
+//		s_tab2.setBackgroundResource(R.drawable.app_lock_unselected);
 
 		s_tab1.setOnClickListener(new OnClickListener() {
 

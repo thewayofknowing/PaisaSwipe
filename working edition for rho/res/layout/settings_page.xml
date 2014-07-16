@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    >
+    
+    <RelativeLayout 
+	        android:id="@+id/titleBar"
+	        android:layout_height="@dimen/title_bar_height"
+	        android:layout_width="match_parent"
+	        android:orientation="horizontal"
+	         />
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_margin="@dimen/layout_margin"
+        android:orientation="vertical" >
+        
+         <TextView
+	        android:id="@+id/textView1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Settings"
+	        android:textStyle="bold"
+	        android:textColor="#6E94C6"
+	        android:textSize="24sp" />
+         
+         <ImageView 
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:src="@drawable/nav_divider"/>
+         
+         <RelativeLayout 
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:orientation="horizontal"
+             android:layout_margin="5dp">
+             <TextView 
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:textColor="#999999"
+                 android:text="Screen Lock"
+                 android:textSize="22sp"
+                 android:layout_centerVertical="true"/>
+             
+             <Switch
+		        android:id="@+id/screenLockSwitch"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:textOff="      "
+		        android:textOn="      "
+		        android:layout_alignParentRight="true"
+		        android:layout_marginRight="15dp"
+		        android:layout_centerVertical="true"
+		        android:thumb="@drawable/switch_bg"
+		        android:track="@drawable/lock_track_bg"
+		         />
+         </RelativeLayout>
+         
+         <RelativeLayout 
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:orientation="horizontal"
+             android:layout_margin="5dp">
+             <TextView 
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:textColor="#999999"
+                 android:text="App Lock"
+                 android:textSize="20sp"
+                 android:layout_centerVertical="true"/>
+             
+             <Switch
+		        android:id="@+id/appLockSwitch"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:textOff="      "
+		        android:textOn="      "
+		        android:layout_alignParentRight="true"
+		        android:layout_marginRight="15dp"
+		        android:layout_centerVertical="true"
+				android:textSize="20sp"
+		        android:thumb="@drawable/switch_bg"
+		        android:track="@drawable/lock_track_bg"
+		         />
+         </RelativeLayout>
+         
+         <ExpandableListView
+                android:id="@+id/lvExp"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"/>
+        
+        
+    </LinearLayout>
+   
+
+</LinearLayout>

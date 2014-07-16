@@ -72,7 +72,7 @@ public class CustomListAdapter extends ArrayAdapter<String> implements Constants
 
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
-	        s_myService = ((MyService.LocalBinder)service).getService();
+	        
 		}
 
 		@Override

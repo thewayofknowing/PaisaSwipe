@@ -191,34 +191,33 @@ public class MainActivity extends Activity implements Constants {
 
 		return super.onOptionsItemSelected(item);
 	}
-	
 	@Override
 	protected void onResume() {
-		
-		//stopService(intent);
 		/*
 		 * LOADING THE LIST OF ACTIVATED ADS
 		 */
 		if(sharedPreferences.contains(ACTIVATED_LIST)){
 			 app_ad_list.addAll( sharedPreferences.getStringSet(ACTIVATED_LIST, new HashSet<String>() ));	
 			 app_ad.addAll(app_ad_list);
+			 app_ad_lock.addAll( sharedPreferences.getStringSet(LOCKED_LIST, new HashSet<String>()) );
 	    }
 		super.onResume();
 	}
 	
+	
 	@Override
 	protected void onPause() {
-		
-		
-		//startService(intent);
 		/*
 		 * SAVE THE LIST OF ACTIVATED ADS 
 		 */
 		sharedPreferences.edit().putStringSet(ACTIVATED_LIST, app_ad_list).commit();
-		finish();
+		sharedPreferences.edit().putStringSet(LOCKED_LIST, app_ad_lock).commit();
 		super.onPause();
 	}
 	
+	
+	
+
 	
 	/*
 	 * READING THE LIST OF ACTIVATED APPS AT THE START
@@ -406,29 +405,7 @@ public class MainActivity extends Activity implements Constants {
 		return false;
 	}
 	
-	@Override
-	protected void onResume() {
-		/*
-		 * LOADING THE LIST OF ACTIVATED ADS
-		 */
-		if(sharedPreferences.contains(ACTIVATED_LIST)){
-			 app_ad_list.addAll( sharedPreferences.getStringSet(ACTIVATED_LIST, new HashSet<String>() ));	
-			 app_ad.addAll(app_ad_list);
-			 app_ad_lock.addAll( sharedPreferences.getStringSet(LOCKED_LIST, new HashSet<String>()) );
-	    }
-		super.onResume();
-	}
-	
-	@Override
-	protected void onPause() {
-		/*
-		 * SAVE THE LIST OF ACTIVATED ADS 
-		 */
-		sharedPreferences.edit().putStringSet(ACTIVATED_LIST, app_ad_list).commit();
-		sharedPreferences.edit().putStringSet(LOCKED_LIST, app_ad_lock).commit();
-		super.onPause();
-	}
-	
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();

@@ -17,12 +17,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
+import android.text.GetChars;
 import android.util.Log;
 
 public class LockScreenService extends Service implements Constants{
-	 BroadcastReceiver mReceiver;
-	 KeyguardManager.KeyguardLock k1;
-	 IntentFilter filter;
+	 static BroadcastReceiver mReceiver;
+	 static KeyguardManager.KeyguardLock k1;
+	 static IntentFilter filter;
+	 private static Context context;
 	 
 	 @Override
 	public IBinder onBind(Intent intent) {
@@ -36,15 +38,16 @@ public class LockScreenService extends Service implements Constants{
 	     * runs in the same process as its clients, we don't need to deal with
 	     * IPC.
 	     */
-	    public class LocalBinder extends Binder {
-	        public LockScreenService getService() {
-	            return LockScreenService.this;
-	        }
-	    }
+    public class LocalBinder extends Binder {
+        public LockScreenService getService() {
+            return LockScreenService.this;
+        }
+    }
 
 	@Override
 	public void onCreate() {
 		Log.d(TAG,"Lock Service Oncreate");
+		context = getBaseContext();
 		
 	    filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
 	    filter.addAction(Intent.ACTION_SCREEN_OFF);
@@ -69,6 +72,16 @@ public class LockScreenService extends Service implements Constants{
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		return START_REDELIVER_INTENT | START_FLAG_REDELIVERY;
+	}
+	
+	public static void disableLock() {
+		context.unregisterReceiver(mReceiver);
+		k1.reenableKeyguard();
+	}
+	
+	public static void enableLock() {
+		context.registerReceiver(mReceiver, filter);
+		k1.disableKeyguard();
 	}
 	
 	@Override

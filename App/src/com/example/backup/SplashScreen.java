@@ -1,11 +1,14 @@
 package com.example.backup;
 
+import java.util.Arrays;
+
 import com.example.backup.constants.Constants;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.model.GraphUser;
+import com.facebook.widget.LoginButton;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -35,9 +38,10 @@ public class SplashScreen extends Activity implements ConnectionCallbacks, OnCon
 
 	  Boolean s_onSplash = true;
 	  LinearLayout signup_screen, loading_screen;
-	  String s_personName;
-	  String s_email;
-	  int s_gender;
+	  String s_personName = "";
+	  String s_email = "";
+	  int s_gender = -1;
+	  String s_type = "custom";
 	
 	  /* Request code used to invoke sign in user interactions. */
 	  private static final int RC_SIGN_IN = 0;
@@ -72,12 +76,21 @@ public class SplashScreen extends Activity implements ConnectionCallbacks, OnCon
         .addScope(Plus.SCOPE_PLUS_LOGIN)
         .build();
 		
+		findViewById(R.id.signup_button_custom).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				s_type = "custom";
+				gotoSignupForm();
+			}
+		});
+		
 		findViewById(R.id.sign_in_button_google).setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				Log.d(TAG,"clicked");
-				 if ( !mGoogleApiClient.isConnecting()) {
+				 if ( mGoogleApiClient.isConnecting()==false) {
 					    Log.d(TAG,"connected");
 					    mSignInClicked = true;
 					    resolveSignInError();
@@ -86,38 +99,41 @@ public class SplashScreen extends Activity implements ConnectionCallbacks, OnCon
 		});
 		
 		
-		/* ****************************fACEBOOK LOGIN HERE ******************************************* */
-		
-		findViewById(R.id.sign_in_button_facebook).setOnClickListener(new OnClickListener() {
+		/* ****************************fACEBOOK LOGIN HERE ******************************************* 
+		  LoginButton authButton = (LoginButton) findViewById(R.id.authButton);
+		  // set permission list, Don't foeget to add email
+		  authButton.setReadPermissions(Arrays.asList("publish_actions","email"));
+		  // session state call back event */
+		 findViewById(R.id.sign_in_button_facebook).setOnClickListener(new OnClickListener() {
 			
 			@Override
-			public void onClick(View v) {
-				// start Facebook Login
-				Session.openActiveSession(SplashScreen.this, true, new Session.StatusCallback() {
-
-				      // callback when session changes state
-				      @Override
-				      public void call(Session session, SessionState state, Exception exception) {
-				        if (session.isOpened()) {
-
-				          // make request to the /me API
-				          
-				          Request.newMeRequest(session, new Request.GraphUserCallback() {
-
-				            // callback after Graph API response with user object
-							@Override
-							public void onCompleted(GraphUser user,
-									Response response) {
-								Toast.makeText(getBaseContext(), "Welcome! " + user.getName(), Toast.LENGTH_LONG).show();
-							}
-				          }).executeAsync();
-				        }
-				      }
-				    });
-				
+			public void onClick(View arg0) {
+				 Session.openActiveSession(SplashScreen.this, false, new Session.StatusCallback() {
+					   
+					   @Override
+					   public void call(Session session, SessionState state, Exception exception) {
+					    
+					    if (session.isOpened()) {
+					              Log.i(TAG,"Access Token"+ session.getAccessToken());
+					              Request.executeMeRequestAsync(session,
+					                      new Request.GraphUserCallback() {
+					                          @Override
+					                          public void onCompleted(GraphUser user,Response response) {
+					                              if (user != null) { 
+					                            	s_personName = user.getName();
+					  							    s_email = user.asMap().get("email").toString();
+					  							    s_type = "facebook";
+					  							    gotoSignupForm();
+					                              }
+					                          }
+					                      });
+					          }
+					    
+					   }
+					  });
 			}
 		});
-		
+			 
 		Animation close_splash = AnimationUtils.loadAnimation(getBaseContext(), R.anim.close_splash);
 		Animation open_signup = AnimationUtils.loadAnimation(getBaseContext(), R.anim.open_signup);
 		
@@ -148,7 +164,7 @@ public class SplashScreen extends Activity implements ConnectionCallbacks, OnCon
 				signup_screen.startAnimation(open_signup);
 				signup_screen.setVisibility(View.VISIBLE);
 				s_onSplash = false;
-				startActivity(new Intent(SplashScreen.this,MainActivity.class));
+				//startActivity(new Intent(SplashScreen.this,MainActivity.class));
 		    }
 		}, 3000);
 		
@@ -180,6 +196,7 @@ public class SplashScreen extends Activity implements ConnectionCallbacks, OnCon
 	    try {
 	      mIntentInProgress = true;
 	      mConnectionResult.startResolutionForResult(this, RC_SIGN_IN);
+	      Log.d(TAG,"Signing in");
 	    } catch (SendIntentException e) {
 	      // The intent was canceled before it was sent.  Return to the default
 	      // state and attempt to connect to get an updated ConnectionResult.
@@ -191,19 +208,17 @@ public class SplashScreen extends Activity implements ConnectionCallbacks, OnCon
 	
 	protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
 		  if (requestCode == RC_SIGN_IN) {
-			    if (responseCode != RESULT_OK) {
-			      mSignInClicked = false;
-			    }
-			    mIntentInProgress = false;
-			    if (!mGoogleApiClient.isConnecting()) {
-			      mGoogleApiClient.connect();
-			    }
+		    if (responseCode != RESULT_OK) {
+		      mSignInClicked = false;
+		    }
+
+		    mIntentInProgress = false;
+
+		    if (!mGoogleApiClient.isConnecting()) {
+		      mGoogleApiClient.connect();
+		    }
 		  }
-		  else {
-		      Session.getActiveSession().onActivityResult(this, requestCode, responseCode, intent);
-		  }
-		  
-	}
+		}
 	
 	@Override
 	protected void onStart() {
@@ -240,13 +255,14 @@ public class SplashScreen extends Activity implements ConnectionCallbacks, OnCon
 		 if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
 			    Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
 			    s_personName = currentPerson.getDisplayName();
-			    s_gender = currentPerson.getGender();
+			    //s_gender = currentPerson.getGender();
 			    //String personPhoto = currentPerson.getImage();
 			    s_email = Plus.AccountApi.getAccountName(mGoogleApiClient);
 			    //Toast.makeText(this, personName, Toast.LENGTH_LONG).show();
-			    Toast.makeText(getApplicationContext(), s_email, Toast.LENGTH_LONG).show();
+			    //Toast.makeText(getApplicationContext(), s_email, Toast.LENGTH_LONG).show();
+			    s_type = "gmail";
 			    Log.d(TAG,s_email);
-			    //gotoSignupForm();
+			    gotoSignupForm();
 			  }
 	}
 	
@@ -271,11 +287,10 @@ public class SplashScreen extends Activity implements ConnectionCallbacks, OnCon
 	}
 	
 	private void gotoSignupForm() {
-		String[] gender = {"male","female","other"};
 		Intent signup_intent = new Intent(getBaseContext(),SignUp.class);
 		signup_intent.putExtra("name", s_personName);
 		signup_intent.putExtra("email", s_email);
-		signup_intent.putExtra("gender", gender[s_gender]);
+		signup_intent.putExtra("type", s_type);
 		startActivity(signup_intent);
 	}
 

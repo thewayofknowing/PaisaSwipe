@@ -1,13 +1,7 @@
 package com.example.backup;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -16,10 +10,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -29,10 +24,7 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,20 +35,19 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import com.example.backup.Views.TitleBar;
+import com.example.backup.adapters.AppListFragment;
+import com.example.backup.adapters.AppLockFragment;
 import com.example.backup.adapters.CustomListAdapter;
 import com.example.backup.adapters.NavBarAdapter;
 import com.example.backup.backgroundtasks.FakeService;
 import com.example.backup.backgroundtasks.LockScreenService;
 import com.example.backup.backgroundtasks.MyService;
 import com.example.backup.constants.*;
-import com.example.backup.postinfo.*;
 
 public class MainActivity extends Activity implements Constants {
 	
@@ -73,19 +64,17 @@ public class MainActivity extends Activity implements Constants {
 	 */
 	
 	public static SharedPreferences sharedPreferences;
-	private ListView list;
-	private CustomListAdapter adapter;
+	public ListView list;
+	public static CustomListAdapter adapter;
 	private PackageManager pm;
-	private List<String> s_appLabels;
-	private List<Drawable> s_appIcons;
-	List<Process> processes;
+	private static List<Process> processes;
+	public static List<Process> result_processes;
 	public static HashSet<String> app_ad;
 	public static HashSet<String> app_ad_off;
 	public static HashSet<String> app_ad_list;
-	
-	private static Intent intent;
-	
-	private DrawerLayout mDrawerLayout;
+	public static HashSet<String> app_ad_lock;
+		
+	public static DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
 	
 
@@ -96,6 +85,14 @@ public class MainActivity extends Activity implements Constants {
 	private ImageView s_cross = null;
 	private RelativeLayout s_searchLayout = null;
 	
+	AppListFragment s_appListFragment;
+	AppLockFragment s_appLockFragment;
+	FragmentManager s_fragmentManager;
+	FragmentTransaction s_fragmentTransaction;
+	ImageView s_tab1,s_tab2;
+	Drawable s_appAdTabSelected,s_appAdTabUnSelected,s_appLockTabSelected,s_appLockTabUnSelected;
+	int tabId;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -103,16 +100,16 @@ public class MainActivity extends Activity implements Constants {
 				
 		app_ad_list = new HashSet<String>();
 		app_ad = new HashSet<String>();
+		app_ad_lock = new HashSet<String>();
 		
 		initAppLockList();	
 		
 		setContentView(R.layout.activity_main);
 		initTitle();	
-		sharedPreferences.edit().putBoolean(STATUS, true).commit();
 		initDrawer();
+		setTabListener();
 		
-		//Start LockScreen Service
-		//stopService(new Intent(getBaseContext(),LockScreenService.class));
+		//Start LockScreen/AppScreen Service
 		startService(new Intent(getBaseContext(),LockScreenService.class));
 		startService(new Intent(getBaseContext(),MyService.class));
 		startService(new Intent(getBaseContext(),FakeService.class));
@@ -121,10 +118,8 @@ public class MainActivity extends Activity implements Constants {
 		pm = getPackageManager();
 		List<PackageInfo> apps = pm.getInstalledPackages(0);
 	    processes = new ArrayList<Process>();
+	    result_processes = new ArrayList<Process>();
 		Process process = new Process();
-
-	   //POST INFO
-	    //postInfo(MainActivity.this);
 	    
 	    /*
 	    * GET A LIST OF INSTALLED APPS
@@ -135,6 +130,7 @@ public class MainActivity extends Activity implements Constants {
 				//if((info.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) == 0) {
 					if(!(info.applicationInfo.packageName.equals(getPackageName())) && pm.getApplicationLabel(info.applicationInfo).toString().indexOf("com.")<0) {	
 						process = new Process();
+						process.setPackageName(info.applicationInfo.packageName);
 						process.setLabel("" + pm.getApplicationLabel(info.applicationInfo));
 						process.setIcon(pm.getApplicationIcon(info.applicationInfo));
 						processes.add(process);
@@ -158,6 +154,7 @@ public class MainActivity extends Activity implements Constants {
 	public class Process {
 		public Drawable icon;
 		public String appLabel;
+		public String packageName;
 		
 		public void setIcon(Drawable icon) {
 			this.icon = icon;
@@ -165,6 +162,10 @@ public class MainActivity extends Activity implements Constants {
 		
 		public void setLabel(String label) {
 			this.appLabel = label;
+		}
+		
+		public void setPackageName(String name) {
+			this.packageName = name;
 		}
 	}
 	
@@ -192,34 +193,6 @@ public class MainActivity extends Activity implements Constants {
 		return super.onOptionsItemSelected(item);
 	}
 	
-	@Override
-	protected void onResume() {
-		
-		//stopService(intent);
-		/*
-		 * LOADING THE LIST OF ACTIVATED ADS
-		 */
-		if(sharedPreferences.contains(ACTIVATED_LIST)){
-			 app_ad_list.addAll( sharedPreferences.getStringSet(ACTIVATED_LIST, new HashSet<String>() ));	
-			 app_ad.addAll(app_ad_list);
-	    }
-		super.onResume();
-	}
-	
-	@Override
-	protected void onPause() {
-		
-		
-		//startService(intent);
-		/*
-		 * SAVE THE LIST OF ACTIVATED ADS 
-		 */
-		sharedPreferences.edit().putStringSet(ACTIVATED_LIST, app_ad_list).commit();
-		finish();
-		super.onPause();
-	}
-	
-	
 	/*
 	 * READING THE LIST OF ACTIVATED APPS AT THE START
 	 */
@@ -227,6 +200,7 @@ public class MainActivity extends Activity implements Constants {
 		if(sharedPreferences.contains(ACTIVATED_LIST)){
 			app_ad_list.addAll( sharedPreferences.getStringSet(ACTIVATED_LIST, new HashSet<String>() ));	
 		    app_ad.addAll(app_ad_list);
+		    app_ad_lock.addAll( sharedPreferences.getStringSet(LOCKED_LIST, new HashSet<String>()) );
 	    }
 	}
 	
@@ -320,16 +294,7 @@ public class MainActivity extends Activity implements Constants {
 
 		 mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
 		 mDrawerList.setAdapter(l_leftNavBarListAdapter);
-		 
-		 mDrawerList.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long arg3) {
-				// Closing the drawer
-				 mDrawerLayout.closeDrawer(Gravity.LEFT);
-			}
-		});
+		
 		 s_leftNavButton.setOnClickListener(new OnClickListener() {
 				
 				@Override
@@ -346,58 +311,60 @@ public class MainActivity extends Activity implements Constants {
 	 * PREPARE THE LIST FROM CUSTOM ADAPTER
 	 */
 	private void prepareList(List<Process> Processes) {
-		if(Processes.isEmpty()) {
-			adapter = new CustomListAdapter(this, s_appIcons, s_appLabels,false);
-		}
-		else {
-			s_appLabels = new ArrayList<String>();
-			s_appIcons = new ArrayList<Drawable>();
-			for (Process process: Processes) {
-				s_appLabels.add(process.appLabel);
-				s_appIcons.add(process.icon);
-			}
-			adapter = new CustomListAdapter(this, s_appIcons, s_appLabels,true);
-		}
-		list = (ListView) findViewById(R.id.list);
-		list.setAdapter(adapter);	
+		  result_processes.clear();
+		  result_processes.addAll(Processes);
+		  s_appListFragment = new AppListFragment();
+		  s_appLockFragment = new AppLockFragment();
+		  s_fragmentManager = getFragmentManager();
+		  s_fragmentTransaction = s_fragmentManager.beginTransaction();
+		  if(tabId == 1) s_fragmentTransaction.replace(R.id.list_fragment, s_appListFragment);
+		  else 			 s_fragmentTransaction.replace(R.id.list_fragment, s_appLockFragment);
+		  s_fragmentTransaction.commit();	
 	}
 	
-	/*
-	 * ACTIVATED BUTTON TOGGLE CHANGE HANDLER
-	 *
-	private void setToggle() {
-		  // toggleservice = (ToggleButton) findViewById(R.id.toggleButton1);
-		   if(sharedPreferences.contains(STATUS)) {
-			   if(sharedPreferences.getBoolean(STATUS, false)) {
-				   toggleservice.setChecked(true);
-				   restartService();
-			   }
-		   
-		   else {
-			   sharedPreferences.edit().putBoolean(STATUS, false).commit();
-		   }
-		   
-		   //TOGGLE ON/OFF APP ADS
-		   toggleservice.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-		   
+	private void setTabListener() {
+		tabId = 1;
+		//s_appAdTabSelected = getResources().getDrawable(R.drawable.app_ads_selected);
+		//s_appAdTabUnSelected = getResources().getDrawable(R.drawable.app_ads_unselected);
+		//s_appLockTabSelected = getResources().getDrawable(R.drawable.app_lock_selected);
+		//s_appLockTabUnSelected = getResources().getDrawable(R.drawable.app_lock_unselected);
+		s_tab1 = (ImageView) findViewById(R.id.tab1);
+		s_tab2 = (ImageView) findViewById(R.id.tab2);
+		
+		s_tab1.setBackgroundResource(R.drawable.app_ads_selected);
+		s_tab2.setBackgroundResource(R.drawable.app_lock_unselected);
+
+		s_tab1.setOnClickListener(new OnClickListener() {
+			
 			@Override
-			public void onCheckedChanged(CompoundButton arg0, boolean isChecked) {
-				if (isChecked) {
-					sharedPreferences.edit().putBoolean(STATUS, true).commit();
-					startService(intent);
-					Toast.makeText(getBaseContext(), "App Ads Activated", Toast.LENGTH_SHORT).show();
-					//Intent i = new Intent(getBaseContext(), HomeActivity.class);
-					//startActivity(i);
+			public void onClick(View v) {
+				if (tabId == 2) {
+					 tabId = 1;
+					 s_tab1.setBackgroundResource(R.drawable.app_ads_selected);
+					 s_tab2.setBackgroundResource(R.drawable.app_lock_unselected);
+					 s_fragmentTransaction = s_fragmentManager.beginTransaction();
+					 s_fragmentTransaction.replace(R.id.list_fragment, s_appListFragment);
+					 s_fragmentTransaction.commit();
 				}
-				else {
-					sharedPreferences.edit().putBoolean(STATUS, false).commit();
-					stopService(intent);
-					Toast.makeText(getBaseContext(), "App Ads DeActivated", Toast.LENGTH_SHORT).show();
+			}
+		});
+		
+		s_tab2.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if (tabId == 1) {
+					tabId = 2;
+					s_tab2.setBackgroundResource(R.drawable.app_lock_selected);
+					s_tab1.setBackgroundResource(R.drawable.app_ads_unselected);
+					s_fragmentTransaction = s_fragmentManager.beginTransaction();
+					s_fragmentTransaction.replace(R.id.list_fragment, s_appLockFragment);
+					s_fragmentTransaction.commit();
 				}
 			}
 		});
 	}
-	*/
+	
 	/*
 	 * Check connectivity of Internet
 	 */
@@ -413,17 +380,32 @@ public class MainActivity extends Activity implements Constants {
 	}
 	
 	@Override
+	protected void onResume() {
+		/*
+		 * LOADING THE LIST OF ACTIVATED ADS
+		 */
+		if(sharedPreferences.contains(ACTIVATED_LIST)){
+			 app_ad_list.addAll( sharedPreferences.getStringSet(ACTIVATED_LIST, new HashSet<String>() ));	
+			 app_ad.addAll(app_ad_list);
+			 app_ad_lock.addAll( sharedPreferences.getStringSet(LOCKED_LIST, new HashSet<String>()) );
+	    }
+		super.onResume();
+	}
+	
+	@Override
+	protected void onPause() {
+		/*
+		 * SAVE THE LIST OF ACTIVATED ADS 
+		 */
+		sharedPreferences.edit().putStringSet(ACTIVATED_LIST, app_ad_list).commit();
+		sharedPreferences.edit().putStringSet(LOCKED_LIST, app_ad_lock).commit();
+		super.onPause();
+	}
+	
+	@Override
 	protected void onDestroy() {
-		//restartService();
 		super.onDestroy();
 	}
 	
-	private void postInfo(Activity context) {
-		//if(!(sharedPreferences.contains("DataPosted") && sharedPreferences.getBoolean("DataPosted", false))) {
-			if(isConnented(context)) {
-				//PostData.post(context);
-			}
-		//}
-	}
 
 }

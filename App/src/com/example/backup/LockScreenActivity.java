@@ -15,13 +15,10 @@ import com.fima.glowpadview.GlowPadView;
 import com.fima.glowpadview.GlowPadView.OnTriggerListener;
 
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -32,7 +29,6 @@ public class LockScreenActivity extends Activity implements Constants, OnTrigger
     private Bitmap bitmap;
     private GlowPadView mGlowPadView;
 	Intent myIntent;
-	MyService s_myService;
 	Calendar calendar;
 	String s_appearedAt,s_swipedAt;
 	List<NameValuePair> s_postElements;
@@ -42,8 +38,7 @@ public class LockScreenActivity extends Activity implements Constants, OnTrigger
 	protected void onCreate(Bundle savedInstanceState) {
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON|
 	            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD|
-	            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED|
-	            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+	            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.lock);
 	   	
@@ -58,9 +53,7 @@ public class LockScreenActivity extends Activity implements Constants, OnTrigger
 	     //myService = new Intent(getBaseContext(),MyService.class);
 	     //stopService(myService);
 	     
-	     Intent mIntent = new Intent(this, MyService.class);
-	     bindService(mIntent, mConnection, BIND_AUTO_CREATE);
-	     s_myService.stopAds();
+	     MyService.stopAds();
          
          mGlowPadView = (GlowPadView) findViewById(R.id.glow_pad_view);
          mGlowPadView.setBackgroundDrawable(new BitmapDrawable(bitmap));
@@ -119,19 +112,6 @@ public class LockScreenActivity extends Activity implements Constants, OnTrigger
 
 	}
 	
-	ServiceConnection mConnection = new ServiceConnection() {
-
-		@Override
-		public void onServiceConnected(ComponentName name, IBinder service) {
-	        s_myService = ((MyService.LocalBinder)service).getService();
-		}
-
-		@Override
-		public void onServiceDisconnected(ComponentName name) {
-	        s_myService = null;
-		}
-	};
-	
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -144,8 +124,7 @@ public class LockScreenActivity extends Activity implements Constants, OnTrigger
 	
 	@Override
 	protected void onDestroy() {
-		s_myService.delayAds();
-		unbindService(mConnection);
+		MyService.delayAds();
 		super.onDestroy();
 	}
 	

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:gravity="center_horizontal"
     tools:context="com.example.backup.SplashScreen"
     tools:ignore="MergeRootFrame" >
@@ -46,29 +46,42 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:layout_weight="15"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="5dp"
+        android:layout_weight="5"
         android:background="@drawable/signup_background"
         android:orientation="vertical" >
         
-	        <TextView 
-	            android:id="@+id/signup_button"
+	        <ImageView 
+	            android:id="@+id/signup_button_custom"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:layout_gravity="center_horizontal"
-	            android:textSize="22sp"
-	            android:textStyle="bold"
-	            android:textColor="#FFFFFF"
-	            android:text="Sign up with us"
-	            android:layout_marginBottom="8dp"
+	            android:src="@drawable/sign_up_with_us"
+	            android:clickable="true"
+	            android:layout_marginTop="10dp"
+	            android:layout_marginBottom="10dp"
 	            />
 	        
 	        <ImageView 
-	            android:layout_height="10dp"
-	            android:layout_width="match_parent"
-	            android:padding="5dp"
-	            android:layout_marginBottom="8dp"
-	            android:src="@drawable/white_divider"/>
+	            android:layout_height="3dp"
+	            android:layout_width="200dp"
+	            android:layout_gravity="center_horizontal"
+	            android:src="@drawable/signup_divider"
+	            android:layout_marginBottom="10dp"/>
+	        
+	        <TextView 
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center_horizontal"
+	            android:textSize="14sp"
+	            android:textColor="#FFFFFF"
+	            android:textStyle="bold"
+	            android:text="Or simply sign up with"
+	            android:layout_marginBottom="15dp"
+	            />
 	        
 	        <ImageView
 		            android:id="@+id/sign_in_button_google"
@@ -80,19 +93,31 @@
 		            android:layout_marginBottom="5dp" />
 	        
 	        <ImageView
-	            android:id="@+id/sign_in_button_facebook"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:layout_gravity="center_horizontal"
-	            android:clickable="true"
-	            android:src="@drawable/facebook_signup" />
+		            android:id="@+id/sign_in_button_facebook"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_gravity="center_horizontal"
+		            android:src="@drawable/facebook_signup"
+		            android:clickable="true"
+		             />
 	        
 	    </LinearLayout>
-	   
+	    <TextView
+		        android:id="@+id/login"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:clickable="true"
+		        android:layout_gravity="center_horizontal|top"
+		        android:text="Already have an Account? Sign in"
+		        android:textColor="#FFFFFF"
+		        android:textSize="13sp" />
+	    
 	     <LinearLayout 
 	        android:layout_height="wrap_content"
 	        android:layout_width="wrap_content"
-	        android:layout_weight="25" />
+	        android:layout_weight="25">
+	         
+	     </LinearLayout>
 	
 	</LinearLayout>
 

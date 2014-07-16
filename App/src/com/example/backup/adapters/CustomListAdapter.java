@@ -4,95 +4,68 @@ import java.util.List;
 
 import com.example.backup.MainActivity;
 import com.example.backup.R;
-import com.example.backup.R.drawable;
-import com.example.backup.R.id;
-import com.example.backup.R.layout;
 import com.example.backup.backgroundtasks.MyService;
 import com.example.backup.constants.*;
 
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
 public class CustomListAdapter extends ArrayAdapter<String> implements Constants {
 	private final Activity context;
-	private final List<String> appLabels;
-	private final List<Drawable> icons;
+	private final List<String> s_appLabels;
+	private List<String> s_packageNames;
+	private final List<Drawable> s_icons;
 	private boolean is_list;
-	SharedPreferences sharedPreferences;
+	SharedPreferences s_sharedPreferences;
 	static class ViewHolder {
 		TextView txtTitle;
 		ImageView imageView;
 		Switch switchButton;
 	}
-	MyService s_myService;
-
 	
 	@Override
 	public int getCount() {
 		if (is_list) {
-			return appLabels.size();
+			return s_appLabels.size();
 		}
 		else {
 			return 1;
 		}
 	}
 	 
-	ServiceConnection mConnection = new ServiceConnection() {
-
-		@Override
-		public void onServiceConnected(ComponentName name, IBinder service) {
-	        s_myService = ((MyService.LocalBinder)service).getService();
-		}
-
-		@Override
-		public void onServiceDisconnected(ComponentName name) {
-	        s_myService = null;
-		}
-	};
-	
 	/*
 	 * @params: appLabels - Application labels for the installed applications
 	 * @params: icons- set of icons for the list of applications installed
 	 */
-	public CustomListAdapter(Activity context, List<Drawable> icons, List<String> objects, Boolean isList) {
+	public CustomListAdapter(Activity context, List<Drawable> icons, List<String> objects, List<String> names, Boolean isList) {
 		super(context, R.layout.list_element, objects);
 		this.context = context;
-		this.appLabels = objects;
-		this.icons = icons;
+		this.s_appLabels = objects;
+		this.s_icons = icons;
+		this.s_packageNames = names;
 		this.is_list = isList;
-		sharedPreferences = context.getSharedPreferences(myPreferences, context.MODE_PRIVATE);
-		Intent mIntent = new Intent(context, MyService.class);
-	    context.bindService(mIntent, mConnection, Context.BIND_AUTO_CREATE);
+		s_sharedPreferences = context.getSharedPreferences(myPreferences, Context.MODE_PRIVATE);
 	}
 	
 	@Override
@@ -104,20 +77,21 @@ public class CustomListAdapter extends ArrayAdapter<String> implements Constants
 		if(is_list) {
 		    convertView = inflater.inflate(R.layout.list_element, parent, false);
 		    viewHolder = new ViewHolder();
-			convertView.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.background_small));
+			//convertView.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.background_small));
 		    
 			//Setting the various elements of a row
 			viewHolder.txtTitle = (TextView) convertView.findViewById(R.id.textView1);
 			viewHolder.imageView = (ImageView) convertView.findViewById(R.id.imageView1);
 			viewHolder.switchButton = (Switch) convertView.findViewById(R.id.switch1);
 		
-			final String appName = appLabels.get(position);
+			final String appName = s_appLabels.get(position);
+			final String packageName = s_packageNames.get(position);
 			viewHolder.txtTitle.setText(appName);
-			Bitmap bitmap = ((BitmapDrawable)icons.get(position)).getBitmap();
-		    viewHolder.imageView.setImageBitmap(getRoundedCornerBitmap(bitmap, 36));
+			Bitmap bitmap = ((BitmapDrawable)s_icons.get(position)).getBitmap();
+		    viewHolder.imageView.setImageBitmap(getRoundedCornerBitmap(bitmap, ROUND_RADIUS));
 			//viewHolder.imageView.setImageDrawable();
 			
-			if(MainActivity.app_ad_list.contains(appName)) {
+			if(MainActivity.app_ad_list.contains(packageName)) {
 				viewHolder.switchButton.setChecked(true);
 			}
 			
@@ -130,25 +104,24 @@ public class CustomListAdapter extends ArrayAdapter<String> implements Constants
 				@Override
 				public void onCheckedChanged(CompoundButton arg0, boolean isChecked) {
 					if(isChecked) {
-						MainActivity.app_ad_list.add(appName);
+						MainActivity.app_ad_list.add(packageName);
 					}
 					else {
-						MainActivity.app_ad_list.remove(appName);
+						MainActivity.app_ad_list.remove(packageName);
+						MainActivity.app_ad_lock.remove(packageName);
 					}
 					Log.d(TAG,"Adapter:" + MainActivity.app_ad_list.toString() + "");
-					   context.getSharedPreferences(myPreferences,context.MODE_PRIVATE).edit().putStringSet(ACTIVATED_LIST, MainActivity.app_ad_list).commit();
-					   if(MainActivity.sharedPreferences.getBoolean(STATUS, false)) {
-						   Intent intent = new Intent(context, MyService.class);
-						   s_myService.stopAds();
-						   s_myService.initVariables();
-						   s_myService.startAds();
-					   }
+					   context.getSharedPreferences(myPreferences,Context.MODE_PRIVATE).edit().putStringSet(ACTIVATED_LIST, MainActivity.app_ad_list).commit();
+					   context.getSharedPreferences(myPreferences,Context.MODE_PRIVATE).edit().putStringSet(LOCKED_LIST, MainActivity.app_ad_lock).commit();
+					   MyService.stopAds();
+					   MyService.initVariables();
+					   MyService.startAds();
 				}
 			});
 		}
 		else {
 			convertView = inflater.inflate(R.layout.search_no_match, parent, false);
-			convertView.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.background_small));
+			//convertView.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.background_small));
 		}
 	return convertView;
   }

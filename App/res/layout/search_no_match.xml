@@ -2,6 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/row_view_height"
     android:orientation="horizontal"
+    android:background="@color/white"
      >
 
      <TextView
@@ -12,6 +13,6 @@
         android:layout_centerHorizontal="true"
         android:textSize="16sp"
         android:textColor="#B0B0B0"
-        android:text="No Match Found" />
+        android:text="0 Results Found" />
 
 </RelativeLayout>

@@ -1,6 +1,8 @@
 package com.example.backup.adapters;
 
+import com.example.backup.MainActivity;
 import com.example.backup.R;
+import com.example.backup.SettingsPage;
 import com.example.backup.R.id;
 import com.example.backup.R.layout;
 import com.example.backup.constants.Constants;
@@ -8,6 +10,7 @@ import com.example.backup.game.PuzzleActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,12 +63,25 @@ public class NavBarAdapter extends BaseAdapter implements Constants {
 				
 				@Override
 				public void onClick(View v) {
-					
-					if(position==0) {
+					MainActivity.mDrawerLayout.closeDrawer(Gravity.LEFT);
+					switch (position) {
+					case 0:
 						Intent intent = new Intent(m_cont,PuzzleActivity.class);
-						intent.addFlags(intent.FLAG_ACTIVITY_NEW_TASK | intent.FLAG_ACTIVITY_CLEAR_TOP);
+						intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
 						m_cont.startActivity(intent);
-					}
+						break;
+					case 1:
+						
+						break;
+					case 2:
+						Intent settingIntent = new Intent(m_cont,SettingsPage.class);
+						settingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+						m_cont.startActivity(settingIntent);
+						break;
+					default:
+						break;
+					} 
+	
 				}
 			});
 			

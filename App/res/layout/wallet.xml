@@ -145,26 +145,26 @@
             android:paddingBottom="5dp" >
 
             <ImageView
-                android:id="@+id/imageView1"
+                android:id="@+id/im_fb"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/fb" />
 
             <ImageView
-                android:id="@+id/imageView1"
+                android:id="@+id/im_tw"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:src="@drawable/tw" />
 
             <ImageView
-                android:id="@+id/imageView1"
+                android:id="@+id/im_gplus"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:src="@drawable/gplus" />
 
             <ImageView
-                android:id="@+id/imageView1"
+                android:id="@+id/im_lin"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:src="@drawable/lin" />

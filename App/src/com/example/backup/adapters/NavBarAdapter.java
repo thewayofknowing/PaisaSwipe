@@ -71,6 +71,9 @@ public class NavBarAdapter extends BaseAdapter implements Constants {
 						m_cont.startActivity(intent);
 						break;
 					case 1:
+						Intent walletIntent = new Intent(m_cont,WalletPage.class);
+						walletIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+						m_cont.startActivity(walletIntent);
 						
 						break;
 					case 2:

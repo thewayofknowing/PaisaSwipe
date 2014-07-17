@@ -10,8 +10,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -31,19 +29,15 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.backup.Views.TitleBar;
-import com.example.backup.adapters.AppListFragment;
-import com.example.backup.adapters.AppLockFragment;
 import com.example.backup.adapters.CustomListAdapter;
+import com.example.backup.adapters.CustomLockListAdapter;
 import com.example.backup.adapters.NavBarAdapter;
 import com.example.backup.backgroundtasks.FakeService;
 import com.example.backup.backgroundtasks.LockScreenService;
@@ -66,10 +60,8 @@ public class MainActivity extends Activity implements Constants {
 	
 	public static SharedPreferences sharedPreferences;
 	public ListView list;
-	public static CustomListAdapter adapter;
 	private PackageManager pm;
 	private static List<Process> processes;
-	public static List<Process> result_processes;
 	public static HashSet<String> app_ad;
 	public static HashSet<String> app_ad_off;
 	public static HashSet<String> app_ad_list;
@@ -78,7 +70,12 @@ public class MainActivity extends Activity implements Constants {
 	public static DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
 	
-
+	private List<String> s_appLabels;
+	private List<String> s_packageNames;
+	private List<Drawable> s_appIcons;
+	private CustomListAdapter s_listAdapter;
+	private CustomLockListAdapter s_lockAdapter;
+	
 	private ImageView s_leftNavButton = null; 
 	private EditText s_searchText = null;
 	private ImageView s_searchIcon = null;
@@ -86,12 +83,7 @@ public class MainActivity extends Activity implements Constants {
 	private ImageView s_cross = null;
 	private RelativeLayout s_searchLayout = null;
 	
-	AppListFragment s_appListFragment;
-	AppLockFragment s_appLockFragment;
-	FragmentManager s_fragmentManager;
-	FragmentTransaction s_fragmentTransaction;
 	ImageView s_tab1,s_tab2;
-	Drawable s_appAdTabSelected,s_appAdTabUnSelected,s_appLockTabSelected,s_appLockTabUnSelected;
 	int tabId;
 	
 	@Override
@@ -119,7 +111,6 @@ public class MainActivity extends Activity implements Constants {
 		pm = getPackageManager();
 		List<PackageInfo> apps = pm.getInstalledPackages(0);
 	    processes = new ArrayList<Process>();
-	    result_processes = new ArrayList<Process>();
 		Process process = new Process();
 	    
 	    /*
@@ -147,6 +138,7 @@ public class MainActivity extends Activity implements Constants {
 	    Collections.sort(processes,new CustomComparator());
 	    
 	    //PREPARE THE LIST OF APPS (CUSTOM ADAPTER)
+	    list = (ListView) findViewById(R.id.list);
 		prepareList(processes);
 		
 		
@@ -220,12 +212,22 @@ public class MainActivity extends Activity implements Constants {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
 				String search = s_searchText.getText().toString();
-				if(search.length() == 0) {
-					prepareList(processes);
+				if(tabId == 1) {
+					if(search.length() == 0) {
+						prepareList(processes);
+					}
+					else {
+						prepareList(searchMatches(search));
+					}	
 				}
 				else {
-					prepareList(searchMatches(search));
-				}	
+					if(search.length() == 0) {
+						prepareLockList(processes);
+					}
+					else {
+						prepareLockList(searchMatches(search));
+					}	
+				}
 			}
 			
 			@Override
@@ -312,16 +314,44 @@ public class MainActivity extends Activity implements Constants {
 	 * PREPARE THE LIST FROM CUSTOM ADAPTER
 	 */
 	private void prepareList(List<Process> Processes) {
-		  result_processes.clear();
-		  result_processes.addAll(Processes);
-		  s_appListFragment = new AppListFragment();
-		  s_appLockFragment = new AppLockFragment();
-		  s_fragmentManager = getFragmentManager();
-		  s_fragmentTransaction = s_fragmentManager.beginTransaction();
-		  if(tabId == 1) s_fragmentTransaction.replace(R.id.list_fragment, s_appListFragment);
-		  else 			 s_fragmentTransaction.replace(R.id.list_fragment, s_appLockFragment);
-		  s_fragmentTransaction.commit();	
+		if(Processes.isEmpty()) {
+			s_listAdapter = new CustomListAdapter(MainActivity.this, s_appIcons, s_appLabels, s_packageNames, false);
+		}
+		else {
+			s_appLabels = new ArrayList<String>();
+			s_packageNames = new ArrayList<String>();
+			s_appIcons = new ArrayList<Drawable>();
+			for (Process process: Processes) {
+				s_appLabels.add(process.appLabel);
+				s_appIcons.add(process.icon);
+				s_packageNames.add(process.packageName);
+			}
+			s_listAdapter = new CustomListAdapter(MainActivity.this, s_appIcons, s_appLabels, s_packageNames, true);
+		}
+		list.setAdapter(s_listAdapter);
 	}
+	
+	/*
+	 * PREPARE THE LIST FROM CUSTOM LOCK ADAPTER
+	 */
+	private void prepareLockList(List<Process> Processes) {
+		if(Processes.isEmpty()) {
+			s_lockAdapter = new CustomLockListAdapter(MainActivity.this, s_appIcons, s_appLabels, s_packageNames, false);
+		}
+		else {
+			s_appLabels = new ArrayList<String>();
+			s_packageNames = new ArrayList<String>();
+			s_appIcons = new ArrayList<Drawable>();
+			for (Process process: Processes) {
+				s_appLabels.add(process.appLabel);
+				s_appIcons.add(process.icon);
+				s_packageNames.add(process.packageName);
+			}
+			s_lockAdapter = new CustomLockListAdapter(MainActivity.this, s_appIcons, s_appLabels, s_packageNames, true);
+		}
+		list.setAdapter(s_lockAdapter);
+	}
+	
 	
 	private void setTabListener() {
 		tabId = 1;
@@ -334,8 +364,6 @@ public class MainActivity extends Activity implements Constants {
 		
 		s_tab1.setBackgroundResource(R.drawable.app_ads_selected);
 		s_tab2.setBackgroundResource(R.drawable.app_lock_unselected);
-		s_tab1.setScaleType(ScaleType.FIT_XY);
-		s_tab2.setScaleType(ScaleType.FIT_XY);
 
 		s_tab1.setOnClickListener(new OnClickListener() {
 			
@@ -345,9 +373,10 @@ public class MainActivity extends Activity implements Constants {
 					 tabId = 1;
 					 s_tab1.setBackgroundResource(R.drawable.app_ads_selected);
 					 s_tab2.setBackgroundResource(R.drawable.app_lock_unselected);
-					 s_fragmentTransaction = s_fragmentManager.beginTransaction();
-					 s_fragmentTransaction.replace(R.id.list_fragment, s_appListFragment);
-					 s_fragmentTransaction.commit();
+					 if(s_searchText.isEnabled()) {
+						 prepareList(searchMatches(s_searchText.getText().toString()));
+					 }
+					 else prepareList(processes);
 				}
 			}
 		});
@@ -360,9 +389,10 @@ public class MainActivity extends Activity implements Constants {
 					tabId = 2;
 					s_tab2.setBackgroundResource(R.drawable.app_lock_selected);
 					s_tab1.setBackgroundResource(R.drawable.app_ads_unselected);
-					s_fragmentTransaction = s_fragmentManager.beginTransaction();
-					s_fragmentTransaction.replace(R.id.list_fragment, s_appLockFragment);
-					s_fragmentTransaction.commit();
+					 if(s_searchText.isEnabled()) {
+						 prepareLockList(searchMatches(s_searchText.getText().toString()));
+					 }
+					 else prepareLockList(processes);
 				}
 			}
 		});

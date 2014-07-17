@@ -3,12 +3,14 @@ package com.example.backup;
 import java.util.Arrays;
 
 import com.example.backup.constants.Constants;
+import com.facebook.FacebookException;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.LoginButton;
+import com.facebook.widget.LoginButton.OnErrorListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -103,7 +105,7 @@ public class SplashScreen extends Activity implements ConnectionCallbacks, OnCon
 		  LoginButton authButton = (LoginButton) findViewById(R.id.authButton);
 		  // set permission list, Don't foeget to add email
 		  authButton.setReadPermissions(Arrays.asList("publish_actions","email"));
-		  // session state call back event */
+		  // session state call back event /*
 		 findViewById(R.id.sign_in_button_facebook).setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -133,7 +135,47 @@ public class SplashScreen extends Activity implements ConnectionCallbacks, OnCon
 					  });
 			}
 		});
-			 
+	     */
+		final LoginButton authButton = (LoginButton) findViewById(R.id.sign_in_button_facebook);
+		authButton.setBackgroundResource(R.drawable.facebook_signup);
+		authButton.setCompoundDrawablesWithIntrinsicBounds(0,0,0,0);
+		
+		authButton.setOnErrorListener(new OnErrorListener() {
+			   
+			   @Override
+			   public void onError(FacebookException error) {
+			    Log.i(TAG, "Error " + error.getMessage());
+			   }
+			  });
+			  // set permission list, Don't foeget to add email
+			  authButton.setReadPermissions(Arrays.asList("email"));
+			  // session state call back event
+			  authButton.setSessionStatusCallback(new Session.StatusCallback() {
+			   @Override
+			   public void call(Session session, SessionState state, Exception exception) {
+			    
+			    if (session.isOpened()) {
+			              Log.i(TAG,"Access Token"+ session.getAccessToken());
+			              Request.executeMeRequestAsync(session,
+			                      new Request.GraphUserCallback() {
+			                          @Override
+			                          public void onCompleted(GraphUser user,Response response) {
+			                              if (user != null) { 
+			                               Log.i(TAG,"User ID "+ user.getId());
+			                               Log.i(TAG,"Email "+ user.asMap().get("email"));
+			                               s_personName = user.getName();
+			  							   s_email = user.asMap().get("email").toString();
+			  							   s_type = "facebook";
+			  							   gotoSignupForm();
+			                              }
+			                          }
+			                      });
+			          }
+			    
+			   }
+			});
+		
+		
 		Animation close_splash = AnimationUtils.loadAnimation(getBaseContext(), R.anim.close_splash);
 		Animation open_signup = AnimationUtils.loadAnimation(getBaseContext(), R.anim.open_signup);
 		
@@ -164,9 +206,9 @@ public class SplashScreen extends Activity implements ConnectionCallbacks, OnCon
 				signup_screen.startAnimation(open_signup);
 				signup_screen.setVisibility(View.VISIBLE);
 				s_onSplash = false;
-				//startActivity(new Intent(SplashScreen.this,MainActivity.class));
+				startActivity(new Intent(SplashScreen.this,MainActivity.class));
 		    }
-		}, 3000);
+		}, 2000);
 		
 	}
 	
@@ -206,6 +248,12 @@ public class SplashScreen extends Activity implements ConnectionCallbacks, OnCon
 	  }
 	}
 	
+	 @Override
+	 public void onActivityResult(int requestCode, int resultCode, Intent data) {
+	     super.onActivityResult(requestCode, resultCode, data);
+	     Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
+	 }
+	/*
 	protected void onActivityResult(int requestCode, int responseCode, Intent intent) {
 		  if (requestCode == RC_SIGN_IN) {
 		    if (responseCode != RESULT_OK) {
@@ -219,7 +267,7 @@ public class SplashScreen extends Activity implements ConnectionCallbacks, OnCon
 		    }
 		  }
 		}
-	
+	*/
 	@Override
 	protected void onStart() {
 	    mGoogleApiClient.connect();

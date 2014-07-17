@@ -34,7 +34,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
@@ -46,16 +45,12 @@ import android.widget.Toast;
 public class SignUp extends Activity implements Constants{
 	
 	private ImageView s_leftNavButton = null; 
-	private EditText s_searchText = null;
 	private ImageView s_searchIcon = null;
-	private TextView s_title = null;
-	private ImageView s_cross = null;
 	private RelativeLayout s_searchLayout = null;
 	
 	private TextView s_emailError,s_nameError,s_passError,s_repassError,s_pincodeError;
 	
 	private RadioGroup s_genderButtonGroup = null;
-	private Button s_signup;
 	private EditText s_passwordEditText,s_repasswordEditText,s_nameEditText,s_emailEditText,s_pincodeEditText;
 	private ProgressDialog s_progressDialog = null;
 	private String s_progressDialogMessage;
@@ -228,19 +223,23 @@ public class SignUp extends Activity implements Constants{
 		
 		s_nameEditText.setTextColor(Color.rgb(78, 78, 78));
 		s_nameEditText.setEnabled(false);
+		s_pincodeEditText.requestFocus();
 	}
 	
 	/* Call AsyncTask */
 	private void finishSignUp() {
 		s_nameValuePairs = new ArrayList<NameValuePair>();
-		s_nameValuePairs.add(new BasicNameValuePair("email", s_email));
-		s_nameValuePairs.add(new BasicNameValuePair("first_name", s_name.split(" ")[0]));
-		s_nameValuePairs.add(new BasicNameValuePair("last_name", s_name.split(" ")[1]));
+		s_nameValuePairs.add(new BasicNameValuePair("email_id", s_email));
 		s_nameValuePairs.add(new BasicNameValuePair("gender", s_gender));
 		s_nameValuePairs.add(new BasicNameValuePair("pincode", s_pincode));
 		s_nameValuePairs.add(new BasicNameValuePair("type", s_type));
 		if (s_type.equals("custom") == true) {
-			s_nameValuePairs.add(new BasicNameValuePair("password", s_password));
+			s_nameValuePairs.add(new BasicNameValuePair("password", MD5(s_password)));
+			s_nameValuePairs.add(new BasicNameValuePair("first_name", s_name));
+		}
+		else {
+			s_nameValuePairs.add(new BasicNameValuePair("first_name", s_name.split(" ")[0]));
+			s_nameValuePairs.add(new BasicNameValuePair("last_name", s_name.split(" ")[1]));
 		}
 		//Send Data
 		SubmitSignUpForm submit = new SubmitSignUpForm();
@@ -280,6 +279,20 @@ public class SignUp extends Activity implements Constants{
 		s_searchIcon.setEnabled(false);
 	
 	}
+	
+	public String MD5(String md5) {
+		   try {
+		        java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+		        byte[] array = md.digest(md5.getBytes());
+		        StringBuffer sb = new StringBuffer();
+		        for (int i = 0; i < array.length; ++i) {
+		          sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1,3));
+		       }
+		        return sb.toString();
+		    } catch (java.security.NoSuchAlgorithmException e) {
+		    }
+		    return null;
+		}
 	
 	private class SubmitSignUpForm extends AsyncTask<String, String, String>  {
 
@@ -338,8 +351,8 @@ public class SignUp extends Activity implements Constants{
 				e.printStackTrace();
 			}
 			startActivity(new Intent(getBaseContext(),MainActivity.class));
+			SignUp.this.finish();
 			super.onPostExecute(result);
-			finish();
 		}
 		
 	}

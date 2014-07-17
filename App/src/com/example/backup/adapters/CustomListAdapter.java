@@ -9,7 +9,7 @@ import com.example.backup.constants.*;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
@@ -37,7 +37,8 @@ public class CustomListAdapter extends ArrayAdapter<String> implements Constants
 	private List<String> s_packageNames;
 	private final List<Drawable> s_icons;
 	private boolean is_list;
-	SharedPreferences s_sharedPreferences;
+	Editor edit;
+	
 	static class ViewHolder {
 		TextView txtTitle;
 		ImageView imageView;
@@ -65,7 +66,7 @@ public class CustomListAdapter extends ArrayAdapter<String> implements Constants
 		this.s_icons = icons;
 		this.s_packageNames = names;
 		this.is_list = isList;
-		s_sharedPreferences = context.getSharedPreferences(myPreferences, Context.MODE_PRIVATE);
+		edit = context.getSharedPreferences(myPreferences, Context.MODE_PRIVATE).edit();
 	}
 	
 	@Override
@@ -94,6 +95,9 @@ public class CustomListAdapter extends ArrayAdapter<String> implements Constants
 			if(MainActivity.app_ad_list.contains(packageName)) {
 				viewHolder.switchButton.setChecked(true);
 			}
+			if(MainActivity.app_ad_lock.contains(packageName)) {
+				viewHolder.switchButton.setEnabled(false);
+			}
 			
 			/*
 			 * Image button click.. toggle app add on/off
@@ -108,11 +112,9 @@ public class CustomListAdapter extends ArrayAdapter<String> implements Constants
 					}
 					else {
 						MainActivity.app_ad_list.remove(packageName);
-						MainActivity.app_ad_lock.remove(packageName);
 					}
 					Log.d(TAG,"Adapter:" + MainActivity.app_ad_list.toString() + "");
-					   context.getSharedPreferences(myPreferences,Context.MODE_PRIVATE).edit().putStringSet(ACTIVATED_LIST, MainActivity.app_ad_list).commit();
-					   context.getSharedPreferences(myPreferences,Context.MODE_PRIVATE).edit().putStringSet(LOCKED_LIST, MainActivity.app_ad_lock).commit();
+					   edit.putStringSet(LOCKED_LIST, MainActivity.app_ad_lock).commit();
 					   MyService.stopAds();
 					   MyService.initVariables();
 					   MyService.startAds();

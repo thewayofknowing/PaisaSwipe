@@ -9,7 +9,7 @@ import com.example.backup.constants.*;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
@@ -37,7 +37,8 @@ public class CustomLockListAdapter extends ArrayAdapter<String> implements Const
 	private final List<String> packageNames;
 	private final List<Drawable> icons;
 	private boolean is_list;
-	SharedPreferences sharedPreferences;
+	Editor edit;
+	
 	static class ViewHolder {
 		TextView txtTitle;
 		ImageView imageView;
@@ -65,7 +66,7 @@ public class CustomLockListAdapter extends ArrayAdapter<String> implements Const
 		this.icons = icons;
 		this.packageNames = names;
 		this.is_list = isList;
-		sharedPreferences = context.getSharedPreferences(myPreferences, Context.MODE_PRIVATE);
+		edit = context.getSharedPreferences(myPreferences,Context.MODE_PRIVATE).edit();
 	}
 	
 	@Override
@@ -105,12 +106,14 @@ public class CustomLockListAdapter extends ArrayAdapter<String> implements Const
 				public void onCheckedChanged(CompoundButton arg0, boolean isChecked) {
 					if(isChecked) {
 						MainActivity.app_ad_lock.add(packageName);
+						MainActivity.app_ad_list.add(packageName);
 					}
 					else {
 						MainActivity.app_ad_lock.remove(packageName);
 					}
 					Log.d(TAG,"Adapter:" + MainActivity.app_ad_list.toString() + "");
-					   context.getSharedPreferences(myPreferences,Context.MODE_PRIVATE).edit().putStringSet(LOCKED_LIST, MainActivity.app_ad_lock).commit();
+					   edit.putStringSet(LOCKED_LIST, MainActivity.app_ad_lock).commit();
+					   edit.putStringSet(ACTIVATED_LIST, MainActivity.app_ad_list).commit();
 					   if(MainActivity.sharedPreferences.getBoolean(APPLOCK_ACTIVATED, true)) {
 						   MyService.stopAds();
 						   MyService.initVariables();
@@ -121,7 +124,6 @@ public class CustomLockListAdapter extends ArrayAdapter<String> implements Const
 		}
 		else {
 			convertView = inflater.inflate(R.layout.search_no_match, parent, false);
-			((TextView) convertView.findViewById(R.id.textView1)).setText("No Apps selected for Ads");
 			//convertView.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.background_small));
 		}
 	return convertView;

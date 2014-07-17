@@ -50,7 +50,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginBottom="5dp"
-        android:layout_weight="5"
+        android:layout_weight="8"
         android:background="@drawable/signup_background"
         android:orientation="vertical" >
         
@@ -92,14 +92,20 @@
 		            android:clickable="true"
 		            android:layout_marginBottom="5dp" />
 	        
+	        <com.facebook.widget.LoginButton
+			    xmlns:fb="http://schemas.android.com/apk/res-auto"
+		        android:id="@+id/sign_in_button_facebook"
+		        android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center_horizontal"
+	            android:src="@drawable/facebook_signup"
+	            android:clickable="true"
+			    fb:login_text=""
+			    fb:logout_text="" />
+	        
 	        <ImageView
-		            android:id="@+id/sign_in_button_facebook"
-		            android:layout_width="wrap_content"
-		            android:layout_height="wrap_content"
-		            android:layout_gravity="center_horizontal"
-		            android:src="@drawable/facebook_signup"
-		            android:clickable="true"
-		             />
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content" />
 	        
 	    </LinearLayout>
 	    <TextView
@@ -115,7 +121,7 @@
 	     <LinearLayout 
 	        android:layout_height="wrap_content"
 	        android:layout_width="wrap_content"
-	        android:layout_weight="25">
+	        android:layout_weight="30">
 	         
 	     </LinearLayout>
 	

@@ -353,6 +353,7 @@ public class SignUp extends Activity implements Constants{
 			startActivity(new Intent(getBaseContext(),MainActivity.class));
 			SignUp.this.finish();
 			super.onPostExecute(result);
+			finish();
 		}
 		
 	}

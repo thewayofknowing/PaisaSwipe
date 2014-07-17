@@ -54,7 +54,8 @@
 		</receiver>
         <activity
             android:name="com.example.backup.SplashScreen"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:noHistory="true">
 		       <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -80,6 +81,7 @@
          <activity android:name="com.example.backup.game.Finish"/>
          <activity android:name="com.example.backup.SignUp" />
 		 <activity android:name="com.example.backup.SettingsPage"/>
+		 <activity android:name="com.example.backup.WalletPage"/>
 		 <activity android:name="com.example.backup.SetScreenLock"/>
         <service android:enabled="true" android:name="com.example.backup.backgroundtasks.MyService" />
         <service android:enabled="true" android:name="com.example.backup.backgroundtasks.LockScreenService" />

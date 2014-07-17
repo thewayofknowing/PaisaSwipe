@@ -1,13 +1,5 @@
 package com.example.backup.adapters;
 
-import com.example.backup.MainActivity;
-import com.example.backup.R;
-import com.example.backup.SettingsPage;
-import com.example.backup.R.id;
-import com.example.backup.R.layout;
-import com.example.backup.constants.Constants;
-import com.example.backup.game.PuzzleActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.view.Gravity;
@@ -18,6 +10,13 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.example.backup.MainActivity;
+import com.example.backup.R;
+import com.example.backup.SettingsPage;
+import com.example.backup.WalletPage;
+import com.example.backup.constants.Constants;
+import com.example.backup.game.PuzzleActivity;
 
 public class NavBarAdapter extends BaseAdapter implements Constants {
 

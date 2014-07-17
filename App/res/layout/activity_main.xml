@@ -19,8 +19,8 @@
             android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="#f7f7f6" >
+            android:background="#f7f7f6"
+            android:orientation="horizontal" >
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -56,12 +56,12 @@
             </RelativeLayout>
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/list_fragment"
-            android:layout_width="fill_parent"
+        <ListView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/background_small"
-            android:orientation="vertical" />
+            android:background="@color/white"
+            android:divider="@drawable/nav_divider" />
     </LinearLayout>
 
     <!-- The navigation drawer -->

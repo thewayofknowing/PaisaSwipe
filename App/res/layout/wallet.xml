@@ -105,7 +105,7 @@
             android:orientation="vertical"
             android:paddingBottom="10dp"
             android:paddingTop="20dp"
-            android:visibility="visible" >
+            android:visibility="gone" >
 
             <TextView
                 android:id="@+id/processed"
@@ -281,8 +281,8 @@
 
                 <EditText
                     android:id="@+id/IAccN"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:ems="12"
                     android:inputType="text"
                     android:paddingLeft="20dp"
@@ -311,8 +311,8 @@
 
                 <EditText
                     android:id="@+id/IAccNu"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:ems="12"
                     android:inputType="number"
                     android:paddingLeft="20dp"
@@ -342,7 +342,7 @@
                 <EditText
                     android:id="@+id/IIFSC"
                     android:layout_width="match_parent"
-                    android:layout_height="30dp"
+                    android:layout_height="wrap_content"
                     android:ems="12"
                     android:inputType="text"
                     android:paddingLeft="20dp"
@@ -372,7 +372,7 @@
                 <EditText
                     android:id="@+id/IAmt"
                     android:layout_width="match_parent"
-                    android:layout_height="30dp"
+                    android:layout_height="wrap_content"
                     android:ems="12"
                     android:inputType="number"
                     android:paddingLeft="20dp"
@@ -422,8 +422,8 @@
 
                 <EditText
                     android:id="@+id/Bank_IAccN"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:ems="12"
                     android:inputType="text"
                     android:paddingLeft="20dp"
@@ -444,7 +444,7 @@
                     android:gravity="top"
                     android:paddingLeft="20dp"
                     android:paddingRight="10dp"
-                    android:text="Bank Account Number"
+                    android:text="IFSC code"
                     android:textAlignment="gravity"
                     android:textColor="#898989"
                     android:textSize="15sp"
@@ -452,8 +452,8 @@
 
                 <EditText
                     android:id="@+id/Bank_IIfsc"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:ems="12"
                     android:inputType="text"
                     android:paddingLeft="20dp"
@@ -483,7 +483,7 @@
                 <EditText
                     android:id="@+id/Bank_IAmt"
                     android:layout_width="match_parent"
-                    android:layout_height="30dp"
+                    android:layout_height="wrap_content"
                     android:ems="12"
                     android:inputType="number"
                     android:paddingLeft="20dp"

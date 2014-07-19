@@ -3,6 +3,7 @@ package com.example.backup;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -39,7 +40,7 @@ public class WalletPage extends Activity implements Constants {
 
 		initTitle();
 		findTheViews();
-		
+
 		set_on_clicks();
 
 	}
@@ -70,45 +71,43 @@ public class WalletPage extends Activity implements Constants {
 		butt_money_transfer = (Button) findViewById(R.id.Mob_Rech);
 		butt_bank_transfer = (Button) findViewById(R.id.Bank_Trans);
 		butt_mob_sub = (Button) findViewById(R.id.submit);
-		butt_bank_sub =  (Button) findViewById(R.id.Bank_submit);
-		
-		
+		butt_bank_sub = (Button) findViewById(R.id.Bank_submit);
+
 	}
 
 	private void set_on_clicks() {
 
-//		facebook.setOnClickListener(new OnClickListener() {
-//			public void onClick(View arg0) {
-//			}
-//		});
-//
-//		googleplus.setOnClickListener(new OnClickListener() {
-//			public void onClick(View arg0) {
-//			}
-//		});
-//
-//		linkedin.setOnClickListener(new OnClickListener() {
-//			public void onClick(View arg0) {
-//			}
-//		});
-//
-//		twitter.setOnClickListener(new OnClickListener() {
-//			public void onClick(View arg0) {
-//			}
-//		});
-		
+		// facebook.setOnClickListener(new OnClickListener() {
+		// public void onClick(View arg0) {
+		// }
+		// });
+		//
+		// googleplus.setOnClickListener(new OnClickListener() {
+		// public void onClick(View arg0) {
+		// }
+		// });
+		//
+		// linkedin.setOnClickListener(new OnClickListener() {
+		// public void onClick(View arg0) {
+		// }
+		// });
+		//
+		// twitter.setOnClickListener(new OnClickListener() {
+		// public void onClick(View arg0) {
+		// }
+		// });
+
 		butt_bank_sub.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
-				submit(1);				
+				submit(1);
 			}
 		});
-		
+
 		butt_mob_sub.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
 				submit(0);
 			}
 		});
-		
 
 		butt_money_transfer.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
@@ -173,21 +172,41 @@ public class WalletPage extends Activity implements Constants {
 
 	}
 
-	protected void submit(int x){
-		
-		if (x==0) {
-		
+	protected void submit(int x) {
+
+		boolean passable = true;
+		if (x == 0) {
+
 			Account_name = (EditText) findViewById(R.id.IAccN);
 			Account_number = (EditText) findViewById(R.id.IAccNu);
 			IFSC = (EditText) findViewById(R.id.IIFSC);
 			Amount = (EditText) findViewById(R.id.IAmt);
 		}
-			
-		if(x==1){
+
+		if (x == 1) {
 			Account_number = (EditText) findViewById(R.id.Bank_IAccN);
 			Amount = (EditText) findViewById(R.id.Bank_IAmt);
 			IFSC = (EditText) findViewById(R.id.Bank_IIfsc);
 		}
+
+		if (passable == true) {
+			flash_share();
+		}
+	}
+
+	protected void flash_share(){
+		transfer_share = (TextView) findViewById(R.id.processed);
+		transfer_share.setText("Your recent request for Mobile Recharge of Rs."+ tranfer_amount + " has been processed");
+		findViewById(R.id.Share_it).setVisibility(View.VISIBLE);
+		
+		Handler handler = new Handler();
+	    Runnable r=new Runnable() {
+	              @Override
+	              public void run() {
+	            	  findViewById(R.id.Share_it).setVisibility(View.GONE);
+	              }         
+	            };
+	        handler.postDelayed(r, 8000); 
 		
 	}
 	

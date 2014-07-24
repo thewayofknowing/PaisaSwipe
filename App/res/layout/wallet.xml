@@ -233,7 +233,7 @@
                     android:padding="8dp"
                     android:text="Mobile Recharge"
                     android:textColor="@android:color/white"
-                    android:textSize="18sp" />
+                    android:textSize="14sp" />
 
                 <Button
                     android:id="@+id/Bank_Trans"
@@ -248,7 +248,7 @@
                     android:padding="8dp"
                     android:text="Bank Account Transfer"
                     android:textColor="@android:color/white"
-                    android:textSize="18sp" />
+                    android:textSize="14sp" />
             </RelativeLayout>
         </LinearLayout>
 

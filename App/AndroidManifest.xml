@@ -83,6 +83,7 @@
 		 <activity android:name="com.example.backup.SettingsPage"/>
 		 <activity android:name="com.example.backup.WalletPage"/>
 		 <activity android:name="com.example.backup.SetScreenLock"/>
+		 <activity android:name="com.example.backup.AbstractGetNameTask"/>
         <service android:enabled="true" android:name="com.example.backup.backgroundtasks.MyService" />
         <service android:enabled="true" android:name="com.example.backup.backgroundtasks.LockScreenService" />
         <service  android:enabled="true" android:name="com.example.backup.backgroundtasks.FakeService"/>      

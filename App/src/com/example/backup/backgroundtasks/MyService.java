@@ -69,8 +69,8 @@ public class MyService extends Service implements Constants{
 		 */
 		sharedPreferences = getSharedPreferences(myPreferences,	MODE_PRIVATE);   
 		
-		DataBaseHelper db = new DataBaseHelper(this);
-		advertisements = db.getAllAds();
+		//DataBaseHelper db = new DataBaseHelper(this);
+		//advertisements = db.getAllAds();
 		
 		initVariables();
 	
@@ -198,11 +198,13 @@ public class MyService extends Service implements Constants{
 	}
 	
 	public static void stopAds() {
-		 myHandler.removeCallbacks(runnable);
+		 if(myHandler!=null)
+			 myHandler.removeCallbacks(runnable);
 	}
 	
 	public static void startAds() {
-		 myHandler.post(runnable);
+		if(myHandler!=null)
+			myHandler.post(runnable);
 	}
 	
 	public static void enableLock() {

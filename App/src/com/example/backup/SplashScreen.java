@@ -194,11 +194,6 @@ public class SplashScreen extends Activity implements ConnectionCallbacks,
 			}
 		});
 
-		Animation close_splash = AnimationUtils.loadAnimation(getBaseContext(),
-				R.anim.close_splash);
-		Animation open_signup = AnimationUtils.loadAnimation(getBaseContext(),
-				R.anim.open_signup);
-
 		initSplash();
 
 	}
@@ -216,20 +211,25 @@ public class SplashScreen extends Activity implements ConnectionCallbacks,
 		handler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
-				for (int i = 0; i < signup_screen.getChildCount(); i++) {
-					signup_screen.getChildAt(i).setEnabled(true);
+				if(getSharedPreferences(myPreferences, Context.MODE_PRIVATE).contains(LOGIN_TYPE) == false){
+					for (int i = 0; i < signup_screen.getChildCount(); i++) {
+						signup_screen.getChildAt(i).setEnabled(true);
+					}
+					Animation close_splash = AnimationUtils.loadAnimation(
+							getBaseContext(), R.anim.close_splash);
+					Animation open_signup = AnimationUtils.loadAnimation(
+							getBaseContext(), R.anim.open_signup);
+					// findViewById(R.id.containerLL).startAnimation(close_splash);
+					loading_screen.startAnimation(close_splash);
+					signup_screen.startAnimation(open_signup);
+					signup_screen.setVisibility(View.VISIBLE);
+					s_onSplash = false;
 				}
-				Animation close_splash = AnimationUtils.loadAnimation(
-						getBaseContext(), R.anim.close_splash);
-				Animation open_signup = AnimationUtils.loadAnimation(
-						getBaseContext(), R.anim.open_signup);
-				// findViewById(R.id.containerLL).startAnimation(close_splash);
-				loading_screen.startAnimation(close_splash);
-				signup_screen.startAnimation(open_signup);
-				signup_screen.setVisibility(View.VISIBLE);
-				s_onSplash = false;
-				// startActivity(new
-				// Intent(SplashScreen.this,MainActivity.class));
+				else {
+					Intent mainIntent = new Intent(SplashScreen.this,MainActivity.class);
+					startActivity(mainIntent);
+					finish();
+				}
 			}
 		}, 2000);
 
@@ -276,6 +276,7 @@ public class SplashScreen extends Activity implements ConnectionCallbacks,
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == REQUEST_CODE_PICK_ACCOUNT) {
 			if (resultCode == RESULT_OK) {
 				mEmail = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
@@ -290,8 +291,7 @@ public class SplashScreen extends Activity implements ConnectionCallbacks,
 			return;
 		}
 		
-		super.onActivityResult(requestCode, resultCode, data);
-		Session.getActiveSession().onActivityResult(this, requestCode,
+		if(Session.getActiveSession() != null) Session.getActiveSession().onActivityResult(this, requestCode,
 				resultCode, data);
 	}
 
@@ -393,6 +393,7 @@ public class SplashScreen extends Activity implements ConnectionCallbacks,
 		signup_intent.putExtra("email", s_email);
 		signup_intent.putExtra("type", s_type);
 		startActivity(signup_intent);
+		finish();
 	}
 
 	private boolean isDeviceOnline() {

@@ -66,6 +66,11 @@ public class SignUp extends Activity implements Constants{
 	String s_password;
 	String s_repassword;
 	String s_pincode;
+	String s_userId;
+	String s_userBalance;
+	
+	public final String SUBMIT_SIGNUP_FORM = "submit signup form";
+	public final String FETCH_AD_JSON = "fetch ads json";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -226,7 +231,7 @@ public class SignUp extends Activity implements Constants{
 		s_pincodeEditText.requestFocus();
 	}
 	
-	/* Call AsyncTask */
+	/* Call AsyncTask to submit form*/
 	private void finishSignUp() {
 		s_nameValuePairs = new ArrayList<NameValuePair>();
 		s_nameValuePairs.add(new BasicNameValuePair("email_id", s_email));
@@ -242,7 +247,15 @@ public class SignUp extends Activity implements Constants{
 			s_nameValuePairs.add(new BasicNameValuePair("last_name", s_name.split(" ")[1]));
 		}
 		//Send Data
-		SubmitSignUpForm submit = new SubmitSignUpForm();
+		SubmitSignUpForm submit = new SubmitSignUpForm(SUBMIT_SIGNUP_FORM);
+		submit.execute();
+	}
+	
+	/* Call AsyncTask to fetch Ad data */
+	private void fetchAdJSON() {
+		s_nameValuePairs = new ArrayList<NameValuePair>();
+		s_nameValuePairs.add(new BasicNameValuePair("user_id", s_userId));
+		SubmitSignUpForm submit = new SubmitSignUpForm(FETCH_AD_JSON);
 		submit.execute();
 	}
 
@@ -280,6 +293,13 @@ public class SignUp extends Activity implements Constants{
 	
 	}
 	
+	@Override
+	public void onBackPressed() {
+		startActivity(new Intent(getBaseContext(),SplashScreen.class));
+		finish();
+		super.onBackPressed();
+	}
+	
 	public String MD5(String md5) {
 		   try {
 		        java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
@@ -296,20 +316,35 @@ public class SignUp extends Activity implements Constants{
 	
 	private class SubmitSignUpForm extends AsyncTask<String, String, String>  {
 
+		private String task;
+		
+		public SubmitSignUpForm(String task) {
+			this.task = task;
+		}
+		
 		@Override
 		protected void onPreExecute() {
-			s_progressDialog= new ProgressDialog(SignUp.this);
-            s_progressDialog.setIndeterminate(true);
-            s_progressDialog.setCancelable(false);
-            s_progressDialog.setMessage("Signing Up!");
-            s_progressDialog.show();
+			if(task.equals(SUBMIT_SIGNUP_FORM)) {
+				s_progressDialog= new ProgressDialog(SignUp.this);
+				s_progressDialog.setIndeterminate(true);
+	            s_progressDialog.setCancelable(false);
+	            s_progressDialog.setMessage("Signing Up!");
+	            s_progressDialog.show();
+			}
 			super.onPreExecute();
 		}
 		
 		@Override
 		protected String doInBackground(String... params) {
+			
 			HttpClient client = new DefaultHttpClient();
-			HttpPost post = new HttpPost(server_url + signup_page);//"http://54.187.181.173/start_up/insert_userDetails");
+			HttpPost post;
+			if(task.equals(SUBMIT_SIGNUP_FORM)) {
+				post = new HttpPost(server_url + signup_page);//"http://54.187.181.173/start_up/insert_userDetails");	
+			}
+			else {
+				post = new HttpPost(server_url + fetch_ads);//"http://54.187.181.173/start_up/insert_userDetails");	
+			}
 
 			try {
 				// Add your data        
@@ -341,19 +376,42 @@ public class SignUp extends Activity implements Constants{
 		
 		@Override
 		protected void onPostExecute(String result) {
-		    s_progressDialog.dismiss();
-		    try {
-				JSONObject json_result = new JSONObject(result);
-				String user_id = json_result.getJSONObject("user_id").toString();
-				String user_balance = json_result.getJSONObject("user_balance").toString();
-				Toast.makeText(getApplicationContext(), user_id, Toast.LENGTH_LONG).show();				
-			} catch (JSONException e) {
-				e.printStackTrace();
+		    if(task.equals(FETCH_AD_JSON)) {
+		    	s_progressDialog.dismiss();
+		    	Intent s_fetchAdIntent = new Intent(SignUp.this, FetchAds.class);
+		    	s_fetchAdIntent.putExtra("json", result);
+		    	startActivity(s_fetchAdIntent);
+		    	finish();
+		    }
+		    else {
+		    	 try {
+						JSONObject json_result = new JSONObject(result);
+						s_userId = json_result.getString("user_id");
+						s_userBalance = json_result.getString("user_balance");
+						saveUserCredentials();
+						//s_editor.putString(USER_BALANCE,Integer.parseInt(s_userBalance));
+						s_editor.commit();
+						Toast.makeText(getApplicationContext(), s_userId, Toast.LENGTH_LONG).show();				
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+		    	 fetchAdJSON();
+		    }	   
+		    super.onPostExecute(result);
+		}
+		
+		public void saveUserCredentials() {
+			s_editor.putString(LOGIN_TYPE, s_type);
+			s_editor.putString(USER_ID, s_userId);
+			s_editor.putString(USER_EMAIL, s_email);
+			/*
+			if (s_type.equals("custom") == true) {
+				s_editor.putString(USER_PASSWORD, s_password);
 			}
-			startActivity(new Intent(getBaseContext(),MainActivity.class));
-			SignUp.this.finish();
-			super.onPostExecute(result);
-			finish();
+			*/
+			s_editor.putString(USER_NAME, s_name);
+			s_editor.putString(USER_PINCODE, s_pincode);
+			s_editor.putString(USER_GENDER, s_gender).commit();
 		}
 		
 	}

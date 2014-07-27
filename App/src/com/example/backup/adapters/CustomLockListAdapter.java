@@ -18,6 +18,7 @@ import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -38,6 +39,7 @@ public class CustomLockListAdapter extends ArrayAdapter<String> implements Const
 	private final List<Drawable> icons;
 	private boolean is_list;
 	Editor edit;
+	Typeface s_openSansTypeFace;
 	
 	static class ViewHolder {
 		TextView txtTitle;
@@ -66,6 +68,7 @@ public class CustomLockListAdapter extends ArrayAdapter<String> implements Const
 		this.icons = icons;
 		this.packageNames = names;
 		this.is_list = isList;
+		this.s_openSansTypeFace = Typeface.createFromAsset(context.getAssets(), OPEN_SANS_SEMIBOLD);
 		edit = context.getSharedPreferences(myPreferences,Context.MODE_PRIVATE).edit();
 	}
 	
@@ -87,6 +90,7 @@ public class CustomLockListAdapter extends ArrayAdapter<String> implements Const
 		
 			final String appName = appLabels.get(position);
 			final String packageName = packageNames.get(position);
+			viewHolder.txtTitle.setTypeface(s_openSansTypeFace);
 			viewHolder.txtTitle.setText(appName);
 			Bitmap bitmap = ((BitmapDrawable)icons.get(position)).getBitmap();
 		    viewHolder.imageView.setImageBitmap(getRoundedCornerBitmap(bitmap, ROUND_RADIUS));
@@ -114,11 +118,10 @@ public class CustomLockListAdapter extends ArrayAdapter<String> implements Const
 					Log.d(TAG,"Adapter:" + MainActivity.app_ad_list.toString() + "");
 					   edit.putStringSet(LOCKED_LIST, MainActivity.app_ad_lock).commit();
 					   edit.putStringSet(ACTIVATED_LIST, MainActivity.app_ad_list).commit();
-					   if(MainActivity.sharedPreferences.getBoolean(APPLOCK_ACTIVATED, true)) {
-						   MyService.stopAds();
-						   MyService.initVariables();
-						   MyService.startAds();
-					   }
+					   MyService.stopAds();
+					   MyService.initVariables();
+					   MyService.startAds();
+					   
 				}
 			});
 		}

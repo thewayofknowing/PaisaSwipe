@@ -25,9 +25,10 @@
     
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/logo"
         android:label="@string/app_name"
         android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+        android:description="@string/description"
          >
         
  <activity android:name="com.haibison.android.lockpattern.LockPatternActivity"
@@ -54,17 +55,16 @@
 		</receiver>
         <activity
             android:name="com.example.backup.SplashScreen"
-            android:label="@string/app_name"
-            android:noHistory="true">
-		       <intent-filter>
+            android:label="@string/app_name">
+		    <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-           	   </intent-filter>
+           	</intent-filter>
         </activity>
         <activity 
             android:name="com.example.backup.MainActivity"
             android:windowSoftInputMode="stateHidden">
-		  
+		    
 		</activity>
         <activity 
             android:name="com.example.backup.ads.AdScreen" 
@@ -81,9 +81,9 @@
          <activity android:name="com.example.backup.game.Finish"/>
          <activity android:name="com.example.backup.SignUp" />
 		 <activity android:name="com.example.backup.SettingsPage"/>
-		 <activity android:name="com.example.backup.WalletPage"/>
 		 <activity android:name="com.example.backup.SetScreenLock"/>
-		 <activity android:name="com.example.backup.AbstractGetNameTask"/>
+		 <activity android:name="com.example.backup.FetchAds"/>
+		 <activity android:name="com.example.backup.WalletPage"/>
         <service android:enabled="true" android:name="com.example.backup.backgroundtasks.MyService" />
         <service android:enabled="true" android:name="com.example.backup.backgroundtasks.LockScreenService" />
         <service  android:enabled="true" android:name="com.example.backup.backgroundtasks.FakeService"/>      

@@ -139,7 +139,7 @@ public class MainActivity extends Activity implements Constants {
 	    
 	    //PREPARE THE LIST OF APPS (CUSTOM ADAPTER)
 	    list = (ListView) findViewById(R.id.list);
-		prepareList(processes);
+		prepareLockList(processes);
 		
 		
 	}
@@ -355,15 +355,11 @@ public class MainActivity extends Activity implements Constants {
 	
 	private void setTabListener() {
 		tabId = 1;
-		//s_appAdTabSelected = getResources().getDrawable(R.drawable.app_ads_selected);
-		//s_appAdTabUnSelected = getResources().getDrawable(R.drawable.app_ads_unselected);
-		//s_appLockTabSelected = getResources().getDrawable(R.drawable.app_lock_selected);
-		//s_appLockTabUnSelected = getResources().getDrawable(R.drawable.app_lock_unselected);
 		s_tab1 = (ImageView) findViewById(R.id.tab1);
 		s_tab2 = (ImageView) findViewById(R.id.tab2);
 		
-		s_tab1.setBackgroundResource(R.drawable.app_ads_selected);
-		s_tab2.setBackgroundResource(R.drawable.app_lock_unselected);
+		s_tab1.setBackgroundResource(R.drawable.app_lock_selected);
+		s_tab2.setBackgroundResource(R.drawable.app_ads_unselected);
 
 		s_tab1.setOnClickListener(new OnClickListener() {
 			
@@ -371,12 +367,12 @@ public class MainActivity extends Activity implements Constants {
 			public void onClick(View v) {
 				if (tabId == 2) {
 					 tabId = 1;
-					 s_tab1.setBackgroundResource(R.drawable.app_ads_selected);
-					 s_tab2.setBackgroundResource(R.drawable.app_lock_unselected);
+					 s_tab1.setBackgroundResource(R.drawable.app_lock_selected);
+					 s_tab2.setBackgroundResource(R.drawable.app_ads_unselected);
 					 if(s_searchText.isEnabled()) {
-						 prepareList(searchMatches(s_searchText.getText().toString()));
+						 prepareLockList(searchMatches(s_searchText.getText().toString()));
 					 }
-					 else prepareList(processes);
+					 else prepareLockList(processes);
 				}
 			}
 		});
@@ -387,12 +383,12 @@ public class MainActivity extends Activity implements Constants {
 			public void onClick(View v) {
 				if (tabId == 1) {
 					tabId = 2;
-					s_tab2.setBackgroundResource(R.drawable.app_lock_selected);
-					s_tab1.setBackgroundResource(R.drawable.app_ads_unselected);
+					s_tab2.setBackgroundResource(R.drawable.app_ads_selected);
+					s_tab1.setBackgroundResource(R.drawable.app_lock_unselected);
 					 if(s_searchText.isEnabled()) {
-						 prepareLockList(searchMatches(s_searchText.getText().toString()));
+						 prepareList(searchMatches(s_searchText.getText().toString()));
 					 }
-					 else prepareLockList(processes);
+					 else prepareList(processes);
 				}
 			}
 		});

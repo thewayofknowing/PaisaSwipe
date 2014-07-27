@@ -1,27 +1,34 @@
 package com.example.backup.adapters;
 
+import com.example.backup.MainActivity;
+import com.example.backup.R;
+import com.example.backup.SettingsPage;
+import com.example.backup.SplashScreen;
+import com.example.backup.WalletPage;
+import com.example.backup.constants.Constants;
+import com.example.backup.game.PuzzleActivity;
+import com.facebook.Session;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.plus.Plus;
+
 import android.content.Context;
 import android.content.Intent;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewDebug.FlagToString;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.example.backup.MainActivity;
-import com.example.backup.R;
-import com.example.backup.SettingsPage;
-import com.example.backup.WalletPage;
-import com.example.backup.constants.Constants;
-import com.example.backup.game.PuzzleActivity;
-
 public class NavBarAdapter extends BaseAdapter implements Constants {
 
 		private Context m_cont;
 		private LayoutInflater m_inflater;
+		/* Client used to interact with Google APIs. */
+		private GoogleApiClient mGoogleApiClient;
 
 		public NavBarAdapter(Context a_cont) {
 			m_cont = a_cont;
@@ -70,15 +77,21 @@ public class NavBarAdapter extends BaseAdapter implements Constants {
 						m_cont.startActivity(intent);
 						break;
 					case 1:
-						Intent walletIntent = new Intent(m_cont,WalletPage.class);
-						walletIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
-						m_cont.startActivity(walletIntent);
 						
 						break;
 					case 2:
+						Intent walletIntent = new Intent(m_cont,WalletPage.class);
+						walletIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+						m_cont.startActivity(walletIntent);
+						break;
+					case 3:
 						Intent settingIntent = new Intent(m_cont,SettingsPage.class);
 						settingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
 						m_cont.startActivity(settingIntent);
+						break;
+						
+					case 7:
+						logOut();
 						break;
 					default:
 						break;
@@ -90,4 +103,37 @@ public class NavBarAdapter extends BaseAdapter implements Constants {
 			return convertView;
 		}
 
+		private void logOut() {
+			switch (m_cont.getSharedPreferences(myPreferences, Context.MODE_PRIVATE).getString(LOGIN_TYPE, "none")) {
+			case "gmail":
+				if (mGoogleApiClient.isConnected()) {
+				      Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+				      mGoogleApiClient.disconnect();
+				      mGoogleApiClient.connect();
+				 }
+			case "facebook":
+				Session session = Session.getActiveSession();
+			    if (session != null) {
+			        if (!session.isClosed()) {
+			            session.closeAndClearTokenInformation();
+			            //clear your preferences if saved
+			        }
+			    } else {
+			        session = new Session(m_cont);
+			        Session.setActiveSession(session);
+			        session.closeAndClearTokenInformation();
+			    }
+				break;
+			case "custom":
+				
+				break;
+			default:
+				break;
+			}
+			m_cont.getSharedPreferences(myPreferences, Context.MODE_PRIVATE).edit().remove(LOGIN_TYPE).commit();
+			Intent splashIntent = new Intent(m_cont, SplashScreen.class);
+			splashIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+			m_cont.startActivity(splashIntent);
+		}
+		
 	}

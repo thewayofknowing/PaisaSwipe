@@ -1,3 +1,4 @@
+package com.example.backup;
 /*
  * Copyright 2012 The Android Open Source Project
  *
@@ -13,9 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package com.example.backup;
-
 import com.google.android.gms.auth.GoogleAuthUtil;
 
 import android.os.AsyncTask;

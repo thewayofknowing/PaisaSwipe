@@ -4,19 +4,19 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
-    <dimen name="title_bar_height">64dp</dimen>
-    <dimen name="row_view_height">75dp</dimen>
+    <dimen name="title_bar_height">58dp</dimen>
+    <dimen name="row_view_height">58dp</dimen>
     <dimen name="row_view_height_large">65dp</dimen>
     <dimen name="app_icon_height">45dp</dimen>
     <dimen name="app_icon_width">52dp</dimen>
     <dimen name="app_icon_height_large">60dp</dimen>
     <dimen name="app_icon_width_large">66dp</dimen>
-    <dimen name="app_icon_dimension">53dp</dimen>
+    <dimen name="app_icon_dimension">45dp</dimen>
     <dimen name="app_icon_dimension_large">60dp</dimen>
     <dimen name="margin_left_to_center_button">140dp</dimen>
     
-    <dimen name="drawer_width">180dp</dimen>
-    <dimen name="drawer_option_height">20dp</dimen>
+    <dimen name="drawer_width">250dp</dimen>
+    <dimen name="drawer_option_height">30dp</dimen>
     
     <dimen name="layout_margin">15dp</dimen>
     

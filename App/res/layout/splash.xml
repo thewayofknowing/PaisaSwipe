@@ -59,7 +59,7 @@
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:layout_gravity="center_horizontal"
-	            android:src="@drawable/sign_up_with_us"
+	            android:src="@drawable/custom_signup"
 	            android:clickable="true"
 	            android:layout_marginTop="10dp"
 	            android:layout_marginBottom="10dp"

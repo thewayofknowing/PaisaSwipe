@@ -111,28 +111,25 @@
 	
 	
 	       	<RadioGroup
-	       	    android:layout_width="wrap_content"
+	       	    android:layout_width="match_parent"
 	       	    android:layout_height="wrap_content"
 	       	    android:orientation="horizontal"
-	       	    android:layout_gravity="center_horizontal"
+	       	    android:gravity="center_horizontal"
 	       	    android:layout_marginTop="7dp"
 	       	    android:id="@+id/gender_radioGroup">
 		       	  <RadioButton
 		            android:id="@+id/radiobutton_male"
 		            android:layout_width="wrap_content"
 		            android:layout_height="wrap_content"
-		            android:drawableRight="@drawable/male"
-		            android:paddingLeft="-10dp"
-		            android:layout_marginRight="12dp"
+		            android:drawableStart="@drawable/male"
 		            android:text="male"
 		            android:checked="true"/>  
 		           <RadioButton 
 		            android:id="@+id/radiobutton_female"
 		            android:layout_width="wrap_content"
 		            android:layout_height="wrap_content"
-		            android:paddingLeft="-12dp"
 		            android:text="female"
-		            android:drawableRight="@drawable/female"/>
+		            android:drawableStart="@drawable/female"/>
 	       	</RadioGroup>
 	        	        
 	

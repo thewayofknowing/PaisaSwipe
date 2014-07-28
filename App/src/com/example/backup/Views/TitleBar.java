@@ -4,6 +4,7 @@ import com.example.backup.R;
 import com.example.backup.constants.Constants;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -20,9 +21,11 @@ public class TitleBar extends ViewGroup implements Constants {
 	private static TextView title = null;
 	private static RelativeLayout search_layout = null;
 	private static ImageView cross = null;
+	public static Typeface openSansTypeFace;
 	
 	public TitleBar(Context context, ViewGroup v) {
 		super(context);
+		openSansTypeFace = Typeface.createFromAsset(context.getAssets(), OPEN_SANS_SEMIBOLD);
 		initTitleBar(context,v);
 	}
 	
@@ -33,6 +36,7 @@ public class TitleBar extends ViewGroup implements Constants {
 		searchText = (EditText) viewGroup.findViewById(R.id.search);
 		searchIcon = (ImageView) viewGroup.findViewById(R.id.search_icon);
 		title = (TextView) viewGroup.findViewById(R.id.title);
+		title.setTypeface(openSansTypeFace);
 		cross = (ImageView) viewGroup.findViewById(R.id.cross);
 		search_layout = (RelativeLayout) viewGroup.findViewById(R.id.search_layout);
 	}

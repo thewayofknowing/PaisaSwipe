@@ -18,6 +18,7 @@ import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -38,6 +39,7 @@ public class CustomListAdapter extends ArrayAdapter<String> implements Constants
 	private final List<Drawable> s_icons;
 	private boolean is_list;
 	Editor edit;
+	Typeface s_openSansTypeFace;
 	
 	static class ViewHolder {
 		TextView txtTitle;
@@ -66,6 +68,7 @@ public class CustomListAdapter extends ArrayAdapter<String> implements Constants
 		this.s_icons = icons;
 		this.s_packageNames = names;
 		this.is_list = isList;
+		this.s_openSansTypeFace = Typeface.createFromAsset(context.getAssets(), OPEN_SANS_SEMIBOLD);
 		edit = context.getSharedPreferences(myPreferences, Context.MODE_PRIVATE).edit();
 	}
 	
@@ -87,6 +90,7 @@ public class CustomListAdapter extends ArrayAdapter<String> implements Constants
 		
 			final String appName = s_appLabels.get(position);
 			final String packageName = s_packageNames.get(position);
+			viewHolder.txtTitle.setTypeface(s_openSansTypeFace);
 			viewHolder.txtTitle.setText(appName);
 			Bitmap bitmap = ((BitmapDrawable)s_icons.get(position)).getBitmap();
 		    viewHolder.imageView.setImageBitmap(getRoundedCornerBitmap(bitmap, ROUND_RADIUS));
@@ -114,7 +118,7 @@ public class CustomListAdapter extends ArrayAdapter<String> implements Constants
 						MainActivity.app_ad_list.remove(packageName);
 					}
 					Log.d(TAG,"Adapter:" + MainActivity.app_ad_list.toString() + "");
-					   edit.putStringSet(LOCKED_LIST, MainActivity.app_ad_lock).commit();
+					   edit.putStringSet(ACTIVATED_LIST, MainActivity.app_ad_list).commit();
 					   MyService.stopAds();
 					   MyService.initVariables();
 					   MyService.startAds();

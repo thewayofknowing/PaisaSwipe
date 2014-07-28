@@ -76,6 +76,7 @@ public class AdScreen extends Activity implements Constants, OnTriggerListener {
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		
 		switch (requestCode) {
 			// REQ_CREATE_PATTERN
 			 case REQ_ENTER_PATTERN: {
@@ -88,10 +89,18 @@ public class AdScreen extends Activity implements Constants, OnTriggerListener {
 			        	checkForAppKill();
 			            break;
 			        case RESULT_CANCELED:
-			            // The user cancelled the task
+			        	Intent homeIntent= new Intent(Intent.ACTION_MAIN);
+			        	homeIntent.addCategory(Intent.CATEGORY_HOME);
+			        	homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			        	startActivity(homeIntent);
+			        	finish();
 			            break;
 			        case LockPatternActivity.RESULT_FAILED:
-			            // The user failed to enter the pattern
+			        	Intent homeIntentb= new Intent(Intent.ACTION_MAIN);
+			        	homeIntentb.addCategory(Intent.CATEGORY_HOME);
+			        	homeIntentb.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			        	startActivity(homeIntentb);
+			        	finish();
 			            break;
 			        case LockPatternActivity.RESULT_FORGOT_PATTERN:
 			            // The user forgot the pattern and invoked your recovery Activity.

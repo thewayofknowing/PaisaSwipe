@@ -12,7 +12,7 @@
         android:id="@+id/navButton"
         android:layout_height="wrap_content"
         android:layout_width="50dp"
-        android:src="@drawable/dots"
+        android:src="@drawable/nav_bar_button"
         android:layout_centerVertical="true"
         android:clickable="true"
         />

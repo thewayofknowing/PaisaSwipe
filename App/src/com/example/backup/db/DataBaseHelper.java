@@ -1,7 +1,6 @@
 package com.example.backup.db;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,9 +13,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.NetworkInfo.State;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
 
@@ -33,10 +30,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
  // Advertisement column names
     private static final String AD_ID = "id";
     private static final String AD_TYPE = "type";
+    private static final String AD_IMAGE_NAME = "image_name";
+    private static final String AD_IMPRESSION_COUNT = "ad_impressions";
     private static final String AD_COMP_ID = "company_id";
     private static final String AD_AUDIENCE = "audience";
     private static final String AD_URL = "ad_url";
-    private static final String AD_IMAGE = "image";
     
  // Statistics column names
     private static final String STATS_AD_ID = "ad_id";
@@ -59,9 +57,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 		// Table Create Statements
 	    // Advertisement table create statement
 	    final String CREATE_TABLE_ADVERTISEMENT = "CREATE TABLE IF NOT EXISTS "
-	            + TABLE_ADVERTISEMENT + "(" + AD_ID + "INTEGER PRIMARY KEY," + AD_TYPE
-	            + " INT," + AD_COMP_ID + " INT," + AD_AUDIENCE + " VARCHAR,"
-	            + AD_URL + " VARCHAR," +  AD_IMAGE + " BLOB" + ")";
+	            + TABLE_ADVERTISEMENT + "(" + AD_ID + " INTEGER PRIMARY KEY," + AD_TYPE
+	            + " INT," + AD_IMAGE_NAME + " VARCHAR," + AD_IMPRESSION_COUNT + " INT,"  
+	            + AD_COMP_ID + " INT," + AD_AUDIENCE + " VARCHAR," + AD_URL + " VARCHAR)";
 	    
 	    //Statistics table create statement
 	    final String CREATE_TABLE_STATISTICS = "CREATE TABLE IF NOT EXISTS " 
@@ -85,21 +83,18 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 	}
 	
 	// Adding new contact
-    void addContact(Advertisement advertisement) {
+    public void addAdvertisement(Advertisement advertisement) {
         SQLiteDatabase db = this.getWritableDatabase();
  
         ContentValues values = new ContentValues();
         values.put(AD_ID, advertisement.getId()); 
         values.put(AD_COMP_ID, advertisement.getCompanyId());
         values.put(AD_TYPE, advertisement.getType());
+        values.put(AD_IMAGE_NAME, advertisement.getImageName());
+        values.put(AD_IMPRESSION_COUNT, advertisement.getImpressionCount());
         values.put(AD_AUDIENCE, advertisement.getAudience() + "");
         values.put(AD_URL, advertisement.getURL());
         
-        Bitmap bitmap = advertisement.getImage();
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
-        byte[] bArray = bos.toByteArray();
-        values.put(AD_IMAGE, bArray);
  
         // Inserting Row
         db.insert(TABLE_ADVERTISEMENT, null, values);
@@ -139,14 +134,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
            do {
                Advertisement advertisement = new Advertisement();
                advertisement.setId(Integer.parseInt(cursor.getString(0)));
-               advertisement.setCompanyId(Integer.parseInt(cursor.getString(1)));
-               advertisement.setType(Integer.parseInt(cursor.getString(2)));
-               advertisement.setAudience(cursor.getString(3).charAt(0));
-               advertisement.setURL(cursor.getString(4));
-               
-               byte[] pic=(cursor.getBlob(5));   
-               ByteArrayInputStream imageStream = new ByteArrayInputStream(pic);
-               advertisement.setImage(BitmapFactory.decodeStream(imageStream));
+               advertisement.setType(Integer.parseInt(cursor.getString(1)));
+               advertisement.setImageName(cursor.getString(2));
+               advertisement.setImpressionCount(cursor.getInt(3));
+               advertisement.setCompanyId(Integer.parseInt(cursor.getString(4)));
+               advertisement.setAudience(cursor.getString(5).charAt(0));
+               advertisement.setURL(cursor.getString(6));
                
                // Adding ad to list
                adList.add(advertisement);

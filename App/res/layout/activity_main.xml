@@ -1,94 +1,84 @@
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/drawer_layout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
 
-    <LinearLayout
+<android.support.v4.widget.DrawerLayout
+     xmlns:android="http://schemas.android.com/apk/res/android"
+   	 android:id="@+id/drawer_layout"
+   	 android:layout_width="match_parent"
+   	 android:layout_height="match_parent"
+   	 >
+	   <LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="vertical"
+	    android:background="@color/white"
+	     >
+	    
+	    <RelativeLayout 
+	        android:id="@+id/titleBar"
+	        android:layout_height="@dimen/title_bar_height"
+	        android:layout_width="match_parent"
+	        android:orientation="horizontal"
+	         />
+	    <LinearLayout
+	        android:id="@+id/tabs"
+	        android:layout_height="@dimen/title_bar_height"
+	        android:layout_width="match_parent"
+	        android:orientation="horizontal" >	
+	        <LinearLayout 
+	            android:layout_height="wrap_content"
+	        	android:layout_width="wrap_content"
+	        	android:layout_weight="25">
+	              <ImageView 
+		            android:id="@+id/tab1"
+		            android:layout_height="wrap_content"
+		            android:layout_width="wrap_content"
+		            android:clickable="true"/>
+	        </LinearLayout>        
+	        <LinearLayout 
+	          android:layout_height="wrap_content"
+	       	  android:layout_width="wrap_content"
+	       	  android:layout_weight="25">
+		           <ImageView
+		            android:id="@+id/tab2" 
+		            android:layout_height="wrap_content"
+		            android:layout_width="wrap_content"
+		            android:clickable="true"/>
+	      </LinearLayout>
+	       
+	    </LinearLayout>
+		 
+	   <ListView 
+	    android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:orientation="vertical" >
+        android:divider="@drawable/nav_divider"
+         />
+	   
+	   </LinearLayout>
 
-        <RelativeLayout
-            android:id="@+id/titleBar"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/title_bar_height"
-            android:orientation="horizontal" />
-
-        <LinearLayout
-            android:id="@+id/tabs"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#f7f7f6"
-            android:orientation="horizontal" >
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" >
-
-                <View
-                    android:id="@+id/spacer"
-                    android:layout_width="2dp"
-                    android:layout_height="0dp"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true"
-                    android:background="#92959c" />
-
-                <ImageView
-                    android:id="@+id/tab1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_margin="0dp"
-                    android:layout_toLeftOf="@+id/spacer"
-                    android:clickable="true" />
-
-                <ImageView
-                    android:id="@+id/tab2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_margin="0dp"
-                    android:layout_toRightOf="@id/spacer"
-                    android:clickable="true" />
-            </RelativeLayout>
-        </LinearLayout>
-
-        <ListView
-            android:id="@+id/list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:divider="@drawable/nav_divider" />
-    </LinearLayout>
-
-    <!-- The navigation drawer -->
-
-    <LinearLayout
+	   
+	<!-- The navigation drawer -->
+	<LinearLayout
         android:id="@+id/drawer"
         android:layout_width="@dimen/drawer_width"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         android:layout_gravity="start"
         android:background="@color/white"
-        android:orientation="vertical" >
-
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:gravity="center"
-            android:text="Menu"
-            android:textColor="#FF4444"
-            android:textSize="24sp" />
-
-        <ListView
-            android:id="@+id/drawer_list"
-            android:layout_width="@dimen/drawer_width"
+         >
+		<ImageView 
+		    android:layout_height="64dp"
+		    android:layout_width="64dp"
+		    android:src="@drawable/logo"
+		    android:layout_marginBottom="3dp"
+		    android:layout_gravity="center_horizontal"/>
+        <ListView android:id="@+id/drawer_list"
             android:layout_height="match_parent"
+            android:layout_width="match_parent"
             android:choiceMode="singleChoice"
-            android:divider="@drawable/nav_divider" />
+            android:divider="@color/white"
+        />
+ 
     </LinearLayout>
-
+    
 </android.support.v4.widget.DrawerLayout>

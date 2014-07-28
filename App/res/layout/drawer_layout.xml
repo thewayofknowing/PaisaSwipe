@@ -1,33 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:background="@drawable/drawer_item_background"
-    android:layout_height="@dimen/drawer_option_height"
-    android:id="@+id/parentLayout"
-    android:clickable="true" >
- 
-<ImageView
-        android:id="@+id/icon"
-        android:layout_width="30dp"
-        android:layout_height="20dp"
-        android:layout_marginLeft="5dp"
-        android:paddingTop="8dp"
-        android:paddingRight="8dp"
-        android:paddingBottom="8dp"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
-        android:contentDescription="@string/hello_world" />    
-    
-    
- <TextView
-        android:id="@+id/content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:textColor="#333333"
-        android:textSize="20sp"
-        android:padding="8dp"
-	    android:layout_toRightOf="@id/icon"
-        android:gravity="center" />
- 
+	<RelativeLayout
+	    xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="wrap_content"
+	    android:background="@drawable/drawer_item_background"
+	    android:layout_height="wrap_content"
+	    android:id="@+id/parentLayout"
+	    android:paddingLeft="20dp"
+	    android:paddingBottom="8dp"
+		android:paddingTop="8dp"
+		android:layout_gravity="center_horizontal"
+		android:gravity="center"
+	    android:clickable="true" >
+	  
+	<ImageView
+	        android:id="@+id/icon"
+	        android:layout_width="50dp"
+	        android:layout_height="50dp"
+	        android:layout_centerVertical="true" />      
+	 <TextView
+	        android:id="@+id/content"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_centerVertical="true"
+	        android:textColor="#C1D0E5"
+	        android:textSize="20sp"
+	        android:paddingLeft="8dp"
+	        android:gravity="left"
+	        android:layout_toRightOf="@id/icon" />
 </RelativeLayout>

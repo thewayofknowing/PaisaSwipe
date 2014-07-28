@@ -1,5 +1,6 @@
 package com.example.backup;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -16,7 +17,6 @@ import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.GooglePlayServicesAvailabilityException;
 import com.google.android.gms.auth.UserRecoverableAuthException;
-
 import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -96,6 +96,13 @@ public class SplashScreen extends Activity implements ConnectionCallbacks,
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.splash);
 
+		/*
+		File file = new File(getApplicationContext().getFilesDir().getAbsolutePath());
+		for(File item: file.listFiles()) {
+			Log.d(TAG,item.toString() + "");
+		}
+		*/
+		
 		mGoogleApiClient = new GoogleApiClient.Builder(this)
 				.addConnectionCallbacks(this)
 				.addOnConnectionFailedListener(this).addApi(Plus.API)
@@ -117,7 +124,11 @@ public class SplashScreen extends Activity implements ConnectionCallbacks,
 					@Override
 					public void onClick(View v) {
 						Log.d(TAG, "clicked");
-						start_google();
+						if ( mGoogleApiClient.isConnecting()==false) {
+							Log.d(TAG,"connected");
+							mSignInClicked = true;
+							resolveSignInError();
+						}
 					}
 				});
 
@@ -234,7 +245,7 @@ public class SplashScreen extends Activity implements ConnectionCallbacks,
 		}, 2000);
 
 	}
-
+ /*
 	@Override
 	public void onBackPressed() {
 		if (s_onSplash) {
@@ -255,42 +266,38 @@ public class SplashScreen extends Activity implements ConnectionCallbacks,
 		}
 
 	}
-
+*/
+	
 	/* A helper method to resolve the current ConnectionResult error. */
 	private void resolveSignInError() {
-		if (mConnectionResult.hasResolution()) {
-			try {
-				mIntentInProgress = true;
-				mConnectionResult.startResolutionForResult(this, RC_SIGN_IN);
-				Log.d(TAG, "Signing in");
-			} catch (SendIntentException e) {
-				// The intent was canceled before it was sent. Return to the
-				// default
-				// state and attempt to connect to get an updated
-				// ConnectionResult.
-				mIntentInProgress = false;
-				mGoogleApiClient.connect();
-			}
-		}
+	  if (mConnectionResult.hasResolution()) {
+	    try {
+	      mIntentInProgress = true;
+			mConnectionResult.startResolutionForResult(this, RC_SIGN_IN);
+	    } catch (SendIntentException e) {
+	      // The intent was canceled before it was sent.  Return to the default
+	      // state and attempt to connect to get an updated ConnectionResult.
+	      mIntentInProgress = false;
+	      mGoogleApiClient.connect();
+	    }
+	  }
 	}
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == REQUEST_CODE_PICK_ACCOUNT) {
-			if (resultCode == RESULT_OK) {
-				mEmail = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-				getUsername();
-			} else if (resultCode == RESULT_CANCELED) {
-				Toast.makeText(this, "You must pick an account",
-						Toast.LENGTH_SHORT).show();
-			}
-		} else if ((requestCode == REQUEST_CODE_RECOVER_FROM_AUTH_ERROR || requestCode == REQUEST_CODE_RECOVER_FROM_PLAY_SERVICES_ERROR)
-				&& resultCode == RESULT_OK) {
-			handleAuthorizeResult(resultCode, data);
-			return;
-		}
-		
+		if (requestCode == RC_SIGN_IN) {
+		    if (resultCode != RESULT_OK) {
+		      mSignInClicked = false;
+		    }
+
+		    mIntentInProgress = false;
+
+		    if (!mGoogleApiClient.isConnecting()) {
+		      mGoogleApiClient.connect();
+		    }
+		  }
+
 		if(Session.getActiveSession() != null) Session.getActiveSession().onActivityResult(this, requestCode,
 				resultCode, data);
 	}
@@ -315,21 +322,6 @@ public class SplashScreen extends Activity implements ConnectionCallbacks,
 		mGoogleApiClient.disconnect();
 		super.onStop();
 	}
-	
-	protected void start_google(){
-		int statusCode = GooglePlayServicesUtil
-				.isGooglePlayServicesAvailable(this);
-		if (statusCode == ConnectionResult.SUCCESS) {
-			getUsername();
-		} else if (GooglePlayServicesUtil.isUserRecoverableError(statusCode)) {
-			Dialog dialog = GooglePlayServicesUtil.getErrorDialog(statusCode,
-					this, 0 /* request code not used */);
-			dialog.show();
-		} else {
-			Toast.makeText(this, "Unrecoverable Play Services error",
-					Toast.LENGTH_SHORT).show();
-		}
-	}
 
 	public void onConnectionFailed(ConnectionResult result) {
 		if (!mIntentInProgress) {
@@ -350,12 +342,12 @@ public class SplashScreen extends Activity implements ConnectionCallbacks,
 	@Override
 	public void onConnected(Bundle arg0) {
 		mSignInClicked = false;
-		Toast.makeText(this, "User is connected!", Toast.LENGTH_LONG).show();
+		//Toast.makeText(this, "User is connected!", Toast.LENGTH_LONG).show();
 		if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
 			Person currentPerson = Plus.PeopleApi
 					.getCurrentPerson(mGoogleApiClient);
 			s_personName = currentPerson.getDisplayName();
-			// s_gender = currentPerson.getGender();
+		    s_gender = currentPerson.getGender();
 			// String personPhoto = currentPerson.getImage();
 			s_email = Plus.AccountApi.getAccountName(mGoogleApiClient);
 			// Toast.makeText(this, personName, Toast.LENGTH_LONG).show();
@@ -404,104 +396,5 @@ public class SplashScreen extends Activity implements ConnectionCallbacks,
 		}
 		return false;
 	}
-
-	private void pickUserAccount() {
-		String[] accountTypes = new String[] { "com.google" };
-		Intent intent = AccountPicker.newChooseAccountIntent(null, null,
-				accountTypes, false, null, null, null, null);
-		startActivityForResult(intent, REQUEST_CODE_PICK_ACCOUNT);
-	}
-
-	private void getUsername() {
-		if (mEmail == null) {
-			pickUserAccount();
-		} else {
-			if (isDeviceOnline()) {
-				new GetNameInForeground(SplashScreen.this, mEmail, SCOPE);
-			} else {
-				Toast.makeText(this, "No network connection available",
-						Toast.LENGTH_SHORT).show();
-			}
-		}
-	}
-
 	
-	private void handleAuthorizeResult(int resultCode, Intent data) {
-		if (data == null) {
-			show("Unknown error, click the button again");
-			return;
-		}
-		if (resultCode == RESULT_OK) {
-			Log.i(TAG, "Retrying");
-			new GetNameInForeground(SplashScreen.this, mEmail, SCOPE);
-			return;
-		}
-		if (resultCode == RESULT_CANCELED) {
-			show("User rejected authorization.");
-			return;
-		}
-		show("Unknown error, click the button again");
-	}
-
-	public void show(final String message) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-//                mOut.setText(message);
-            }
-        });
-    }
-	
-	public class GetNameInForeground extends AbstractGetNameTask {
-
-		  public GetNameInForeground(SplashScreen activity, String email, String scope) {
-		      super(activity, email, scope);
-		  }
-
-
-		  /**
-		   * Get a authentication token if one is not available. If the error is not recoverable then
-		   * it displays the error message on parent activity right away.
-		   */
-		  @Override
-		  protected String fetchToken() throws IOException {
-		      try {
-		          return GoogleAuthUtil.getToken(mActivity, mEmail, mScope);
-		      } catch (UserRecoverableAuthException userRecoverableException) {
-		          // GooglePlayServices.apk is either old, disabled, or not present, which is
-		          // recoverable, so we need to show the user some UI through the activity.
-		          handleException(userRecoverableException);
-		      } catch (GoogleAuthException fatalException) {
-		          onError("Unrecoverable error " + fatalException.getMessage(), fatalException);
-		      }
-		      return null;
-		  }
-		  
-		  public void handleException(final Exception e) {
-		        runOnUiThread(new Runnable() {
-		            @Override
-		            public void run() {
-		                if (e instanceof GooglePlayServicesAvailabilityException) {
-		                    // The Google Play services APK is old, disabled, or not present.
-		                    // Show a dialog created by Google Play services that allows
-		                    // the user to update the APK
-		                    int statusCode = ((GooglePlayServicesAvailabilityException)e)
-		                            .getConnectionStatusCode();
-		                    Dialog dialog = GooglePlayServicesUtil.getErrorDialog(statusCode,
-		                           SplashScreen.this,
-		                            REQUEST_CODE_RECOVER_FROM_PLAY_SERVICES_ERROR);
-		                    dialog.show();
-		                } else if (e instanceof UserRecoverableAuthException) {
-		                    // Unable to authenticate, such as when the user has not yet granted
-		                    // the app access to the account, but the user can fix this.
-		                    // Forward the user to an activity in Google Play services.
-		                    Intent intent = ((UserRecoverableAuthException)e).getIntent();
-		                    startActivityForResult(intent,
-		                            REQUEST_CODE_RECOVER_FROM_PLAY_SERVICES_ERROR);
-		                }
-		            }
-		        });
-		    }
-		}
-
 }

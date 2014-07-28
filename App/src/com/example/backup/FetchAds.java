@@ -83,9 +83,16 @@ public class FetchAds extends Activity implements Constants {
 			e.printStackTrace();
 		}
 		
-		DownloadImagesTask downloadImageTask = new DownloadImagesTask(this);
-		downloadImageTask.execute();
-		
+		if(s_imageDownloadList.isEmpty()) {
+			Intent mainIntent = new Intent(getBaseContext(),MainActivity.class);
+			mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+			startActivity(mainIntent);
+			finish();
+		}
+		else {
+			DownloadImagesTask downloadImageTask = new DownloadImagesTask(this);
+			downloadImageTask.execute();
+		}
 	}
 
 	@Override
@@ -146,8 +153,9 @@ public class FetchAds extends Activity implements Constants {
 		@Override
 		protected void onProgressUpdate(String... values) {
 			super.onProgressUpdate(values);
-			s_progressBar.setProgress(((s_totalDownloaded + Integer.parseInt(values[0]))/s_totalSize)*100);
-			s_progressText.setText(((s_totalDownloaded + Integer.parseInt(values[0]))/1024) + "/" + (s_totalSize/1024) + " KB Downloaded");
+			float fraction_progress = (float)(Integer.parseInt(values[0]))/s_totalSize;
+			s_progressBar.setProgress((int)(fraction_progress*100));
+			s_progressText.setText((Integer.parseInt(values[0])/1024) + "/" + (s_totalSize/1024) + " KB Downloaded");
 		}
 		
 		public synchronized void getImageBitmap(DownloadImageContainer d) {
@@ -161,16 +169,15 @@ public class FetchAds extends Activity implements Constants {
 			    byte data[] = new byte[1024];
 			    byte sumData[] = new byte[d.image_size];
 			    sumSize = 0;
-			    int total = 0;
 			        while ((count = input.read(data)) != -1) {
-			        	total += count;
-			            publishProgress(""+ total);
+			        	s_totalDownloaded += count;
+			            publishProgress("" + s_totalDownloaded);
 			            for(int i=0;i<count;i++) {
 			            	sumData[sumSize++] = data[i];
 			            }
 			        }
-			    s_totalDownloaded +=  total;
-			    File file = new File( context.getFilesDir().getAbsolutePath()  + "/" + d.image_name);
+			   // s_totalDownloaded +=  total;
+			    File file = new File( context.getFilesDir().getAbsolutePath()  + "/" + d.image_name + ".jpg");
 				FileOutputStream fos;
 				fos = new FileOutputStream(file);
 				fos.write(sumData);

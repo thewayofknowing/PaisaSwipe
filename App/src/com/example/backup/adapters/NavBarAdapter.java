@@ -16,7 +16,6 @@ import android.content.Intent;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewDebug.FlagToString;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -27,8 +26,6 @@ public class NavBarAdapter extends BaseAdapter implements Constants {
 
 		private Context m_cont;
 		private LayoutInflater m_inflater;
-		/* Client used to interact with Google APIs. */
-		private GoogleApiClient mGoogleApiClient;
 
 		public NavBarAdapter(Context a_cont) {
 			m_cont = a_cont;
@@ -106,10 +103,11 @@ public class NavBarAdapter extends BaseAdapter implements Constants {
 		private void logOut() {
 			switch (m_cont.getSharedPreferences(myPreferences, Context.MODE_PRIVATE).getString(LOGIN_TYPE, "none")) {
 			case "gmail":
-				if (mGoogleApiClient.isConnected()) {
-				      Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-				      mGoogleApiClient.disconnect();
-				      mGoogleApiClient.connect();
+				if (MainActivity.mGoogleApiClient.isConnected()) {
+				      Plus.AccountApi.clearDefaultAccount(MainActivity.mGoogleApiClient);
+				      Plus.AccountApi.revokeAccessAndDisconnect(MainActivity.mGoogleApiClient);
+				      MainActivity.mGoogleApiClient.disconnect();
+				      MainActivity.mGoogleApiClient.connect();
 				 }
 			case "facebook":
 				Session session = Session.getActiveSession();

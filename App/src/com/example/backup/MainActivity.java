@@ -43,8 +43,13 @@ import com.example.backup.backgroundtasks.FakeService;
 import com.example.backup.backgroundtasks.LockScreenService;
 import com.example.backup.backgroundtasks.MyService;
 import com.example.backup.constants.*;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.plus.Plus;
 
-public class MainActivity extends Activity implements Constants {
+public class MainActivity extends Activity implements Constants, ConnectionCallbacks, OnConnectionFailedListener {
 	
 	
 	/*
@@ -85,6 +90,9 @@ public class MainActivity extends Activity implements Constants {
 	
 	ImageView s_tab1,s_tab2;
 	int tabId;
+	
+	/* Client used to interact with Google APIs. */
+	public static GoogleApiClient mGoogleApiClient;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -295,6 +303,12 @@ public class MainActivity extends Activity implements Constants {
 		 mDrawerList = (ListView) findViewById(R.id.drawer_list);
 	     NavBarAdapter l_leftNavBarListAdapter = new NavBarAdapter(this);
 
+	     mGoogleApiClient = new GoogleApiClient.Builder(this)
+			.addConnectionCallbacks(this)
+			.addOnConnectionFailedListener(this).addApi(Plus.API)
+			.addScope(Plus.SCOPE_PLUS_LOGIN).build();
+	     mGoogleApiClient.connect();
+	     
 		 mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
 		 mDrawerList.setAdapter(l_leftNavBarListAdapter);
 		
@@ -428,12 +442,31 @@ public class MainActivity extends Activity implements Constants {
 		 */
 		sharedPreferences.edit().putStringSet(ACTIVATED_LIST, app_ad_list).commit();
 		sharedPreferences.edit().putStringSet(LOCKED_LIST, app_ad_lock).commit();
+		mGoogleApiClient.disconnect();
 		super.onPause();
 	}
 	
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onConnected(Bundle arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onConnectionSuspended(int arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 

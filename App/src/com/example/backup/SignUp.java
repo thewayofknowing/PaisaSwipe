@@ -22,6 +22,11 @@ import org.json.JSONObject;
 
 import com.example.backup.Views.TitleBar;
 import com.example.backup.constants.Constants;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.plus.Plus;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -42,7 +47,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class SignUp extends Activity implements Constants{
+public class SignUp extends Activity implements Constants, ConnectionCallbacks, OnConnectionFailedListener{
 	
 	private ImageView s_leftNavButton = null; 
 	private ImageView s_searchIcon = null;
@@ -58,6 +63,8 @@ public class SignUp extends Activity implements Constants{
 	
 	private SharedPreferences s_sharedPref = null;
 	private Editor s_editor;
+	
+	private GoogleApiClient mGoogleApiClient;
 	
 	String s_email;
 	String s_name;
@@ -76,6 +83,13 @@ public class SignUp extends Activity implements Constants{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.signup);
+		
+		 mGoogleApiClient = new GoogleApiClient.Builder(this)
+			.addConnectionCallbacks(this)
+			.addOnConnectionFailedListener(this).addApi(Plus.API)
+			.addScope(Plus.SCOPE_PLUS_LOGIN).build();
+		 mGoogleApiClient.connect();
+		
 		initTitle();
 		initErrorTextViews();
 		setSignupButtonListener();
@@ -296,6 +310,9 @@ public class SignUp extends Activity implements Constants{
 	@Override
 	public void onBackPressed() {
 		startActivity(new Intent(getBaseContext(),SplashScreen.class));
+		Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+		Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient);
+		mGoogleApiClient.disconnect();
 		finish();
 		super.onBackPressed();
 	}
@@ -390,8 +407,7 @@ public class SignUp extends Activity implements Constants{
 						s_userBalance = json_result.getString("user_balance");
 						saveUserCredentials();
 						//s_editor.putString(USER_BALANCE,Integer.parseInt(s_userBalance));
-						s_editor.commit();
-						Toast.makeText(getApplicationContext(), s_userId, Toast.LENGTH_LONG).show();				
+						s_editor.commit();				
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
@@ -413,6 +429,24 @@ public class SignUp extends Activity implements Constants{
 			s_editor.putString(USER_PINCODE, s_pincode);
 			s_editor.putString(USER_GENDER, s_gender).commit();
 		}
+		
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onConnected(Bundle arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onConnectionSuspended(int arg0) {
+		// TODO Auto-generated method stub
 		
 	}
 	

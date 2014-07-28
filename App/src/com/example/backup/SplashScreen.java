@@ -291,6 +291,7 @@ public class SplashScreen extends Activity implements ConnectionCallbacks,
 		}
 		
 		super.onActivityResult(requestCode, resultCode, data);
+		if(Session.getActiveSession() != null)
 		Session.getActiveSession().onActivityResult(this, requestCode,
 				resultCode, data);
 	}

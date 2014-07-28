@@ -30,7 +30,7 @@ public interface Constants {
 	public static final int SWIPE_THRESHOLD = 49;
     public static final int SWIPE_VELOCITY_THRESHOLD = 49;
    
-    public static final int interval = 10000;
+    public static final int interval = 10;
     public static final short gridSize = 3;
     public static final String app_ad_filename = "AppAd.txt";
     

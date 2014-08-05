@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
+        android:src="@drawable/poster"
         />
 
     <TextView
@@ -20,29 +21,29 @@
         android:layout_below="@+id/imageView1"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="17dp"
-        android:gravity="center"
-        android:text="@string/game_congratulations" />
+        android:gravity="center" />
 
     <LinearLayout 
+        android:id="@+id/bottom_info"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:orientation="horizontal"
         android:layout_below="@+id/textView1"
 	    android:layout_marginTop="12dp"
 	    android:layout_centerHorizontal="true">
-	    <Button
+        <ImageView
 	        android:id="@+id/button1"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:text="Go to Ad" />
-	
-	    <Button
+	      	android:src="@drawable/open_ad" />
+	    <ImageView
 	        android:id="@+id/button2"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_alignBaseline="@+id/button1"
 	        android:layout_alignBottom="@+id/button1"
-	        android:layout_toRightOf="@+id/button1"
-	        android:text="Next Game" />
+	        android:clickable="true"
+	        android:src="@drawable/next_ad_button" />    
 	</LinearLayout>
+	
 </RelativeLayout>

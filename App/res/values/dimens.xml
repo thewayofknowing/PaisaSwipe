@@ -15,6 +15,8 @@
     <dimen name="app_icon_dimension_large">60dp</dimen>
     <dimen name="margin_left_to_center_button">140dp</dimen>
     
+    <dimen name="heading_font_size">24dp</dimen>
+    
     <dimen name="drawer_width">250dp</dimen>
     <dimen name="drawer_option_height">30dp</dimen>
     

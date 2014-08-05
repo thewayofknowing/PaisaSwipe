@@ -18,9 +18,10 @@ public class TitleBar extends ViewGroup implements Constants {
 	private static EditText searchText = null;
 	private static ViewGroup viewGroup = null;
 	private static ImageView searchIcon = null;
-	private static TextView title = null;
+	private static ImageView title = null;
 	private static RelativeLayout search_layout = null;
-	private static ImageView cross = null;
+	//private static ImageView cancelText = null;
+	private static ImageView closeSearch = null;
 	public static Typeface openSansTypeFace;
 	
 	public TitleBar(Context context, ViewGroup v) {
@@ -35,9 +36,9 @@ public class TitleBar extends ViewGroup implements Constants {
 		leftNavButton = (ImageView) viewGroup.findViewById(R.id.navButton);
 		searchText = (EditText) viewGroup.findViewById(R.id.search);
 		searchIcon = (ImageView) viewGroup.findViewById(R.id.search_icon);
-		title = (TextView) viewGroup.findViewById(R.id.title);
-		title.setTypeface(openSansTypeFace);
-		cross = (ImageView) viewGroup.findViewById(R.id.cross);
+		title = (ImageView) viewGroup.findViewById(R.id.logo);
+		//cancelText = (ImageView) viewGroup.findViewById(R.id.cancelText);
+		closeSearch = (ImageView) viewGroup.findViewById(R.id.closeSearch);
 		search_layout = (RelativeLayout) viewGroup.findViewById(R.id.search_layout);
 	}
 	
@@ -53,16 +54,22 @@ public class TitleBar extends ViewGroup implements Constants {
 		return searchIcon;
 	}
 	
-	public TextView getTitle() {
+	public ImageView getTitle() {
 		return title;
 	}
 	
+	/*
 	public ImageView getCross() {
-		return cross;
+		return cancelText;
 	}
+	*/
 	
 	public RelativeLayout getSearchLayout() {
 		return search_layout;
+	}
+	
+	public ImageView getCloseSearchButton() {
+		return closeSearch;
 	}
 	
 	@Override

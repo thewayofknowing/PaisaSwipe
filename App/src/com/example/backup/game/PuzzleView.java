@@ -32,8 +32,10 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Vibrator;
 import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 
 public class PuzzleView extends View
 {
@@ -123,7 +125,7 @@ public class PuzzleView extends View
 		sourceHeight = bitmap.getHeight();
 		
 		double targetRatio = (double) targetWidth / (double) targetHeight;
-		double sourceRatio = (double) sourceWidth / (double) sourceHeight;
+		double sourceRatio = targetRatio;
 		
 		targetOffsetX = 0;
 		targetOffsetY = 0;
@@ -518,19 +520,16 @@ public class PuzzleView extends View
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
 	{
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-		DisplayMetrics metrics = new DisplayMetrics();
-		((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(metrics);
-
-		int canvasWidth = MeasureSpec.getSize(widthMeasureSpec);
-		int canvasHeight = (int) (MeasureSpec.getSize(heightMeasureSpec) - (metrics.heightPixels * metrics.density)/25);
 		
-		if(this.canvasWidth != canvasWidth || this.canvasHeight != canvasHeight)
-		{
+		WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+		Display display = wm.getDefaultDisplay();
+		int canvasWidth = display.getWidth();
+		int canvasHeight = (int) ((MeasureSpec.getSize(heightMeasureSpec)*(float)11/12));
+		
 			this.canvasWidth = canvasWidth ;
 			this.canvasHeight = canvasHeight ;
 			puzzleWidth = 0;
 			puzzleHeight = 0;
-		}
 	}
 	
 	public Bitmap getBitmap()

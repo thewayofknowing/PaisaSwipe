@@ -3,24 +3,21 @@ package com.example.backup.game;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.text.MessageFormat;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Random;
 
-import com.example.backup.MainActivity;
 import com.example.backup.R;
+import com.example.backup.game.ButtonView.Timer;
 import com.example.backup.game.PuzzleView.ShowNumbers;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.ActivityInfo;
@@ -36,7 +33,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.text.method.LinkMovementMethod;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.DisplayMetrics;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -90,12 +88,16 @@ public class PuzzleActivity extends Activity
 	private Puzzle puzzle;
 	private Options bitmapOptions;
 	private MenuItem menuShowNumbers;
+	private TextView timer;
 	private int puzzleWidth = 4;
 	private int puzzleHeight = 4;
 	public static Uri imageUri;
 	private boolean portrait;
 	private boolean expert;
-	
+
+	private BroadcastReceiver m_receiver;
+    static final public String SWIPENAD = "SwipeNad";   
+
 	public Bitmap bitmap;
 
 	@Override
@@ -120,20 +122,21 @@ public class PuzzleActivity extends Activity
 
 		view = new PuzzleView(this, puzzle);
 		ButtonView buttonView = new ButtonView(this, view);
+		timer = buttonView.timer;
 		setContentView(buttonView);
-
 		scramble();
 		
 	    setPuzzleSize(DEFAULT_SIZE, true);
 		newImage();
-	}
+		m_receiver = new BroadcastReceiver() {
 
-	 @Override
-    public void onBackPressed() {
-        startActivity(new Intent(getBaseContext(),MainActivity.class));
-        finish();
-	 	return;
-    }
+			@Override
+			public void onReceive(Context arg0, Intent intent) {
+				String time = intent.getStringExtra("time");
+				timer.setText(time);
+			}
+	    };
+	}
 	
 	private void scramble()
 	{
@@ -408,11 +411,32 @@ public class PuzzleActivity extends Activity
 	{
 		return getSharedPreferences(PuzzleActivity.class.getName(), Activity.MODE_PRIVATE);
 	}
+	
+	@Override
+	public void onBackPressed() {
+	    //stopService(new Intent(getBaseContext(),Timer.class));
+		super.onBackPressed();
+	}
+	
+	@Override
+	protected void onResume() {
+	    LocalBroadcastManager.getInstance(this).registerReceiver((m_receiver), new IntentFilter(SWIPENAD));
+	    super.onResume();
+	}
+	
+	@Override
+	protected void onPause() {
+	    LocalBroadcastManager.getInstance(this).unregisterReceiver(m_receiver);
+		super.onPause();
+	}
+	
 	@Override
 	protected void onStop()
 	{
+	    LocalBroadcastManager.getInstance(this).unregisterReceiver(m_receiver);
+	    stopService(new Intent(getBaseContext(),Timer.class));
 		super.onStop();
-
+	
 		savePreferences();
 	}
 
@@ -592,9 +616,25 @@ public class PuzzleActivity extends Activity
 	{
 		PuzzleStats stats = updateStats();
 		Intent intent = new Intent(getBaseContext(), Finish.class);
+		int i = ButtonView.Timer.i;
+		String minutes = (i/60) + "";
+		if (minutes.length() == 1) {
+			minutes = "0" + minutes;
+		}
+		String seconds = (i%60) + "";
+		if (seconds.length() == 1) {
+			seconds = "0" + seconds;
+		}
+		intent.putExtra("time", minutes + ":" + seconds);
 		intent.putExtra("URI", imageUri);
 		startActivity(intent);
 		finish();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		bitmap.recycle();
+		super.onDestroy();
 	}
 	
 	public PuzzleView getView()

@@ -1,29 +1,33 @@
 package com.example.backup.ads;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+
 import com.example.backup.R;
 import com.example.backup.backgroundtasks.MyService;
+import com.example.backup.backgroundtasks.PostStatsAsyncTask;
 import com.example.backup.constants.*;
+import com.example.backup.data.Advertisement;
+import com.example.backup.data.Stats;
 import com.fima.glowpadview.GlowPadView;
 import com.fima.glowpadview.GlowPadView.OnTriggerListener;
 import com.haibison.android.lockpattern.LockPatternActivity;
 
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 public class AdScreen extends Activity implements Constants, OnTriggerListener {
 	
@@ -31,12 +35,14 @@ public class AdScreen extends Activity implements Constants, OnTriggerListener {
     private static String packageName;
     private Boolean s_appLock;
     private Bitmap bitmap;
+    private Advertisement advertisement;
     private ActivityManager am;
 	private PackageManager pm;
 	private List<RunningTaskInfo> tasks;
 
     private GlowPadView mGlowPadView;
-	
+	String s_appearedAt,s_swipedAt;
+
 	Intent intent;
 	
 	@Override
@@ -48,14 +54,17 @@ public class AdScreen extends Activity implements Constants, OnTriggerListener {
 		
 		activity = this;
 		
-	    MyService.stopAds();
+	    s_appearedAt =  new SimpleDateFormat("HH:mm:ss-dd-MM-yyyy").format(Calendar.getInstance().getTime());
+		MyService.stopAds();
 	     
         packageName = getIntent().getExtras().getString("name");
         s_appLock = getIntent().getExtras().getBoolean("app_lock");
         ImageView iv = (ImageView) findViewById(R.id.imageView1);
 
-        AdLogic adL = new AdLogic(this);
-	    bitmap = adL.getImageUri(this);
+        AdLogic adL = AdLogic.getInstance(this);
+	    advertisement = adL.getAdvertisement();
+        bitmap = advertisement.getImage();
+	    
 	    mGlowPadView = (GlowPadView) findViewById(R.id.glow_pad_view);
 
 	   if(s_appLock) {
@@ -93,14 +102,14 @@ public class AdScreen extends Activity implements Constants, OnTriggerListener {
 			        	homeIntent.addCategory(Intent.CATEGORY_HOME);
 			        	homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			        	startActivity(homeIntent);
-			        	finish();
+			        	finishActivity();
 			            break;
 			        case LockPatternActivity.RESULT_FAILED:
 			        	Intent homeIntentb= new Intent(Intent.ACTION_MAIN);
 			        	homeIntentb.addCategory(Intent.CATEGORY_HOME);
 			        	homeIntentb.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			        	startActivity(homeIntentb);
-			        	finish();
+			        	finishActivity();
 			            break;
 			        case LockPatternActivity.RESULT_FORGOT_PATTERN:
 			            // The user forgot the pattern and invoked your recovery Activity.
@@ -139,11 +148,25 @@ public class AdScreen extends Activity implements Constants, OnTriggerListener {
 	    	  
 	    	 if(!flag) {
 	 			  Intent LaunchIntent = getPackageManager().getLaunchIntentForPackage(packageName);
-            	  LaunchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            	  startActivity(LaunchIntent);
+            	  try {
+            		  LaunchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            		  startActivity(LaunchIntent);
+            	  }
+            	  catch (Exception e) {
+            		  
+            	  }
 	    	 }
-	    	 MyService.delayAds();
-	    	 finish();
+	    	    s_swipedAt = new SimpleDateFormat("HH:mm:ss-dd-MM-yyyy").format(Calendar.getInstance().getTime());
+				Stats stats = new Stats();
+				stats.setAdId(advertisement.getId());
+				stats.setUserId(Integer.parseInt(getSharedPreferences(myPreferences, Context.MODE_PRIVATE).getString(USER_ID, "0")));
+				stats.setType(1);
+				stats.setCompanyId(advertisement.getCompanyId());
+				stats.setAppearedAtTime(s_appearedAt);
+				stats.setSwipedAtTime(s_swipedAt);
+				PostStatsAsyncTask pTask = new PostStatsAsyncTask(stats, getBaseContext());
+				pTask.execute();
+	    	    finishActivity();
 	    }
 	
        @Override
@@ -151,13 +174,20 @@ public class AdScreen extends Activity implements Constants, OnTriggerListener {
     	super.onPause();
     }
 
+    private void finishActivity() {
+    	finish();
+    	overridePendingTransition(0, 0);    
+    }
+       
     @Override
     protected void onStop() {
+    	MyService.startAds();
     	super.onStop();
     }
 
     @Override
     protected void onDestroy() {
+    	bitmap.recycle();
     	super.onDestroy();
     }
     
@@ -182,7 +212,7 @@ public class AdScreen extends Activity implements Constants, OnTriggerListener {
 			break;
 
 		case R.drawable.ic_item_google:
-        	finish();
+        	finishActivity();
 			//Toast.makeText(this, "Google selected", Toast.LENGTH_SHORT).show();
 
 			break;

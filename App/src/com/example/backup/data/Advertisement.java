@@ -22,7 +22,7 @@ public class Advertisement {
 	public Advertisement() {
 		s_id = 0;
 		s_type = 1;
-		s_companyId = 0;
+		s_companyId = 2;
 		s_bitmap = null;
 	}
 	

@@ -33,15 +33,14 @@ public class Post extends AsyncTask<String, String, String> implements Constants
 	@Override
 	protected String doInBackground(String... params) {
 		HttpClient client = new DefaultHttpClient();
-		HttpPost post = new HttpPost(s_url);//"http://54.187.181.173/start_up/insert_userDetails");
+		HttpPost post = new HttpPost(s_url);
 
 		try {
 			// Add your data        
 	        post.setEntity(new UrlEncodedFormEntity(s_nameValuePairs));
 	        HttpResponse response = client.execute(post);
-	        if (response.getStatusLine().getStatusCode() == 200) {
-	        	return "true";
-	        }
+	        return response.getStatusLine().getStatusCode() + "";
+	        
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 			return "error:" + e.getMessage();
@@ -55,7 +54,8 @@ public class Post extends AsyncTask<String, String, String> implements Constants
 	
 	@Override
 	protected void onPostExecute(String result) {
-		if (result!=null && result.equals("true")) {
+		Log.d(TAG,"Code: " + result);
+		if (result!=null && result.equals("200")) {
 			Log.d(TAG,"Posted Successfully");
 			//s_activity.getSharedPreferences(myPreferences, Context.MODE_PRIVATE).edit().putBoolean("DataPosted", true);							
 		}

@@ -4,7 +4,8 @@ public class Stats {
 
 	private int s_adId;
 	private int s_userId = 0;
-	private int s_companyId;
+	private int s_type = 0;
+	private int s_companyId = 2;
 	private String s_appeared_at;
 	private String s_swiped_at = "";
 	private String s_clicked_at = "";
@@ -21,6 +22,10 @@ public class Stats {
 	
 	public int getUserId() {
 		return this.s_userId;
+	}
+	
+	public int getType() {
+		return this.s_type;
 	}
 	
 	public int getCompanyId() {
@@ -53,6 +58,10 @@ public class Stats {
 
 	public void setUserId(int userId) {
 		this.s_userId = userId;
+	}
+	
+	public void setType(int type) {
+		this.s_type = type;
 	}
 	
 	public void setCompanyId(int companyId) {

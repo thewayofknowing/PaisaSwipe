@@ -58,10 +58,11 @@ public class FetchAds extends Activity implements Constants {
 				Advertisement ad = new Advertisement();
 				
 				JSONObject object = adListArray.getJSONObject(i);		
-				String image_name = object.getString("image_name");
-				File file = new File(myDir.getAbsolutePath() + "/" + image_name + ".jpg");
+				String image_name = object.getString("image_name") + ".jpg";
+				File file = new File(myDir.getAbsolutePath() + "/" + image_name);
 				ad.setImageName(image_name);
 				ad.setId(Integer.parseInt(object.getString("adv_id")));
+				ad.setCompanyId(Integer.parseInt(object.getString("company_id")));
 				ad.setURL(object.getString("adv_url"));
 				ad.setImpressionCount(Integer.parseInt(object.getString("ad_impressions")));
 				
@@ -177,7 +178,7 @@ public class FetchAds extends Activity implements Constants {
 			            }
 			        }
 			   // s_totalDownloaded +=  total;
-			    File file = new File( context.getFilesDir().getAbsolutePath()  + "/" + d.image_name + ".jpg");
+			    File file = new File( context.getFilesDir().getAbsolutePath()  + "/" + d.image_name);
 				FileOutputStream fos;
 				fos = new FileOutputStream(file);
 				fos.write(sumData);

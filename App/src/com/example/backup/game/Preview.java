@@ -29,7 +29,7 @@ public class Preview extends Activity {
 		    InputStream inputStream = getContentResolver().openInputStream(uri);
 		    preview_image = Drawable.createFromStream(inputStream, uri.toString() );
 		} catch (FileNotFoundException e) {
-		    preview_image = getResources().getDrawable(R.drawable.back);
+		    preview_image = getResources().getDrawable(R.drawable.poster);
 		}
 		iv.setBackgroundDrawable(preview_image);
 		

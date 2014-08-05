@@ -1,6 +1,5 @@
 package com.example.backup.db;
 
-import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,9 +10,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.BitmapFactory;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
 
@@ -40,7 +37,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String STATS_AD_ID = "ad_id";
     private static final String STATS_COMP_ID = "company_id";
     private static final String STATS_USER_ID = "user_id";
-    private static final String STATS_TYPE = "type";
+    private static final String STATS_TYPE = "stats_type";
     private static final String STATS_APPEARED_AT = "appeared_at";
     private static final String STATS_CLICKED_AT = "clicked_at";
     private static final String STATS_SWIPED_AT = "swiped_at";
@@ -64,8 +61,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 	    //Statistics table create statement
 	    final String CREATE_TABLE_STATISTICS = "CREATE TABLE IF NOT EXISTS " 
 	    	+ TABLE_STATISTICS + "(" + STATS_AD_ID + " INTEGER," + STATS_COMP_ID + " INTEGER,"
-	    	+ STATS_USER_ID + " INTEGER,"  + STATS_APPEARED_AT + " DATETIME,"
-	    	+ STATS_SWIPED_AT + " DATETIME," + STATS_CLICKED_AT + " DATETIME," + STATS_COMPLETION_TIME 
+	    	+ STATS_USER_ID + " INTEGER,"  + STATS_TYPE + " INTEGER," + STATS_APPEARED_AT + " VARCHAR,"
+	    	+ STATS_SWIPED_AT + " VARCHAR," + STATS_CLICKED_AT + " VARCHAR," + STATS_COMPLETION_TIME 
 	    	+ " INT," + STATS_PREVIEWS + " INT)";
 	     
 	    db.execSQL(CREATE_TABLE_ADVERTISEMENT);
@@ -109,6 +106,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
          values.put(STATS_AD_ID, stats.getAdId());
          values.put(STATS_COMP_ID, stats.getCompanyId());
          values.put(STATS_USER_ID, stats.getUserId());
+         values.put(STATS_TYPE, stats.getType());
          values.put(STATS_APPEARED_AT, stats.getAppearedAtTime());
          values.put(STATS_SWIPED_AT, stats.getSwipedAtTime());
          values.put(STATS_CLICKED_AT, stats.getClickedAtTime());
@@ -116,7 +114,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
          values.put(STATS_PREVIEWS, stats.getPreviews());
          
       // Inserting Row
-         db.insert(TABLE_ADVERTISEMENT, null, values);
+         db.insert(TABLE_STATISTICS, null, values);
          db.close(); // Closing database connection
     }
     
@@ -166,11 +164,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                stats.setAdId(cursor.getInt(0));
                stats.setCompanyId(cursor.getInt(1));
                stats.setUserId(cursor.getInt(2));
-               stats.setAppearedAtTime(cursor.getString(3));
-               stats.setSwipedAtTime(cursor.getString(4));
-               stats.setClickedAtTime(cursor.getString(5));
-               stats.setCompletionTime(cursor.getInt(6));
-               stats.setPreviews(cursor.getInt(7));
+               stats.setType(cursor.getInt(3));
+               stats.setAppearedAtTime(cursor.getString(4));
+               stats.setSwipedAtTime(cursor.getString(5));
+               stats.setClickedAtTime(cursor.getString(6));
+               stats.setCompletionTime(cursor.getInt(7));
+               stats.setPreviews(cursor.getInt(8));
                
                // Adding ad to list
                statsList.add(stats);
@@ -181,12 +180,20 @@ public class DataBaseHelper extends SQLiteOpenHelper {
        return statsList;
    }
     
+    //Delete all Advertisements
+    public void deleteAllAds() {
+    	SQLiteDatabase db = this.getWritableDatabase();
+    	db.delete(TABLE_ADVERTISEMENT, null, null);
+    	db.close();
+    }
+    
     // Deleting single stat
-public void deleteContact(Stats stat) {
-    SQLiteDatabase db = this.getWritableDatabase();
-    db.delete(TABLE_STATISTICS, STATS_APPEARED_AT + " = ?",
-            new String[] { String.valueOf(stat.getAppearedAtTime()) });
-    db.close();
-}
+    public void deleteStat(Stats stat) {
+	    SQLiteDatabase db = this.getWritableDatabase();
+	    db.delete(TABLE_STATISTICS, STATS_APPEARED_AT + " = ?",
+	            new String[] { String.valueOf(stat.getAppearedAtTime()) });
+	    db.close();
+	}
+    
 
 }

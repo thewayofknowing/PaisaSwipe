@@ -31,7 +31,6 @@
 	<string name="menu_show_numbers">Show numbers: {0}</string>
 	<string name="menu_stats">Stats</string>
 	<string name="menu_about">About</string>
-	<string name="game_congratulations">Congratulations!\nYou have successfully finished the Game.</string>
 	
 	<string name="error_could_not_load_image">Could not load image.</string>
 	<string name="error_could_not_load_image_error">Could not load image: {0}</string>

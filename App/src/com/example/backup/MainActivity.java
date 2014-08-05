@@ -2,6 +2,7 @@ package com.example.backup;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -13,6 +14,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -22,6 +24,7 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,6 +32,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -36,13 +40,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.backup.Views.TitleBar;
-import com.example.backup.adapters.CustomListAdapter;
 import com.example.backup.adapters.CustomLockListAdapter;
 import com.example.backup.adapters.NavBarAdapter;
 import com.example.backup.backgroundtasks.FakeService;
 import com.example.backup.backgroundtasks.LockScreenService;
 import com.example.backup.backgroundtasks.MyService;
 import com.example.backup.constants.*;
+import com.example.backup.listeners.NetworkChangeListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -67,9 +71,6 @@ public class MainActivity extends Activity implements Constants, ConnectionCallb
 	public ListView list;
 	private PackageManager pm;
 	private static List<Process> processes;
-	public static HashSet<String> app_ad;
-	public static HashSet<String> app_ad_off;
-	public static HashSet<String> app_ad_list;
 	public static HashSet<String> app_ad_lock;
 		
 	public static DrawerLayout mDrawerLayout;
@@ -78,29 +79,26 @@ public class MainActivity extends Activity implements Constants, ConnectionCallb
 	private List<String> s_appLabels;
 	private List<String> s_packageNames;
 	private List<Drawable> s_appIcons;
-	private CustomListAdapter s_listAdapter;
+	private List<String> s_appSubLabels;
 	private CustomLockListAdapter s_lockAdapter;
 	
 	private ImageView s_leftNavButton = null; 
 	private EditText s_searchText = null;
 	private ImageView s_searchIcon = null;
-	private TextView s_title = null;
+	private ImageView s_title = null;
 	private ImageView s_cross = null;
+	private ImageView s_closeSearch = null;
 	private RelativeLayout s_searchLayout = null;
-	
-	ImageView s_tab1,s_tab2;
-	int tabId;
+	private Boolean isSearchBarVisible = false;
 	
 	/* Client used to interact with Google APIs. */
-	public static GoogleApiClient mGoogleApiClient;
-	
+	private GoogleApiClient mGoogleApiClient;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		sharedPreferences = getSharedPreferences(myPreferences,	MODE_PRIVATE);   
 				
-		app_ad_list = new HashSet<String>();
-		app_ad = new HashSet<String>();
 		app_ad_lock = new HashSet<String>();
 		
 		initAppLockList();	
@@ -108,37 +106,46 @@ public class MainActivity extends Activity implements Constants, ConnectionCallb
 		setContentView(R.layout.activity_main);
 		initTitle();	
 		initDrawer();
-		setTabListener();
 		
-		//Start LockScreen/AppScreen Service
+		//Start Services, Remove notification
 		startService(new Intent(getBaseContext(),LockScreenService.class));
 		startService(new Intent(getBaseContext(),MyService.class));
+		startService(new Intent(getBaseContext(),NetworkChangeListener.class));
 		startService(new Intent(getBaseContext(),FakeService.class));
 		
 		//INITIALIZE VARIABLES
 		pm = getPackageManager();
 		List<PackageInfo> apps = pm.getInstalledPackages(0);
 	    processes = new ArrayList<Process>();
-		Process process = new Process();
 	    
 	    /*
 	    * GET A LIST OF INSTALLED APPS
 	    */
-	    
+		List<String> system_apps_list = Arrays.asList(SYSTEM_APPS);
+	    int mask = ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP;
 	    if (apps != null) {
 			for (PackageInfo info: apps) {
-				//if((info.applicationInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) == 0) {
-					if(!(info.applicationInfo.packageName.equals(getPackageName())) && pm.getApplicationLabel(info.applicationInfo).toString().indexOf("com.")<0) {	
-						process = new Process();
-						process.setPackageName(info.applicationInfo.packageName);
-						process.setLabel("" + pm.getApplicationLabel(info.applicationInfo));
-						process.setIcon(pm.getApplicationIcon(info.applicationInfo));
-						processes.add(process);
+				Boolean isSystemAppAllowed = true;
+				Process process = new Process();
+				process.type = "3rd Party Application";
+				if((info.applicationInfo.flags & mask) != 0) {
+					if(system_apps_list.contains(pm.getApplicationLabel(info.applicationInfo)) == false) {
+						isSystemAppAllowed = false;
 					}
-				//}
+					else process.type = "System Application";
+				}
+				if(isSystemAppAllowed && info.applicationInfo.packageName.equals(getPackageName()) == false) {	
+					process.setPackageName(info.applicationInfo.packageName);
+					String str = pm.getApplicationLabel(info.applicationInfo) + "";
+					str = str.substring(0, 1).toUpperCase() + str.substring(1);
+					process.setLabel("" + str);
+					process.setIcon(pm.getApplicationIcon(info.applicationInfo));
+					processes.add(process);
+				}
 			}
 		}
 		else {
+			Process process = new Process();
 			process.appLabel = "No Apps Installed";
 			processes.add(process);
 		}
@@ -156,6 +163,7 @@ public class MainActivity extends Activity implements Constants, ConnectionCallb
 		public Drawable icon;
 		public String appLabel;
 		public String packageName;
+		public String type;
 		
 		public void setIcon(Drawable icon) {
 			this.icon = icon;
@@ -168,6 +176,7 @@ public class MainActivity extends Activity implements Constants, ConnectionCallb
 		public void setPackageName(String name) {
 			this.packageName = name;
 		}
+		
 	}
 	
 	public class CustomComparator implements Comparator<Process> {
@@ -198,11 +207,7 @@ public class MainActivity extends Activity implements Constants, ConnectionCallb
 	 * READING THE LIST OF ACTIVATED APPS AT THE START
 	 */
 	private void initAppLockList() {
-		if(sharedPreferences.contains(ACTIVATED_LIST)){
-			app_ad_list.addAll( sharedPreferences.getStringSet(ACTIVATED_LIST, new HashSet<String>() ));	
-		    app_ad.addAll(app_ad_list);
 		    app_ad_lock.addAll( sharedPreferences.getStringSet(LOCKED_LIST, new HashSet<String>()) );
-	    }
 	}
 	
 	private void initTitle() {
@@ -211,31 +216,29 @@ public class MainActivity extends Activity implements Constants, ConnectionCallb
 		s_leftNavButton = tb.getLeftOptionsImgBtn();
 		
 		s_searchText = tb.getSearchEditText();
+		s_closeSearch = tb.getCloseSearchButton();
 		s_searchLayout = tb.getSearchLayout();
 		s_searchLayout.setVisibility(View.GONE);
 		s_title = tb.getTitle();
+		
+		final Animation searchBarAnimation = AnimationUtils.loadAnimation(this, R.anim.search_bar_animation);
+		final Animation titleAnimation = AnimationUtils.loadAnimation(this, R.anim.title_animation);
+		final Animation searchIconAway = AnimationUtils.loadAnimation(this, R.anim.search_icon_away);
+		final Animation searchBarAwayAnimation = AnimationUtils.loadAnimation(this, R.anim.search_bar_away_animation);
+		final Animation titleReturnAnimation = AnimationUtils.loadAnimation(this, R.anim.title_return_animation);
+		final Animation searchIconBack = AnimationUtils.loadAnimation(this, R.anim.search_icon_back);
 				
 		TextWatcher searchTextWatcher = new TextWatcher() {
 			
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
 				String search = s_searchText.getText().toString();
-				if(tabId == 1) {
-					if(search.length() == 0) {
-						prepareList(processes);
-					}
-					else {
-						prepareList(searchMatches(search));
-					}	
+				if(search.length() == 0) {
+					prepareLockList(processes);
 				}
 				else {
-					if(search.length() == 0) {
-						prepareLockList(processes);
-					}
-					else {
-						prepareLockList(searchMatches(search));
-					}	
-				}
+					prepareLockList(searchMatches(search));
+				}	
 			}
 			
 			@Override
@@ -250,36 +253,65 @@ public class MainActivity extends Activity implements Constants, ConnectionCallb
 		s_searchText.addTextChangedListener(searchTextWatcher);
 		
 		s_searchIcon = tb.getSearchIcon();
-		final Animation searchBarAnimation = AnimationUtils.loadAnimation(this, R.anim.search_bar_animation);
-		final Animation titleAnimation = AnimationUtils.loadAnimation(this, R.anim.title_animation);
-		final Animation searchIconAway = AnimationUtils.loadAnimation(this, R.anim.search_icon_away);
 		s_searchIcon.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
+				isSearchBarVisible = true;
 				s_searchLayout.startAnimation(searchBarAnimation);
 				s_searchIcon.startAnimation(searchIconAway);
-				s_searchIcon.setClickable(false);
-				s_searchText.setEnabled(true);
-				s_cross.setEnabled(true);
+				s_searchIcon.setEnabled(false);
+				s_leftNavButton.startAnimation(searchIconAway);
+				s_searchText.requestFocus();
+				s_closeSearch.setClickable(true);
 				s_searchLayout.setVisibility(View.VISIBLE);
+				for(int i=0; i<s_searchLayout.getChildCount();i++) {
+					View child = s_searchLayout.getChildAt(i);
+					child.setEnabled(true);
+				}
+				InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+			    if (inputMethodManager != null) {
+			        inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+			    }
 				s_title.startAnimation(titleAnimation);
 			}
 		});
 		
-		final Animation searchBarAwayAnimation = AnimationUtils.loadAnimation(this, R.anim.search_bar_away_animation);
-		final Animation titleReturnAnimation = AnimationUtils.loadAnimation(this, R.anim.title_return_animation);
-		final Animation searchIconBack = AnimationUtils.loadAnimation(this, R.anim.search_icon_back);
+		/*
 		s_cross = tb.getCross();
 		s_cross.setOnClickListener(new OnClickListener() {
 			
 			@Override
+			public void onClick(View v) {
+				s_searchText.setText("");
+				
+				if (tabId == 1) {
+					prepareLockList(processes);
+				}
+				else {
+					prepareList(processes);
+				}
+				
+			}
+		});
+		*/
+		
+		s_closeSearch.setOnClickListener(new OnClickListener() {
+			
+			@Override
 			public void onClick(View arg0) {
+				isSearchBarVisible = false;
+				s_searchText.setText("");
 				s_searchLayout.startAnimation(searchBarAwayAnimation);
 				s_searchIcon.startAnimation(searchIconBack);
-				s_searchIcon.setClickable(true);
-				s_searchText.setEnabled(false);
-				s_cross.setEnabled(false);
+				s_searchIcon.setEnabled(true);
+				s_leftNavButton.startAnimation(searchIconBack);
+				s_closeSearch.setClickable(false);
+				s_searchLayout.setVisibility(View.GONE);
+				for(int i=0; i<s_searchLayout.getChildCount();i++) {
+					View child = s_searchLayout.getChildAt(i);
+					child.setEnabled(false);
+				}
 				s_title.startAnimation(titleReturnAnimation);
 			}
 		});
@@ -301,13 +333,12 @@ public class MainActivity extends Activity implements Constants, ConnectionCallb
 	
 	private void initDrawer() {
 		 mDrawerList = (ListView) findViewById(R.id.drawer_list);
-	     NavBarAdapter l_leftNavBarListAdapter = new NavBarAdapter(this);
-
 	     mGoogleApiClient = new GoogleApiClient.Builder(this)
 			.addConnectionCallbacks(this)
 			.addOnConnectionFailedListener(this).addApi(Plus.API)
 			.addScope(Plus.SCOPE_PLUS_LOGIN).build();
 	     mGoogleApiClient.connect();
+	     NavBarAdapter l_leftNavBarListAdapter = new NavBarAdapter(this, mGoogleApiClient, MainActivity.this);
 	     
 		 mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
 		 mDrawerList.setAdapter(l_leftNavBarListAdapter);
@@ -323,90 +354,29 @@ public class MainActivity extends Activity implements Constants, ConnectionCallb
 			});
 	}
 	
-	
-	/*
-	 * PREPARE THE LIST FROM CUSTOM ADAPTER
-	 */
-	private void prepareList(List<Process> Processes) {
-		if(Processes.isEmpty()) {
-			s_listAdapter = new CustomListAdapter(MainActivity.this, s_appIcons, s_appLabels, s_packageNames, false);
-		}
-		else {
-			s_appLabels = new ArrayList<String>();
-			s_packageNames = new ArrayList<String>();
-			s_appIcons = new ArrayList<Drawable>();
-			for (Process process: Processes) {
-				s_appLabels.add(process.appLabel);
-				s_appIcons.add(process.icon);
-				s_packageNames.add(process.packageName);
-			}
-			s_listAdapter = new CustomListAdapter(MainActivity.this, s_appIcons, s_appLabels, s_packageNames, true);
-		}
-		list.setAdapter(s_listAdapter);
-	}
-	
 	/*
 	 * PREPARE THE LIST FROM CUSTOM LOCK ADAPTER
 	 */
 	private void prepareLockList(List<Process> Processes) {
 		if(Processes.isEmpty()) {
-			s_lockAdapter = new CustomLockListAdapter(MainActivity.this, s_appIcons, s_appLabels, s_packageNames, false);
+			s_lockAdapter = new CustomLockListAdapter(MainActivity.this, s_appIcons, s_appLabels, null, s_packageNames, false);
 		}
 		else {
 			s_appLabels = new ArrayList<String>();
 			s_packageNames = new ArrayList<String>();
+			s_appSubLabels = new ArrayList<String>();
 			s_appIcons = new ArrayList<Drawable>();
 			for (Process process: Processes) {
 				s_appLabels.add(process.appLabel);
 				s_appIcons.add(process.icon);
+				s_appSubLabels.add(process.type);
 				s_packageNames.add(process.packageName);
 			}
-			s_lockAdapter = new CustomLockListAdapter(MainActivity.this, s_appIcons, s_appLabels, s_packageNames, true);
+			s_lockAdapter = new CustomLockListAdapter(MainActivity.this, s_appIcons, s_appLabels, s_appSubLabels, s_packageNames, true);
 		}
 		list.setAdapter(s_lockAdapter);
 	}
 	
-	
-	private void setTabListener() {
-		tabId = 1;
-		s_tab1 = (ImageView) findViewById(R.id.tab1);
-		s_tab2 = (ImageView) findViewById(R.id.tab2);
-		
-		s_tab1.setBackgroundResource(R.drawable.app_lock_selected);
-		s_tab2.setBackgroundResource(R.drawable.app_ads_unselected);
-
-		s_tab1.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				if (tabId == 2) {
-					 tabId = 1;
-					 s_tab1.setBackgroundResource(R.drawable.app_lock_selected);
-					 s_tab2.setBackgroundResource(R.drawable.app_ads_unselected);
-					 if(s_searchText.isEnabled()) {
-						 prepareLockList(searchMatches(s_searchText.getText().toString()));
-					 }
-					 else prepareLockList(processes);
-				}
-			}
-		});
-		
-		s_tab2.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				if (tabId == 1) {
-					tabId = 2;
-					s_tab2.setBackgroundResource(R.drawable.app_ads_selected);
-					s_tab1.setBackgroundResource(R.drawable.app_lock_unselected);
-					 if(s_searchText.isEnabled()) {
-						 prepareList(searchMatches(s_searchText.getText().toString()));
-					 }
-					 else prepareList(processes);
-				}
-			}
-		});
-	}
 	
 	/*
 	 * Check connectivity of Internet
@@ -423,15 +393,36 @@ public class MainActivity extends Activity implements Constants, ConnectionCallb
 	}
 	
 	@Override
+	public void onBackPressed() {
+		if (isSearchBarVisible) {
+			final Animation searchBarAwayAnimation = AnimationUtils.loadAnimation(this, R.anim.search_bar_away_animation);
+			final Animation titleReturnAnimation = AnimationUtils.loadAnimation(this, R.anim.title_return_animation);
+			final Animation searchIconBack = AnimationUtils.loadAnimation(this, R.anim.search_icon_back);
+			isSearchBarVisible = false;
+			s_searchText.setText("");
+			s_searchLayout.startAnimation(searchBarAwayAnimation);
+			s_searchIcon.startAnimation(searchIconBack);
+			s_searchIcon.setEnabled(true);
+			s_leftNavButton.startAnimation(searchIconBack);
+			s_closeSearch.setClickable(false);
+			s_searchLayout.setVisibility(View.GONE);
+			for(int i=0; i<s_searchLayout.getChildCount();i++) {
+				View child = s_searchLayout.getChildAt(i);
+				child.setEnabled(false);
+			}
+			s_title.startAnimation(titleReturnAnimation);
+		}
+		else {
+			super.onBackPressed();
+		}
+	}
+	
+	@Override
 	protected void onResume() {
 		/*
 		 * LOADING THE LIST OF ACTIVATED ADS
 		 */
-		if(sharedPreferences.contains(ACTIVATED_LIST)){
-			 app_ad_list.addAll( sharedPreferences.getStringSet(ACTIVATED_LIST, new HashSet<String>() ));	
-			 app_ad.addAll(app_ad_list);
-			 app_ad_lock.addAll( sharedPreferences.getStringSet(LOCKED_LIST, new HashSet<String>()) );
-	    }
+		app_ad_lock.addAll( sharedPreferences.getStringSet(LOCKED_LIST, new HashSet<String>()) );
 		super.onResume();
 	}
 	
@@ -440,8 +431,6 @@ public class MainActivity extends Activity implements Constants, ConnectionCallb
 		/*
 		 * SAVE THE LIST OF ACTIVATED ADS 
 		 */
-		sharedPreferences.edit().putStringSet(ACTIVATED_LIST, app_ad_list).commit();
-		sharedPreferences.edit().putStringSet(LOCKED_LIST, app_ad_lock).commit();
 		mGoogleApiClient.disconnect();
 		super.onPause();
 	}
@@ -453,19 +442,16 @@ public class MainActivity extends Activity implements Constants, ConnectionCallb
 
 	@Override
 	public void onConnectionFailed(ConnectionResult arg0) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void onConnected(Bundle arg0) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void onConnectionSuspended(int arg0) {
-		// TODO Auto-generated method stub
 		
 	}
 	

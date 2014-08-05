@@ -10,12 +10,17 @@ import org.apache.http.NameValuePair;
 
 import com.example.backup.ads.AdLogic;
 import com.example.backup.backgroundtasks.MyService;
+import com.example.backup.backgroundtasks.PostStatsAsyncTask;
 import com.example.backup.constants.Constants;
+import com.example.backup.data.Advertisement;
+import com.example.backup.data.Stats;
 import com.fima.glowpadview.GlowPadView;
 import com.fima.glowpadview.GlowPadView.OnTriggerListener;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -27,12 +32,27 @@ import android.view.WindowManager;
 public class LockScreenActivity extends Activity implements Constants, OnTriggerListener {
 	
     private Bitmap bitmap;
+    private Advertisement advertisement;
     private GlowPadView mGlowPadView;
 	Intent myIntent;
-	Calendar calendar;
 	String s_appearedAt,s_swipedAt;
 	List<NameValuePair> s_postElements;
-	Stack<String> s_activityStack;
+	AdLogic adL;
+	String lastActiveApp;
+	PackageManager pm;
+	Intent activityIntent = null;
+	
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+	    super.onWindowFocusChanged(hasFocus);
+	    Log.d("Focus debug", "Focus changed !");
+		if(!hasFocus) {
+		    Log.d("Focus debug", "Lost focus !");
+	
+		    Intent closeDialog = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+		    sendBroadcast(closeDialog);
+		}
+	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,19 +61,24 @@ public class LockScreenActivity extends Activity implements Constants, OnTrigger
 	            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.lock);
-	   	
-	    myIntent = getIntent();
-	    myIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
    	     
-   	     AdLogic adL = new AdLogic(this);
-	     bitmap = adL.getImageUri(this);
+		 /*
+		 lastActiveApp = getIntent().getStringExtra("lastActiveApp");
+		 pm = getPackageManager();
+     	 if (lastActiveApp != null) {
+     		activityIntent = new Intent();
+     	    activityIntent.setClassName(lastActiveApp, getIntent().getStringExtra("lastActiveActivity"));
+     	    activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+     	 }
+     	 */
+		
+   	     adL = AdLogic.getInstance(this);
+   	     advertisement = adL.getAdvertisement();
+	     bitmap = advertisement.getImage();
 	     
-	     calendar = Calendar.getInstance();
-	     s_appearedAt =  new SimpleDateFormat("HH:mm:ss-dd-MM-yyyy").format(calendar.getTime());
-	     //myService = new Intent(getBaseContext(),MyService.class);
-	     //stopService(myService);
+	     s_appearedAt =  new SimpleDateFormat("HH:mm:ss-dd-MM-yyyy").format(Calendar.getInstance().getTime());
 	     
-	     MyService.stopAds();
+	     //MyService.stopAds();
          
          mGlowPadView = (GlowPadView) findViewById(R.id.glow_pad_view);
          mGlowPadView.setBackgroundDrawable(new BitmapDrawable(bitmap));
@@ -91,17 +116,20 @@ public class LockScreenActivity extends Activity implements Constants, OnTrigger
 
 		case R.drawable.ic_item_google:
 			
-			s_swipedAt = new SimpleDateFormat("HH:mm:ss-dd-MM-yyyy").format(calendar.getTime());
-			/*
+			Intent homeIntent= new Intent(Intent.ACTION_MAIN);
+        	homeIntent.addCategory(Intent.CATEGORY_HOME);
+        	homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        	startActivity(homeIntent);
+			s_swipedAt = new SimpleDateFormat("HH:mm:ss-dd-MM-yyyy").format(Calendar.getInstance().getTime());
 			Stats stats = new Stats();
-			stats.setAdId(id);
-			stats.setUserId(userId);
-			stats.setCompanyId(companyId);
+			stats.setAdId(advertisement.getId());
+			stats.setUserId(Integer.parseInt(getSharedPreferences(myPreferences, Context.MODE_PRIVATE).getString(USER_ID, "0")));
+			stats.setType(0);
+			stats.setCompanyId(advertisement.getCompanyId());
 			stats.setAppearedAtTime(s_appearedAt);
 			stats.setSwipedAtTime(s_swipedAt);
 			PostStatsAsyncTask pTask = new PostStatsAsyncTask(stats, getBaseContext());
 			pTask.execute();
-			*/
         	finish();
 			//Toast.makeText(this, "Google selected", Toast.LENGTH_SHORT).show();
 
@@ -124,7 +152,7 @@ public class LockScreenActivity extends Activity implements Constants, OnTrigger
 	
 	@Override
 	protected void onDestroy() {
-		MyService.delayAds();
+		bitmap.recycle();
 		super.onDestroy();
 	}
 	
@@ -177,19 +205,4 @@ public class LockScreenActivity extends Activity implements Constants, OnTrigger
 	    return false;
 	    }
 	 
-	 /*
-	 private boolean isAdDisplayed() {
-			 boolean isAdRunning  = false;
-			 ActivityManager mngr = (ActivityManager) getSystemService( ACTIVITY_SERVICE );
-			 List<ActivityManager.RunningTaskInfo> taskList = mngr.getRunningTasks(10);
-			 String Main = getApplication().getPackageName() + ".ads.AdScreen";
-			 for(ActivityManager.RunningTaskInfo r : taskList) {
-				 if(r.topActivity.getClassName().equals(Main)) {
-					 isAdRunning = true;
-					 break;
-				 }
-			 }
-			 return isAdRunning;
-	 }
-	 */
 }

@@ -310,9 +310,11 @@ public class SignUp extends Activity implements Constants, ConnectionCallbacks, 
 	@Override
 	public void onBackPressed() {
 		startActivity(new Intent(getBaseContext(),SplashScreen.class));
-		Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-		Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient);
-		mGoogleApiClient.disconnect();
+		if (mGoogleApiClient.isConnected()) {
+			Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+			Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient);
+			mGoogleApiClient.disconnect();
+		}
 		finish();
 		super.onBackPressed();
 	}
@@ -427,7 +429,8 @@ public class SignUp extends Activity implements Constants, ConnectionCallbacks, 
 			*/
 			s_editor.putString(USER_NAME, s_name);
 			s_editor.putString(USER_PINCODE, s_pincode);
-			s_editor.putString(USER_GENDER, s_gender).commit();
+			s_editor.putString(USER_GENDER, s_gender);
+			s_editor.commit();
 		}
 		
 	}

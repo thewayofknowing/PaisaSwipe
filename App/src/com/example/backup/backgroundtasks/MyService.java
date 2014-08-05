@@ -6,19 +6,17 @@ import java.util.List;
 
 import com.example.backup.ads.AdScreen;
 import com.example.backup.constants.*;
-import com.example.backup.data.Advertisement;
-import com.example.backup.db.DataBaseHelper;
 
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.Notification;
 import android.app.Service;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
@@ -38,19 +36,15 @@ public class MyService extends Service implements Constants{
 	private ActivityManager am;
 	private PackageManager pm;
 	private List<RunningTaskInfo> tasks;
-	private static HashSet<String> reset;
-	private static HashSet<String> app_ad;
-	private static HashSet<String> app_ad_off;
 	private static HashSet<String> app_ad_lock;
+	public static String activeAppPackageName;
 	private static SharedPreferences sharedPreferences;
-	private List<Advertisement> advertisements;
-	static Boolean s_appLock;
-	
+	static int s_appLock;
+	String app;
+	String oldApp="";
 	/*
 	 * THIS IS SO THAT AD DOESN'T POPUP AGAIN FOR SPLASH SCREEN APS
 	 */
-
-	private static boolean wait_exec;
 	
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -85,115 +79,72 @@ public class MyService extends Service implements Constants{
 	}
    
 	@Override
-	public int onStartCommand(final Intent intent, int flags, int startId) {
-	 
-	initRunnables();	
-	myHandler.post(runnable);
-	 /*
-	  * LET THE SPLASH SCREEN APS BOOT UP, AVOID DISPLAYING AD AGAIN	
-	  */
-	
-
-	// We need to return if we want to handle this service explicitly. 
-	return START_FLAG_REDELIVERY;
-}
+	public int onStartCommand(final Intent intent, int flags, int startId) { 
+		initRunnables();	
+		if (getSharedPreferences(myPreferences, Context.MODE_PRIVATE).getBoolean(APPLOCK_ACTIVATED, true)) {
+			startAds();
+		} 
+		return START_FLAG_REDELIVERY;
+	}
 	
 	private void initRunnables() {
 		/*
-		 * CHECK THE LIST OF ACTIVATED ADS IN LIST OF RUNNING APPS
-		 * IF PRESENT, START THE "AdScreen" ACTIVITY TO DISPLAY THE AD
-		 * ADD THIS NAME TO app_ad_off, REMOVE IT FROM app_ad
-		 * TILL THIS APP IS CLOSED, THE NAME REMAINS IN app_ad_off
-		 * WHEN IT IS CLOSED, NAME IS ADDED BACK TO app_ad_on
+		 * GET FOREGROUND APP, IF IT IS PRESENT IN
+		 * APP_LOCK LIST, THEN DISPLAY AD. TURN OFF ADS TILL THE APP IS NOT 
+		 * SENT TO BACKGROUND
 		 */
-		 runnable = new Runnable() {
+		runnable = new Runnable() {
 			 @Override
 			 public void run() {
 				 
-				 	 android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+				 	List< ActivityManager.RunningTaskInfo > taskInfo = am.getRunningTasks(1); 
+
+		            Log.d("topActivity", "CURRENT Activity ::"
+		                    + taskInfo.get(0).topActivity.getClassName());
+
+		            ComponentName componentInfo = taskInfo.get(0).topActivity;
+		            app = componentInfo.getPackageName();
+				 	 //Log.d(TAG,app);
 				 	 
-				 	 String app = "";
-				 	 tasks = am.getRunningTasks(Integer.MAX_VALUE);
-				 	 reset.addAll(app_ad_off);
-				 	 
-				 	 for (int i=0;i<tasks.size();i++) { 
-				 		 app = "" +  tasks.get(i).baseActivity.getPackageName();
-						
-						//app is stopped or pushed to background
-						if(reset.contains(app) && tasks.get(i).numRunning>0) {
-							Log.d(TAG,app + "-" + tasks.get(i).describeContents());
-							reset.remove(app);
-						}
-						
-						//app is running and is not in background
-						if (app_ad.contains(app) && tasks.get(i).numRunning>0) {
+					//app is running and is not in background
+					if (app.equals(PACKAGE_NAME)==false && app.equals(oldApp)==false) {
+						if (app_ad_lock.contains(app)) {
 							//To prevent ad popping up until app opened again
 							//Log.d(TAG,app + ":" + tasks.get(i).numRunning);
-							app_ad_off.add(app);
-							app_ad.remove(app);
-							
+							oldApp = "" + app;
 							Intent intent = new Intent();
-							intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP );
-							if(s_appLock && app_ad_lock.contains(app)) {
+							intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_NO_ANIMATION );
+							if(s_appLock==1 && app_ad_lock.contains(app)) {
 								intent.putExtra("app_lock", true);
 							}
 							else {
 								intent.putExtra("app_lock", false);
 							}
-							intent.putExtra("name",tasks.get(i).baseActivity.getPackageName() );
+							intent.putExtra("name",app);
 							intent.setClass(MyService.this, AdScreen.class);
 							startActivity(intent);
 						}
-				 	 }
-				 	 
-				 	 //APP CLOSED: PUT IT BACK ON DISPLAY LIST
-				 	 
-				 	 for(String application: reset) {
-				 		 Log.d(TAG,"Reset out:" + application);
-				 		 app_ad_off.remove(application);
-				 		 app_ad.add(application);
-				 	 } 	 
-				 	 reset.clear();
-				 	 
-				 	myHandler.postDelayed(runnable, 529);
+						else if (app.equals(PACKAGE_NAME) == false){
+							oldApp = "";
+						}
+					}
+					
+				 	myHandler.postDelayed(runnable, 225);
 			 }
 		 };
-		 
-		 waitRunnable = new Runnable() {
-			 	
-				@Override
-				public void run() {
-						if(!wait_exec) {
-							wait_exec = true;
-							myHandler.removeCallbacks(runnable);
-							myHandler.postDelayed(waitRunnable, interval);
-						}
-						else {
-							 app_ad_off.addAll(app_ad);
-							 app_ad.removeAll(app_ad_off);
-					    	 myHandler.post(runnable);						
-						}
-				}
-			};
 	}
 	
-
+	/*
+	 * LOAD THE LIST FROM FILE IF CALLED FROM BOOT BROADCAST LISTENER
+	 */
 	public static void initVariables() {
-		app_ad = new HashSet<String>();	
-		app_ad_off = new HashSet<String>();
+		s_appLock  = sharedPreferences.getInt(APP_LOCK_TYPE, 0);
 		app_ad_lock = new HashSet<String>();
-		/*
-		 * LOAD THE LIST FROM FILE IF CALLED FROM BOOT BROADCAST LISTENER
-		 */
-		s_appLock = sharedPreferences.getBoolean(APPLOCK_ACTIVATED, false);
-		app_ad.addAll( sharedPreferences.getStringSet(ACTIVATED_LIST, new HashSet<String>()) );	
 	    app_ad_lock.addAll( sharedPreferences.getStringSet(LOCKED_LIST, new HashSet<String>()) );
-		Log.d(TAG,"OnStart:"+ app_ad.toString() + "");
-		reset = new HashSet<String>();
+	    app_ad_lock.add("com.android.packageinstaller");
 	}
 	
 	public static void delayAds() {
-		 wait_exec = false;	
 		 myHandler.post(waitRunnable);
 	}
 	
@@ -208,18 +159,18 @@ public class MyService extends Service implements Constants{
 	}
 	
 	public static void enableLock() {
-		s_appLock = true;
+		s_appLock = 1;
 	}
 	
 	public static void disableLock() {
-		s_appLock = false;
+		s_appLock = 0;
 	}
 	
 	@Override
 	public void onDestroy() {
 		Log.d(TAG, "MyService onDestroy");
 		myHandler.removeCallbacks(runnable);
-		myHandler.removeCallbacks(waitRunnable);
+		//myHandler.removeCallbacks(waitRunnable);
 		stopForeground(true);
 		super.onDestroy();
 	}

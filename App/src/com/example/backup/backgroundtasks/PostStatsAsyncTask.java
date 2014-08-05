@@ -14,6 +14,7 @@ import com.example.backup.postinfo.Post;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 public class PostStatsAsyncTask extends AsyncTask<String, String, String> implements Constants {
 
@@ -29,20 +30,23 @@ public class PostStatsAsyncTask extends AsyncTask<String, String, String> implem
 	protected String doInBackground(String... params) {
         
 		if(NetworkChangeListener.connected){
+			Log.d(TAG,"Post Internet:" + stats.toString());
 			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-			nameValuePairs.add(new BasicNameValuePair("ad_id", stats.getAdId() + ""));
-			nameValuePairs.add(new BasicNameValuePair("comp_id", stats.getCompanyId() + ""));
+			nameValuePairs.add(new BasicNameValuePair("user_id", stats.getUserId() + ""));
+			nameValuePairs.add(new BasicNameValuePair("adv_id", stats.getAdId() + ""));
+			nameValuePairs.add(new BasicNameValuePair("flag", stats.getType() + ""));
+			nameValuePairs.add(new BasicNameValuePair("company_id", stats.getCompanyId() + ""));
 			nameValuePairs.add(new BasicNameValuePair("appeared_at", stats.getAppearedAtTime()));
 			nameValuePairs.add(new BasicNameValuePair("swiped_at", stats.getSwipedAtTime()));
 			nameValuePairs.add(new BasicNameValuePair("clicked_at", stats.getClickedAtTime()));
-			nameValuePairs.add(new BasicNameValuePair("completion_time", stats.getCompletionTime() + ""));
-			nameValuePairs.add(new BasicNameValuePair("previews", stats.getPreviews() + ""));
+			//nameValuePairs.add(new BasicNameValuePair("completion_time", stats.getCompletionTime() + ""));
+			//nameValuePairs.add(new BasicNameValuePair("previews", stats.getPreviews() + ""));
 			
-			//nameValuePairs.add(new BasicNameValuePair("user_id", user_id));
-			Post post = new Post(context, server_url, nameValuePairs);
+			Post post = new Post(context, server_url + post_stats_page , nameValuePairs);
 			post.execute();
 		}
 		else {
+			Log.d(TAG,"Post Database:" + stats.toString());
 			DataBaseHelper db = new DataBaseHelper(context);
 			db.addStat(stats);
 		}

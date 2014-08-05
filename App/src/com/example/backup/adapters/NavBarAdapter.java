@@ -5,12 +5,17 @@ import com.example.backup.R;
 import com.example.backup.SettingsPage;
 import com.example.backup.SplashScreen;
 import com.example.backup.WalletPage;
+import com.example.backup.backgroundtasks.LockScreenService;
+import com.example.backup.backgroundtasks.MyService;
 import com.example.backup.constants.Constants;
-import com.example.backup.game.PuzzleActivity;
+import com.example.backup.db.DataBaseHelper;
+import com.example.backup.game.StartScreen;
+import com.example.backup.listeners.NetworkChangeListener;
 import com.facebook.Session;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.Gravity;
@@ -26,27 +31,30 @@ public class NavBarAdapter extends BaseAdapter implements Constants {
 
 		private Context m_cont;
 		private LayoutInflater m_inflater;
-
-		public NavBarAdapter(Context a_cont) {
+		private DataBaseHelper db;
+		private GoogleApiClient mGoogleApiClient;
+		private Activity activity;
+		
+		public NavBarAdapter(Context a_cont, GoogleApiClient client, Activity activity) {
 			m_cont = a_cont;
+			mGoogleApiClient = client;
+			this.activity = activity;
 			m_inflater = (LayoutInflater)a_cont.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			db = new DataBaseHelper(m_cont);
 		}
 
 		@Override
 		public int getCount() {
-			// TODO Auto-generated method stub
 			return mContents.length;
 		}
 
 		@Override
 		public Object getItem(int arg0) {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
 		public long getItemId(int arg0) {
-			// TODO Auto-generated method stub
 			return 0;
 		}
 
@@ -69,7 +77,7 @@ public class NavBarAdapter extends BaseAdapter implements Constants {
 					MainActivity.mDrawerLayout.closeDrawer(Gravity.LEFT);
 					switch (position) {
 					case 0:
-						Intent intent = new Intent(m_cont,PuzzleActivity.class);
+						Intent intent = new Intent(m_cont,StartScreen.class);
 						intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
 						m_cont.startActivity(intent);
 						break;
@@ -93,7 +101,9 @@ public class NavBarAdapter extends BaseAdapter implements Constants {
 					default:
 						break;
 					} 
-	
+					if(activity.getClass().equals(MainActivity.class) == false) {
+						activity.finish();
+					}
 				}
 			});
 			
@@ -101,13 +111,13 @@ public class NavBarAdapter extends BaseAdapter implements Constants {
 		}
 
 		private void logOut() {
-			switch (m_cont.getSharedPreferences(myPreferences, Context.MODE_PRIVATE).getString(LOGIN_TYPE, "none")) {
+			switch (m_cont.getSharedPreferences(myPreferences, Context.MODE_PRIVATE).getString(LOGIN_TYPE, "")) {
 			case "gmail":
-				if (MainActivity.mGoogleApiClient.isConnected()) {
-				      Plus.AccountApi.clearDefaultAccount(MainActivity.mGoogleApiClient);
-				      Plus.AccountApi.revokeAccessAndDisconnect(MainActivity.mGoogleApiClient);
-				      MainActivity.mGoogleApiClient.disconnect();
-				      MainActivity.mGoogleApiClient.connect();
+				if (mGoogleApiClient.isConnected()) {
+				      Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+				      Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient);
+				      mGoogleApiClient.disconnect();
+				      mGoogleApiClient.connect();
 				 }
 			case "facebook":
 				Session session = Session.getActiveSession();
@@ -129,6 +139,10 @@ public class NavBarAdapter extends BaseAdapter implements Constants {
 				break;
 			}
 			m_cont.getSharedPreferences(myPreferences, Context.MODE_PRIVATE).edit().remove(LOGIN_TYPE).commit();
+			m_cont.stopService(new Intent(m_cont,LockScreenService.class));
+			m_cont.stopService(new Intent(m_cont,MyService.class));
+			m_cont.stopService(new Intent(m_cont,NetworkChangeListener.class));
+			db.deleteAllAds();
 			Intent splashIntent = new Intent(m_cont, SplashScreen.class);
 			splashIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
 			m_cont.startActivity(splashIntent);

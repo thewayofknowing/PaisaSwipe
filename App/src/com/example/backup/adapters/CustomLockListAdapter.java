@@ -34,15 +34,17 @@ import android.widget.TextView;
 
 public class CustomLockListAdapter extends ArrayAdapter<String> implements Constants {
 	private final Activity context;
-	private final List<String> appLabels;
-	private final List<String> packageNames;
-	private final List<Drawable> icons;
+	private static List<String> appLabels;
+	private static List<String> appSubLabels;
+	private static List<String> packageNames;
+	private static List<Drawable> icons;
 	private boolean is_list;
 	Editor edit;
-	Typeface s_openSansTypeFace;
+	Typeface s_openSansSemiBold,s_openSansRegular;
 	
 	static class ViewHolder {
 		TextView txtTitle;
+		TextView txtInfo;
 		ImageView imageView;
 		Switch switchButton;
 	}
@@ -61,40 +63,50 @@ public class CustomLockListAdapter extends ArrayAdapter<String> implements Const
 	 * @params: appLabels - Application labels for the installed applications
 	 * @params: icons- set of icons for the list of applications installed
 	 */
-	public CustomLockListAdapter(Activity context, List<Drawable> icons, List<String> objects, List<String> names, Boolean isList) {
+	public CustomLockListAdapter(Activity context, List<Drawable> icons, List<String> objects, List<String> subLabels, List<String> names, Boolean isList) {
 		super(context, R.layout.list_element, objects);
 		this.context = context;
 		this.appLabels = objects;
+		this.appSubLabels = subLabels;
 		this.icons = icons;
 		this.packageNames = names;
 		this.is_list = isList;
-		this.s_openSansTypeFace = Typeface.createFromAsset(context.getAssets(), OPEN_SANS_SEMIBOLD);
+		this.s_openSansSemiBold = Typeface.createFromAsset(context.getAssets(), OPEN_SANS_SEMIBOLD);
+		this.s_openSansRegular = Typeface.createFromAsset(context.getAssets(), OPEN_SANS_REGULAR);
 		edit = context.getSharedPreferences(myPreferences,Context.MODE_PRIVATE).edit();
 	}
 	
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
 	
-	ViewHolder viewHolder;	
+	ViewHolder viewHolder = null;	
 	
 	LayoutInflater inflater = context.getLayoutInflater();
 		if(is_list) {
-		    convertView = inflater.inflate(R.layout.list_element_lock, parent, false);
-		    viewHolder = new ViewHolder();
-			//convertView.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.background_small));
-		    
-			//Setting the various elements of a row
-			viewHolder.txtTitle = (TextView) convertView.findViewById(R.id.textView1);
-			viewHolder.imageView = (ImageView) convertView.findViewById(R.id.imageView1);
-			viewHolder.switchButton = (Switch) convertView.findViewById(R.id.switch1);
-		
+			if (convertView == null) {
+			    convertView = inflater.inflate(R.layout.list_element_lock, parent, false);
+			    viewHolder = new ViewHolder();
+				//convertView.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.background_small));
+			    
+				//Setting the various elements of a row
+				viewHolder.txtTitle = (TextView) convertView.findViewById(R.id.textView1);
+				viewHolder.txtInfo = (TextView) convertView.findViewById(R.id.textView2);
+				viewHolder.imageView = (ImageView) convertView.findViewById(R.id.imageView1);
+				viewHolder.switchButton = (Switch) convertView.findViewById(R.id.switch1);
+				convertView.setTag(viewHolder);
+			}
+			else {
+				viewHolder = (ViewHolder) convertView.getTag();
+			}
+			
 			final String appName = appLabels.get(position);
 			final String packageName = packageNames.get(position);
-			viewHolder.txtTitle.setTypeface(s_openSansTypeFace);
+			viewHolder.txtTitle.setTypeface(s_openSansSemiBold);
 			viewHolder.txtTitle.setText(appName);
+			viewHolder.txtInfo.setTypeface(s_openSansRegular);
+			viewHolder.txtInfo.setText(appSubLabels.get(position));
 			Bitmap bitmap = ((BitmapDrawable)icons.get(position)).getBitmap();
 		    viewHolder.imageView.setImageBitmap(getRoundedCornerBitmap(bitmap, ROUND_RADIUS));
-			//viewHolder.imageView.setImageDrawable();
 			
 			if(MainActivity.app_ad_lock.contains(packageName)) {
 				viewHolder.switchButton.setChecked(true);
@@ -110,18 +122,14 @@ public class CustomLockListAdapter extends ArrayAdapter<String> implements Const
 				public void onCheckedChanged(CompoundButton arg0, boolean isChecked) {
 					if(isChecked) {
 						MainActivity.app_ad_lock.add(packageName);
-						MainActivity.app_ad_list.add(packageName);
 					}
 					else {
 						MainActivity.app_ad_lock.remove(packageName);
 					}
-					Log.d(TAG,"Adapter:" + MainActivity.app_ad_list.toString() + "");
 					   edit.putStringSet(LOCKED_LIST, MainActivity.app_ad_lock).commit();
-					   edit.putStringSet(ACTIVATED_LIST, MainActivity.app_ad_list).commit();
 					   MyService.stopAds();
 					   MyService.initVariables();
 					   MyService.startAds();
-					   
 				}
 			});
 		}

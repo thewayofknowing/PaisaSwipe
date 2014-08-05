@@ -1,44 +1,65 @@
 package com.example.backup;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.widget.DrawerLayout;
+import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.backup.Views.TitleBar;
+import com.example.backup.adapters.NavBarAdapter;
+import com.example.backup.adapters.SpinnerAdapter;
 import com.example.backup.constants.Constants;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.plus.Plus;
 
-public class WalletPage extends Activity implements Constants {
+public class WalletPage extends Activity implements Constants, ConnectionCallbacks, OnConnectionFailedListener {
 
 	private ImageView s_leftNavButton = null;
 	private ImageView s_searchIcon = null;
-	private TextView s_title = null;
+	private ImageView s_title = null;
 	private RelativeLayout s_searchLayout = null;
 
 	private int Money_amount = 0;
 	private int tranfer_amount = 0;
 
 	private ImageView facebook, googleplus, linkedin, twitter;
-	private Button butt_money_transfer, butt_bank_transfer, butt_mob_sub,
-			butt_bank_sub;
+	private Button submit = null;
+	private ImageView tab1,tab2;
+	private LinearLayout tab1_layout,tab2_layout;
+	private int tabId = 1;
 	private TextView transfer_share, total_amount;
-	private EditText Account_name, Account_number, Amount, IFSC;
-	boolean isDown_mobile = false;
-	boolean isDown_bank = false;
+	private EditText s_accountName, s_accountNumber, s_IFSC, s_bankAmount;
+	private EditText s_mobileNumber, s_mobileAmount;
+	private Spinner s_operator, s_state;
 
+	public static DrawerLayout mDrawerLayout;
+	private ListView mDrawerList;
+	/* Client used to interact with Google APIs. */
+	public static GoogleApiClient mGoogleApiClient;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.wallet);
 
 		initTitle();
+		initDrawer();
 		findTheViews();
 
 		set_on_clicks();
@@ -62,17 +83,52 @@ public class WalletPage extends Activity implements Constants {
 		s_searchIcon.setEnabled(false);
 	}
 
+	private void initDrawer() {
+		 mDrawerList = (ListView) findViewById(R.id.drawer_list);
+		 mGoogleApiClient = new GoogleApiClient.Builder(this)
+			.addConnectionCallbacks(this)
+			.addOnConnectionFailedListener(this).addApi(Plus.API)
+			.addScope(Plus.SCOPE_PLUS_LOGIN).build();
+	     mGoogleApiClient.connect();
+		 NavBarAdapter l_leftNavBarListAdapter = new NavBarAdapter(this, mGoogleApiClient, WalletPage.this);
+	     
+		 mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+		 mDrawerList.setAdapter(l_leftNavBarListAdapter);
+		
+		 s_leftNavButton.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View arg0) {
+					mDrawerLayout.openDrawer(Gravity.LEFT);
+					mDrawerList.bringToFront();
+					mDrawerList.requestLayout();
+				}
+			});
+	}
+	
 	private void findTheViews() {
 
 		facebook = (ImageView) findViewById(R.id.im_fb);
 		googleplus = (ImageView) findViewById(R.id.im_gplus);
 		linkedin = (ImageView) findViewById(R.id.im_lin);
 		twitter = (ImageView) findViewById(R.id.im_tw);
-		butt_money_transfer = (Button) findViewById(R.id.Mob_Rech);
-		butt_bank_transfer = (Button) findViewById(R.id.Bank_Trans);
-		butt_mob_sub = (Button) findViewById(R.id.submit);
-		butt_bank_sub = (Button) findViewById(R.id.Bank_submit);
+		submit = (Button) findViewById(R.id.submit);
+		
+		tab1 = (ImageView) findViewById(R.id.tab1);
+		tab1_layout =  (LinearLayout) findViewById(R.id.MobileRechargeDetails);
+		tab2 = (ImageView) findViewById(R.id.tab2);
+		tab2_layout = (LinearLayout) findViewById(R.id.BankTransferDetails);
+		
+		tab1.setBackgroundResource(R.drawable.mobile_recharge_selected);
+		tab2.setBackgroundResource(R.drawable.bank_transfer_unselected);
 
+		
+		s_operator = (Spinner) findViewById(R.id.operator);
+		s_operator.setAdapter( new SpinnerAdapter(getBaseContext(), PROVIDERS));
+		s_state = (Spinner) findViewById(R.id.state);
+		s_state.setAdapter(new SpinnerAdapter(getBaseContext(), STATES));
+		
+		
 	}
 
 	private void set_on_clicks() {
@@ -96,104 +152,53 @@ public class WalletPage extends Activity implements Constants {
 		// public void onClick(View arg0) {
 		// }
 		// });
-
-		butt_bank_sub.setOnClickListener(new OnClickListener() {
+		submit.setOnClickListener(new OnClickListener() {
+			
+			@Override
 			public void onClick(View arg0) {
-				submit(1);
+				
 			}
 		});
-
-		butt_mob_sub.setOnClickListener(new OnClickListener() {
+		
+		tab1.setOnClickListener(new OnClickListener() {
+			
+			@Override
 			public void onClick(View arg0) {
-				submit(0);
-			}
-		});
-
-		butt_money_transfer.setOnClickListener(new OnClickListener() {
-			public void onClick(View arg0) {
-
-				if (butt_money_transfer.isPressed()) {
-
-					if (isDown_mobile == false) {
-						butt_money_transfer.setBackgroundColor(Color.rgb(109,
-								160, 66));
-						findViewById(R.id.Details).setVisibility(View.VISIBLE);
-						isDown_mobile = true;
-
-						if (isDown_bank == true) {
-							butt_bank_transfer.setBackgroundColor(Color.rgb(
-									144, 200, 84));
-							isDown_bank = false;
-							findViewById(R.id.Detail_bank).setVisibility(
-									View.GONE);
-						}
-
-					} else {
-						butt_money_transfer.setBackgroundColor(Color.rgb(144,
-								200, 84));
-						findViewById(R.id.Details).setVisibility(View.GONE);
-						isDown_mobile = false;
-					}
-
+				if (tabId == 2) {
+					tabId = 1;
+					tab1.setBackgroundResource(R.drawable.mobile_recharge_selected);
+					tab2.setBackgroundResource(R.drawable.bank_transfer_unselected);
+					changeView(tab1_layout, true);
+					changeView(tab2_layout, false);
 				}
-
 			}
 		});
-		butt_bank_transfer.setOnClickListener(new OnClickListener() {
+		
+		tab2.setOnClickListener(new OnClickListener() {
+			
+			@Override
 			public void onClick(View arg0) {
-
-				if (butt_bank_transfer.isPressed()) {
-
-					if (isDown_bank == false) {
-						butt_bank_transfer.setBackgroundColor(Color.rgb(109,
-								160, 66));
-						findViewById(R.id.Detail_bank).setVisibility(
-								View.VISIBLE);
-						isDown_bank = true;
-
-						if (isDown_mobile == true) {
-							butt_money_transfer.setBackgroundColor(Color.rgb(
-									144, 200, 84));
-							findViewById(R.id.Details).setVisibility(View.GONE);
-							isDown_mobile = false;
-						}
-
-					} else {
-						butt_bank_transfer.setBackgroundColor(Color.rgb(144,
-								200, 84));
-						isDown_bank = false;
-						findViewById(R.id.Detail_bank).setVisibility(View.GONE);
-					}
-
+				if (tabId == 1) {
+					tabId = 2;
+					tab1.setBackgroundResource(R.drawable.mobile_recharge_unselected);
+					tab2.setBackgroundResource(R.drawable.bank_transfer_selected);
+					changeView(tab2_layout, true);
+					changeView(tab1_layout, false);
 				}
-
 			}
 		});
-
 	}
-
-	protected void submit(int x) {
-
-		boolean passable = true;
-		if (x == 0) {
-
-			Account_name = (EditText) findViewById(R.id.IAccN);
-			Account_number = (EditText) findViewById(R.id.IAccNu);
-			IFSC = (EditText) findViewById(R.id.IIFSC);
-			Amount = (EditText) findViewById(R.id.IAmt);
-		}
-
-		if (x == 1) {
-			Account_number = (EditText) findViewById(R.id.Bank_IAccN);
-			Amount = (EditText) findViewById(R.id.Bank_IAmt);
-			IFSC = (EditText) findViewById(R.id.Bank_IIfsc);
-		}
-
-		if (passable == true) {
-			flash_share();
+	
+	private void changeView(LinearLayout view, boolean visible) {
+		if(visible) 
+			view.setVisibility(View.VISIBLE);
+		else 
+			view.setVisibility(View.GONE);
+		for(int i=0;i<view.getChildCount();i++) {
+			view.getChildAt(i).setEnabled(visible);
 		}
 	}
-
+	
 	protected void flash_share(){
 		transfer_share = (TextView) findViewById(R.id.processed);
 		transfer_share.setText("Your recent request for Mobile Recharge of Rs."+ tranfer_amount + " has been processed");
@@ -212,6 +217,24 @@ public class WalletPage extends Activity implements Constants {
 	
 	protected void onDestroy() {
 		super.onDestroy();
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onConnected(Bundle arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onConnectionSuspended(int arg0) {
+		// TODO Auto-generated method stub
+		
 	};
 
 }

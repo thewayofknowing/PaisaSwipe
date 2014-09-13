@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout
+     xmlns:android="http://schemas.android.com/apk/res/android"
+   	 android:id="@+id/drawer_layout"
+   	 android:layout_width="match_parent"
+   	 android:layout_height="match_parent"
+   	 >
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    >
+    
+<RelativeLayout 
+	        android:id="@+id/titleBar"
+	        android:layout_height="@dimen/title_bar_height"
+	        android:layout_width="match_parent"
+	        android:orientation="horizontal"
+	         />
+
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFF" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFF"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/Head"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp"
+                android:paddingLeft="20dp"
+                android:paddingTop="25dp"
+                android:text="My Wallet"
+                android:textStyle="bold"
+		        android:textColor="#2E64FE"
+		        android:textSize="@dimen/heading_font_size" />
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+                android:background="#eee"
+                android:paddingBottom="30dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp" >
+
+                <TextView
+                    android:id="@+id/TotA"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="20dp"
+                    android:text="Total Amount"
+                    android:textColor="#999"
+                    android:textSize="18sp" />
+
+                <LinearLayout
+                    android:id="@+id/bordercontrol"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_toRightOf="@+id/TotA"
+                    android:background="@drawable/border"
+                    android:gravity="right"
+                    android:orientation="horizontal"
+                    android:paddingLeft="20dp" >
+
+                    <TextView
+                        android:id="@+id/Amount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:gravity="right|center_vertical"
+                        android:paddingLeft="30dp"
+                        android:paddingRight="10dp"
+                        android:text="750"
+                        android:textColor="#DF0101"
+                        android:textSize="25sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/RupSign"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_toRightOf="@+id/TotA"
+                    android:gravity="left|center_vertical"
+                    android:paddingLeft="7dp"
+                    android:text="₹"
+                    android:textColor="#555"
+                    android:textSize="30sp" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/Hist"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:gravity="right|center_vertical"
+                android:paddingLeft="7dp"
+                android:paddingRight="15dp"
+                android:paddingTop="4dp"
+                android:text="Check history details"
+                android:textColor="#2E64FE" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/Share_it"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="10dp"
+            android:paddingTop="20dp"
+            android:visibility="gone" >
+
+            <TextView
+                android:id="@+id/processed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#5ba3d9"
+                android:padding="10dp"
+                android:text="Your recent request for Mobile Recharge of Rs.200 has been processed"
+                android:textColor="@android:color/white"
+                android:textSize="18sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal" >
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/share" />
+
+                <TextView
+                    android:id="@+id/share"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@android:color/white"
+                    android:gravity="center_horizontal"
+                    android:paddingBottom="5dp"
+                    android:paddingTop="10dp"
+                    android:text="Share your happiness with your friends"
+                    android:textAlignment="gravity"
+                    android:textColor="#5ba3d9"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal"
+                android:paddingBottom="15dp" >
+
+                <ImageView
+                    android:id="@+id/im_fb"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:clickable="true"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/fb" 
+                    />
+
+                <ImageView
+                    android:id="@+id/im_tw"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:clickable="true"
+                    android:src="@drawable/tw" />
+
+                <ImageView
+                    android:id="@+id/im_gplus"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:clickable="true"
+                    android:src="@drawable/gplus" />
+
+                <ImageView
+                    android:id="@+id/im_lin"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:clickable="true"
+                    android:src="@drawable/lin" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="#5ba3d9" >
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/utilize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:background="@android:color/white"
+                android:gravity="center_horizontal"
+                android:paddingBottom="5dp"
+                android:paddingLeft="20dp"
+                android:paddingTop="10dp"
+                android:text="You can utilize this money for"
+                android:textColor="#898989"
+                android:textSize="16sp" />
+
+            <RelativeLayout
+                android:id="@+id/Money_Loc"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <View
+                    android:id="@+id/spacer"
+                    android:layout_width="2dp"
+                    android:layout_height="0dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:background="@android:color/white" />
+
+                <LinearLayout
+			        android:id="@+id/tabs"
+			        android:layout_height="@dimen/title_bar_height"
+			        android:layout_width="match_parent"
+			        android:orientation="horizontal"
+			        android:weightSum="50" >	
+			        <LinearLayout 
+			            android:layout_height="wrap_content"
+			        	android:layout_width="wrap_content"
+			        	android:orientation="horizontal"
+			        	android:layout_weight="25">
+			              <ImageView 
+				            android:id="@+id/tab1"
+				            android:layout_height="match_parent"
+				            android:layout_width="match_parent"
+				            android:clickable="true"/>
+			              <requestFocus />
+			        </LinearLayout>        
+			        <LinearLayout 
+			          android:layout_height="wrap_content"
+			       	  android:layout_width="wrap_content"
+			       	  android:layout_weight="25">
+				           <ImageView
+				            android:id="@+id/tab2" 
+				            android:layout_height="match_parent"
+				            android:layout_width="match_parent"
+				            android:clickable="true"/>
+			     </LinearLayout>
+	       
+	    </LinearLayout>
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/MobileRechargeDetails"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="15dp" >
+
+                 <EditText
+		            android:id="@+id/number"
+		            android:layout_width="match_parent"
+		            android:layout_height="wrap_content"
+		            android:ems="12"
+		            android:hint="Mobile Number"
+		            android:inputType="number"
+		            android:textColorHint="#ddd" 
+		            android:layout_marginTop="7dp">
+		        </EditText>
+
+
+                <EditText
+                    android:id="@+id/amount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="12"
+                    android:hint="Amount"
+					android:textColorHint="#ddd" 
+                    android:inputType="number" >
+                </EditText>
+
+                <Spinner
+                    android:id="@+id/operator"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="2dp"
+                    android:ems="8"
+                    android:inputType="text"
+                    android:hint="Operator" >
+                </Spinner>
+
+                <Spinner
+                    android:id="@+id/state"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="2dp"
+                    android:ems="8"
+                    android:inputType="text"
+                    android:hint="State">
+                </Spinner>
+
+         </LinearLayout>
+
+		<LinearLayout
+            android:id="@+id/BankTransferDetails"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="15dp"
+            android:visibility="gone" >
+
+                 <EditText
+		            android:id="@+id/accountName"
+		            android:layout_width="match_parent"
+		            android:layout_height="wrap_content"
+		            android:ems="12"
+		            android:hint="Account Name"
+		            android:inputType="text"
+		            android:textColorHint="#ddd" 
+		            android:layout_marginTop="7dp">
+		        </EditText>
+
+
+                <EditText
+                    android:id="@+id/accountNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="12"
+                    android:hint="Account Number"
+					android:textColorHint="#ddd" 
+                    android:inputType="number" >
+                </EditText>
+
+                <EditText
+                    android:id="@+id/IIFSC"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="12"
+                    android:hint="IFSC Code"
+					android:textColorHint="#ddd" 
+                    android:inputType="number" >
+                </EditText>
+
+                <EditText
+                    android:id="@+id/amount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="12"
+                    android:hint="Amount"
+					android:textColorHint="#ddd" 
+                    android:inputType="number" >
+                </EditText>
+         </LinearLayout>    
+    
+		<Button
+                android:id="@+id/submit"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="15dp"
+                android:background="#90c854"
+                android:text="Submit"
+                android:textColor="@android:color/white"
+                android:textSize="20sp" />
+		
+	</LinearLayout>
+</ScrollView>
+</LinearLayout>
+<!-- The navigation drawer -->
+	<LinearLayout
+        android:id="@+id/drawer"
+        android:layout_width="@dimen/drawer_width"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_gravity="start"
+        android:gravity="center"
+        android:background="@color/white"
+         >
+		<ImageView 
+		    android:layout_height="64dp"
+		    android:layout_width="64dp"
+		    android:src="@drawable/logo"
+		    android:layout_marginBottom="3dp"
+		    android:layout_gravity="center_horizontal"/>
+        <ListView android:id="@+id/drawer_list"
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:choiceMode="singleChoice"
+            android:divider="@color/white"
+        />
+ 
+    </LinearLayout>
+    
+</android.support.v4.widget.DrawerLayout>

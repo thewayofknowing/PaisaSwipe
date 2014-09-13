@@ -6,8 +6,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry exported="true" kind="src" path="/FacebookSDK"/>
-	<classpathentry kind="src" path="/GlowPadView"/>
-	<classpathentry kind="lib" path="/home/kartik/new(startups)/google-play-services_lib/libs/google-play-services.jar"/>
-	<classpathentry kind="src" path="/appcompat_v7_10"/>
+	<classpathentry exported="true" kind="src" path="/GlowPadView"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

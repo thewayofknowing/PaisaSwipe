@@ -83,7 +83,7 @@
                     android:paddingLeft="20dp" >
 
                     <TextView
-                        android:id="@+id/Amount"
+                        android:id="@+id/mun_amount"
                         android:layout_width="wrap_content"
                         android:layout_height="40dp"
                         android:gravity="right|center_vertical"
@@ -236,7 +236,7 @@
 
                 <View
                     android:id="@+id/spacer"
-                    android:layout_width="2dp"
+                    android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true"
@@ -246,28 +246,31 @@
 			        android:id="@+id/tabs"
 			        android:layout_height="@dimen/title_bar_height"
 			        android:layout_width="match_parent"
+			        android:color="#f8f7f7"
 			        android:orientation="horizontal"
-			        android:weightSum="50" >	
+			        android:weightSum="2" >	
 			        <LinearLayout 
 			            android:layout_height="wrap_content"
-			        	android:layout_width="wrap_content"
+			        	android:layout_width="match_parent"
 			        	android:orientation="horizontal"
-			        	android:layout_weight="25">
+			        	android:color="#f8f7f7"
+			        	android:layout_weight="1">
 			              <ImageView 
 				            android:id="@+id/tab1"
 				            android:layout_height="match_parent"
-				            android:layout_width="match_parent"
+				            android:layout_width="wrap_content"
 				            android:clickable="true"/>
 			              <requestFocus />
 			        </LinearLayout>        
 			        <LinearLayout 
 			          android:layout_height="wrap_content"
-			       	  android:layout_width="wrap_content"
-			       	  android:layout_weight="25">
+			       	  android:layout_width="match_parent"
+			       	  android:color="#f8f7f7"
+			       	  android:layout_weight="1">
 				           <ImageView
 				            android:id="@+id/tab2" 
 				            android:layout_height="match_parent"
-				            android:layout_width="match_parent"
+				            android:layout_width="wrap_content"
 				            android:clickable="true"/>
 			     </LinearLayout>
 	       
@@ -295,7 +298,7 @@
 
 
                 <EditText
-                    android:id="@+id/amount"
+                    android:id="@+id/amount1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="12"
@@ -367,7 +370,7 @@
                 </EditText>
 
                 <EditText
-                    android:id="@+id/amount"
+                    android:id="@+id/amount2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="12"
@@ -379,12 +382,14 @@
     
 		<Button
                 android:id="@+id/submit"
-                android:layout_width="match_parent"
+                android:layout_width="250dp"
                 android:layout_height="40dp"
-                android:layout_marginLeft="15dp"
+              	android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
                 android:layout_marginTop="15dp"
                 android:background="#90c854"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:gravity="center_horizontal|center_vertical"
                 android:text="Submit"
                 android:textColor="@android:color/white"
                 android:textSize="20sp" />

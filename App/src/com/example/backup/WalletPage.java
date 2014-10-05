@@ -1,8 +1,10 @@
 package com.example.backup;
 
 import android.app.Activity;
+
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
@@ -29,7 +31,7 @@ import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.plus.Plus;
 
-public class WalletPage extends ListFragment implements Constants, ConnectionCallbacks, OnConnectionFailedListener {
+public class WalletPage extends Fragment implements Constants, ConnectionCallbacks, OnConnectionFailedListener {
 
 	private ImageView s_leftNavButton = null;
 	private ImageView s_searchIcon = null;
@@ -72,15 +74,17 @@ public class WalletPage extends ListFragment implements Constants, ConnectionCal
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-
 		View v = inflater.inflate(R.layout.wallet, container, false);
-		findTheViews();
-		set_on_clicks();
-
+		
 		return v;
 	}
 
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
 
+//		findTheViews();
+//		set_on_clicks();
+	}
 
 
 	

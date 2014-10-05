@@ -37,6 +37,7 @@ public class WalletFragment extends FragmentActivity implements Constants, Conne
 	private ListView mDrawerList;
 	/* Client used to interact with Google APIs. */
 	public static GoogleApiClient mGoogleApiClient;
+	public TitleBar tb;
 
 
 
@@ -55,80 +56,13 @@ public class WalletFragment extends FragmentActivity implements Constants, Conne
 		initDrawer();
 
 	
-		getActionBar().setHomeButtonEnabled(true);
-
 		// ViewPager and its adapters use support library
 		// fragments, so use getSupportFragmentManager.
 		mPagerAdapter = new FragmentAdapter(getSupportFragmentManager());
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mPagerAdapter);
-
-		actionBar = getActionBar();
-
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-		
-		
-
-		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setDisplayShowHomeEnabled(true);
-		ActionBar.OnNavigationListener mNavListener = new ActionBar.OnNavigationListener() {
-
-			@Override
-			public boolean onNavigationItemSelected(int itemPosition,
-					long itemId) {
-				// delayedHide(LONGHIDE);
-				return true;
-			}
-		};
-
-		ActionBar.TabListener tabListener = new ActionBar.TabListener() {
-			public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-				// When the tab is selected, switch to the
-				// corresponding page in the ViewPager.
-				mViewPager.setCurrentItem(tab.getPosition());
-				mNum = tab.getPosition();
-
-			}
-
-			@Override
-			public void onTabReselected(Tab arg0, FragmentTransaction arg1) {
-
-			}
-
-			@Override
-			public void onTabUnselected(Tab arg0, FragmentTransaction arg1) {
-
-			}
-		};
-
-		ViewPager.OnPageChangeListener pageListener = new ViewPager.OnPageChangeListener() {
-
-			@Override
-			public void onPageSelected(int arg0) {
-
-				getActionBar().setSelectedNavigationItem(arg0);
-			}
-
-			@Override
-			public void onPageScrolled(int arg0, float arg1, int arg2) {
-				actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-				// delayedHide(1600);
-			}
-
-			@Override
-			public void onPageScrollStateChanged(int arg0) {
-			}
-		};
-
-		mViewPager.setOnPageChangeListener(pageListener);
-
-		actionBar.addTab(actionBar.newTab().setText("a").setTabListener(tabListener));
-		actionBar.addTab(actionBar.newTab().setText("b").setTabListener(tabListener));
-	
-		pageListener.onPageSelected(0);
-
 	}
-
+		
 
 
 
@@ -155,7 +89,7 @@ public class WalletFragment extends FragmentActivity implements Constants, Conne
 
 	private void initTitle() {
 		RelativeLayout title = (RelativeLayout) findViewById(R.id.titleBar);
-		TitleBar tb = new TitleBar(this, title);
+		tb = new TitleBar(this, title);
 
 		s_leftNavButton = tb.getLeftOptionsImgBtn();
 

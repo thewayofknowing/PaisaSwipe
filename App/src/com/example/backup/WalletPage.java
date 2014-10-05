@@ -75,20 +75,21 @@ public class WalletPage extends Fragment implements Constants, ConnectionCallbac
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.wallet, container, false);
-		
+		findTheViews(v);
+		set_on_clicks(v);
 		return v;
 	}
 
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-//		findTheViews();
-//		set_on_clicks();
+//		
+//		
 	}
 
 
 	
-	private void findTheViews() {
+	private void findTheViews(View v) {
 
 		facebook = (ImageView) v.findViewById(R.id.im_fb);
 		googleplus = (ImageView) v.findViewById(R.id.im_gplus);
@@ -113,7 +114,7 @@ public class WalletPage extends Fragment implements Constants, ConnectionCallbac
 		
 	}
 
-	private void set_on_clicks() {
+	private void set_on_clicks(View v) {
 
 		// facebook.setOnClickListener(new OnClickListener() {
 		// public void onClick(View arg0) {

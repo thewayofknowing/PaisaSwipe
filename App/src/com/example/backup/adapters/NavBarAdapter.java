@@ -4,7 +4,7 @@ import com.example.backup.MainActivity;
 import com.example.backup.R;
 import com.example.backup.SettingsPage;
 import com.example.backup.SplashScreen;
-import com.example.backup.WalletPage;
+import com.example.backup.WalletFragment;
 import com.example.backup.backgroundtasks.LockScreenService;
 import com.example.backup.backgroundtasks.MyService;
 import com.example.backup.constants.Constants;
@@ -85,7 +85,7 @@ public class NavBarAdapter extends BaseAdapter implements Constants {
 						
 						break;
 					case 2:
-						Intent walletIntent = new Intent(m_cont,WalletPage.class);
+						Intent walletIntent = new Intent(m_cont,WalletFragment.class);
 						walletIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
 						m_cont.startActivity(walletIntent);
 						break;

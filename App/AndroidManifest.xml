@@ -86,7 +86,8 @@
 		     android:screenOrientation="portrait"/>
 		 <activity android:name="com.example.backup.FetchAds"/>
 		 <activity android:name="com.example.backup.WalletPage"/>
-		 <activity android:name="com.example.backup.game.StartScreen"
+		 <activity android:name="com.example.backup.WalletFragment"/>
+		  		 <activity android:name="com.example.backup.game.StartScreen"
 		     android:screenOrientation="portrait"/>
 		     
         <service android:enabled="true" android:name="com.example.backup.backgroundtasks.MyService" />

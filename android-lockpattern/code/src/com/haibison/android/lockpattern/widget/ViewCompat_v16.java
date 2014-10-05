@@ -16,6 +16,7 @@
 
 package com.haibison.android.lockpattern.widget;
 
+import android.annotation.SuppressLint;
 import android.view.View;
 
 /**
@@ -41,7 +42,8 @@ public class ViewCompat_v16 {
      *            The announcement text.
      * @see View#announceForAccessibility(CharSequence)
      */
-    public static void announceForAccessibility(View view, CharSequence text) {
+    @SuppressLint("NewApi")
+	public static void announceForAccessibility(View view, CharSequence text) {
         view.announceForAccessibility(text);
     }// announceForAccessibility()
 
